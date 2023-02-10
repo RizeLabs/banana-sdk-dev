@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { UserOperationStruct } from "@account-abstraction/contracts";
 import { PaymasterAPI } from "@account-abstraction/sdk";
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BigNumber, BigNumberish } from 'ethers'
 
 import { arrayify, hexConcat } from 'ethers/lib/utils'

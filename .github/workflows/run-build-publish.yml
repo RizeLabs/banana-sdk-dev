@@ -1,0 +1,52 @@
+name: Build, Test, and Publish
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+
+jobs:
+  build-test-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Use Node.js version
+      uses: actions/setup-node@v2
+      with:
+        node-version: 18
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: List all files
+      working-directory: ./banana-wallet-sdk
+      run: ls
+
+    - name: Install dependencies
+      working-directory: ./banana-wallet-sdk
+      run: npm install
+
+    - name: Build the package
+      working-directory: ./banana-wallet-sdk
+      run: npm run build
+
+    - name: Publish the package
+      working-directory: ./banana-wallet-sdk
+      if: github.event.pull_request.merged == true
+      run: |
+        title=$(echo ${{ github.event.pull_request.title }} | awk '{print $1}')
+        version=$(grep '"version"' package.json | awk -F: '{ print $2 }' | sed 's/[",]//g')
+
+        if [ "$title" == "fix:" ]; then
+          npm version patch --no-git-tag-version
+        elif [ "$title" == "feat:" ]; then
+          npm version minor --no-git-tag-version
+        elif [ "$title" == "BREAKING" ]; then
+          npm version major --no-git-tag-version
+        fi
+
+        npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
