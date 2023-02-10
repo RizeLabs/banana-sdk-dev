@@ -1,0 +1,87 @@
+.dashboard-container-1 {
+    height: 100vh;
+    background-size: 100% 100%;
+    background-color: #020202;;
+  }
+  .inner-top-div {
+    font-family: "montserrat";
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 100px;
+    background-size: 100% 70%;
+    align-items: center;
+    height: 80vh;
+  }
+  .top-button-1 {
+    background: rgb(210,105,30, 0.4);
+    border-radius: 50px;
+    padding: 15px 30px;
+    font-size: 20px;
+    color: white;
+  }
+  .top-button-1 .new-text {
+    background-color: #FFD700;
+    margin-right: 10px;
+    border-radius: 20px;
+    padding: 1px 10px;
+    color: white;
+  }
+  .top-container-btn button {
+    outline: none;
+    border: none;
+    border-radius: 30px;
+    line-height: 20.49px;
+    padding: 5px 22px;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .top-container-btn {
+    display: flex;
+    justify-content: space-between;
+  }
+  .start-learning-btn {
+    background-color: #59afff27;
+    color: #319cff;
+  }
+  .watch-video-btn {
+    background-color: #59afff;
+    color: white;
+  }
+  .top-container-left-text {
+    margin: 30px 0;
+  }
+  .top-container-left-text h2 {
+    font-size: 60px;
+    line-height: 55px;
+    color: #383838;
+  }
+  .top-container-left-text p {
+    color: white;
+    font-size: 30px;
+    line-height: 35px;
+    font-family: "montserrat";
+    font-weight: 300;
+  }
+
+  .top-container-left-text button {
+    padding: 15px 25px;
+    font-size: 30px;
+    color: white;
+    font-family: "montserrat";
+    font-weight: 700;
+    border-radius: 5px;
+    background-color: rgb(210,105,30, 0.4);
+    border: none;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .swap-btn {
+    margin-left: 30px;
+  }
+
+  .dashboard-container-1 img {
+    height: 400px;
+    width: 600px;
+  }
