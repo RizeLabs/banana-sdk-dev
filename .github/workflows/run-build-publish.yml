@@ -18,6 +18,7 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: 18
+        registry-url: 'https://registry.npmjs.org'
 
     - name: List all files
       working-directory: ./banana-wallet-sdk
@@ -32,9 +33,8 @@ jobs:
       run: npm run build
 
     - name: Publish the package
+      working-directory: ./banana-wallet-sdk
       if: github.event.pull_request.merged == true
-      env:
-        NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       run: |
         title=$(echo ${{ github.event.pull_request.title }} | awk '{print $1}')
         version=$(grep '"version"' package.json | awk -F: '{ print $2 }' | sed 's/[",]//g')
@@ -48,3 +48,5 @@ jobs:
         fi
 
         npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
