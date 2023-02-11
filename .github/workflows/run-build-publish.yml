@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        paths: banana-wallet-sdk
 
     - name: Use Node.js version
       uses: actions/setup-node@v2
