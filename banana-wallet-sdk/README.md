@@ -2,7 +2,7 @@
 
 ### Documentation: [here](https://banana-wallet-docs.rizelabs.io/)
 
-### Setting up
+### Setting up:
 To start using the sdk into your react-app follow the below steps on top of your existing react-app configuration.
 
 1. Install `react-app-rewired` as a dependency via.
