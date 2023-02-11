@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+    types: [closed]
 
 jobs:
   build-test-publish:
@@ -30,11 +31,8 @@ jobs:
       working-directory: ./banana-wallet-sdk
       run: npm run build
 
-    # - name: Test the package
-    #   run: npm test
-
     - name: Publish the package
-      if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+      if: github.event.pull_request.merged == true
       env:
         NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       run: |
