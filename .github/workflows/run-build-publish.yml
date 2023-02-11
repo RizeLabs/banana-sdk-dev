@@ -1,0 +1,53 @@
+name: Build, Test, and Publish
+
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  NODE_VERSION: 18
+
+jobs:
+  build-test-publish:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [${{ env.NODE_VERSION }}]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Use Node.js version
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build the package
+      run: npm run build
+
+    - name: Test the package
+      run: npm test
+
+    - name: Publish the package
+      if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+      env:
+        NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      run: |
+        title=$(echo ${{ github.event.pull_request.title }} | awk '{print $1}')
+        version=$(grep '"version"' package.json | awk -F: '{ print $2 }' | sed 's/[",]//g')
+
+        if [ "$title" == "fix:" ]; then
+          npm version patch --no-git-tag-version
+        elif [ "$title" == "feat:" ]; then
+          npm version minor --no-git-tag-version
+        elif [ "$title" == "BREAKING" ]; then
+          npm version major --no-git-tag-version
+        fi
+
+        npm publish
