@@ -21,6 +21,9 @@ jobs:
     - name: Change working directory
       run: cd banana-wallet-sdk
 
+    - name: List all files
+      run: ls
+
     - name: Install dependencies
       run: npm install
 
