@@ -21,6 +21,10 @@ jobs:
       run: |
         npm install
 
+    - name: Build the package
+      working-directory: ./banana-wallet-sdk
+      run: npm run build
+
     - name: Run tests
       working-directory: ./banana-wallet-sdk
       run: |
