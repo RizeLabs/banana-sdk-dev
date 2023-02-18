@@ -27,6 +27,8 @@ export function getUserOp(reqId: string) {
 export const registerFingerprint = async () => {
       const uuid = uuidv4()
       const chanllenge = uuidv4()
+      const isPlatformSupported = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      const authenticationSupport = isPlatformSupported ? 'platform': 'cross-platform';
 
       const publicKeyCredential = await navigator.credentials.create({publicKey: {
         challenge: Uint8Array.from(chanllenge, c => c.charCodeAt(0)),
@@ -40,7 +42,7 @@ export const registerFingerprint = async () => {
         },
         pubKeyCredParams: [{ type: 'public-key', alg: -7	 }],
         authenticatorSelection: {
-          authenticatorAttachment: 'platform',
+          authenticatorAttachment: authenticationSupport,
           userVerification: 'required',
         },
         timeout: 60000,
@@ -91,7 +93,7 @@ export const verifyFingerprint = async (userOp: UserOperation, reqId: string, en
         }],
         challenge: actualChallenge,
         // Set the required authentication factors
-        userVerification: 'preferred',
+        userVerification: 'required',
        }, });
       if (credential === null) {
         // alert('Failed to get credential')
