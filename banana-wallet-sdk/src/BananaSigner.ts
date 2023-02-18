@@ -44,7 +44,7 @@ export class BananaSigner extends Signer {
 
     // TODO: implement this for just message signing
     signMessage(message: Bytes | string): Promise<string> {
-        return logger.throwError("signing transactions is unsupported", Logger.errors.UNSUPPORTED_OPERATION, {
+        return logger.throwError("signing message is unsupported", Logger.errors.UNSUPPORTED_OPERATION, {
             operation: "signTransaction"
         });
     }
