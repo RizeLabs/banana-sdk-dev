@@ -7,7 +7,7 @@ import { HttpRpcClient } from "@account-abstraction/sdk/dist/src/HttpRpcClient";
 import { ERC4337EthersProvider } from "@account-abstraction/sdk";
 import { MyTouchIdWallet__factory } from "./types/factories/MyTouchIdWallet__factory"; // --
 import { getGasFee } from "./utils/GetGasFee";
-import getClientConfigInfo, { Chains } from "./Constants";
+import { Chains, getClientConfigInfo, getChainSpecificAddress  } from "./Constants";
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
 import { hexConcat } from "ethers/lib/utils.js";
@@ -24,17 +24,8 @@ import {
   PublicKey,
   ClientConfig,
   UserCredentialObject,
+  ChainConfig
 } from "./interfaces/Banana.interface";
-
-const addresses = {
-  "Verifier": "0x9Bd0782Cc9C70a57aCAc290077a7e0fc8A4E7C4B",
-  "OTPFactory": "0x2A671dCA3fFD012116f2f31B694E66388Cc4CEcF",
-  "MyWalletDeployer": "0xe6a89A44d41d0C91eCD4E85367cca622A8000457",
-  "Greeter": "0x4221F0B190EeE400FFB8610E4eEc1481dc3E121c",
-  "UniswapV2": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
-  "Staking": "0x1CA35dB18E7f594864b703107FeaE4a24974FCb5",
-  "Elliptic": "0xa5d0D7e820F6f8A0DC68722e41801a1dcfAE2403"
-};
 
 export class Banana {
   Provider: ClientConfig;
@@ -50,9 +41,11 @@ export class Banana {
   cookie: BananaCookie;
   walletIdentifier!: string;
   jsonRpcProviderUrl: string;
+  addresses: ChainConfig;
 
   constructor(readonly chain: Chains, readonly jsonRpcProvideurl: string) {
     this.Provider = getClientConfigInfo(chain);
+    this.addresses = getChainSpecificAddress(chain)
     this.jsonRpcProviderUrl = jsonRpcProvideurl;
     this.jsonRpcProvider = new ethers.providers.JsonRpcProvider(
       this.jsonRpcProviderUrl
@@ -135,7 +128,7 @@ export class Banana {
     );
 
     const MyWalletDeployer = MyWalletDeployer__factory.connect(
-      addresses.MyWalletDeployer,
+      this.addresses.MyWalletDeployer,
       signer
     );
     const factoryAddress = MyWalletDeployer.address;
@@ -175,6 +168,7 @@ export class Banana {
   };
 
   private getAccountInitCode(factory: MyWalletDeployer, salt = 0): BytesLike {
+    console.log(" this is fctory ", factory.address);
     return hexConcat([
       factory.address,
       factory.interface.encodeFunctionData("deployWallet", [
@@ -182,7 +176,7 @@ export class Banana {
         this.bananaSigner.address,
         0,
         [this.publicKey.q0, this.publicKey.q1],
-        addresses.Elliptic,
+        this.addresses.Elliptic,
       ]),
     ]);
   }
@@ -195,7 +189,7 @@ export class Banana {
 
     if (!this.cookieObject) {
       const MyWalletDeployer = MyWalletDeployer__factory.connect(
-        addresses.MyWalletDeployer,
+        this.addresses.MyWalletDeployer,
         signer // we require signer here as we are deploying the SCW with q0 and q1 and for getting it we need to register user if he is not already registered
       );
       try {
@@ -204,7 +198,7 @@ export class Banana {
           ownerAddress,
           0,
           [this.publicKey.q0, this.publicKey.q1],
-          addresses.Elliptic
+          this.addresses.Elliptic
         );
         // cred generation complete here now we need to save it in cookie and server
         this.cookieObject = {
@@ -286,7 +280,7 @@ export class Banana {
     if (navigator.cookieEnabled) {
       const walletIdentifier = this.cookie.getCookie("bananaUser");
       this.cookieObject = this.cookie.getCookie(walletIdentifier);
-      this.cookieObject.initcode = true;
+      this.cookieObject.initcode = false;
       this.cookie.setCookie(
         walletIdentifier,
         JSON.stringify(this.cookieObject)
@@ -362,13 +356,15 @@ export class Banana {
     }
     if(!isInitCode && finalUserOp) {
       finalUserOp.callGasLimit = 3e6;
-      finalUserOp.verificationGasLimit = 3e6;
+      finalUserOp.verificationGasLimit = 10e6;
     }
+    //@ts-ignore
+    // finalUserOp.callData = '0x'
     const uHash: string = await this.sendUserOpToBundler(finalUserOp as any) || '';
     let initCodeSetStatus = false;;
     if(!!uHash) {
       if(uHash.length === 66) {
-        initCodeSetStatus = true;
+        initCodeSetStatus = false;
       }
     }
     if(isInitCode) {
@@ -383,7 +379,7 @@ export class Banana {
     value: string
   ) => {
     const MyWalletDeployer = MyWalletDeployer__factory.connect(
-      addresses.MyWalletDeployer,
+      this.addresses.MyWalletDeployer,
       this.bananaSigner
     );
     this.SCWContract = MyTouchIdWallet__factory.connect(

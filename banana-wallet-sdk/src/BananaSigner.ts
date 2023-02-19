@@ -33,6 +33,7 @@ export class BananaSigner extends Signer {
     getAddress(): Promise<string> {
         const uncompressedPublicKey = `0x04${this.publicKey.q0.slice(2)}${this.publicKey.q1.slice(2)}`;
         this.address = ethers.utils.computeAddress(uncompressedPublicKey)
+        console.log("Hardware address: ", this.address);
         return Promise.resolve(this.address)
     }
 
