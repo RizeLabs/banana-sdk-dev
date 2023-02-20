@@ -6,7 +6,7 @@ import {JsonRpcProvider} from "@ethersproject/providers"
 import { ethers } from "ethers";
 import {  Deferrable } from "@ethersproject/properties";
 import { Bytes} from "@ethersproject/bytes";
-import { verifyFingerprint } from "./WebAuthnContext";
+import { verifyFingerprint, verifyFingerPrintAndSignMessage } from "./WebAuthnContext";
 import { PublicKey } from "./interfaces/Banana.interface";
 import UserOperation from './utils/userOperation'
 const logger = new Logger("abstract-signer/5.7.0");
@@ -52,5 +52,10 @@ export class BananaSigner extends Signer {
     async signUserOp(userOp: UserOperation, reqId: string, encodedId: string) {
         const signedUserOp = await verifyFingerprint(userOp as any, reqId, encodedId)
         return signedUserOp
+    }
+
+    async signUserMessage(message: string, encodedId: string) {
+        const signedMessage = await verifyFingerPrintAndSignMessage(message, encodedId);
+        return signedMessage;
     }
 }

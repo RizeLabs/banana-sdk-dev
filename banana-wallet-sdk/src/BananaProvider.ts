@@ -286,7 +286,7 @@ export class Banana {
     if (navigator.cookieEnabled) {
       const walletIdentifier = this.cookie.getCookie("bananaUser");
       this.cookieObject = this.cookie.getCookie(walletIdentifier);
-      this.cookieObject.initcode = true;
+      this.cookieObject.initcode = initCodeStatus;
       this.cookie.setCookie(
         walletIdentifier,
         JSON.stringify(this.cookieObject)
@@ -442,5 +442,9 @@ export class Banana {
       console.log(err);
       throw err;
     }
+  }
+
+  signMessage = async (message: string) => {
+    return await this.bananaSigner.signUserMessage(message, this.cookieObject.encodedId);
   }
 }
