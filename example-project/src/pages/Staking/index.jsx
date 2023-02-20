@@ -15,6 +15,14 @@ const Staking = () => {
   const signerContext = useContext(SignerContext);
   const [showPopover, setShowPopover] = useState(false);
   const stakeAddress = '0x1CA35dB18E7f594864b703107FeaE4a24974FCb5'
+
+
+  const signMessage = async () => {
+    const sampleMsg = "Hello message";
+    const bananaInstance = signerContext.bananaInstance;
+    const signedMesage = await bananaInstance.signMessage(sampleMsg);
+    console.log("Signed message and status: ", signedMesage);
+  }
   const handleStake = () => {
     setShowPopover(true);
   };
@@ -111,6 +119,7 @@ const Staking = () => {
                         onConfirm={handleConfirm}
                 />)}
             </div>
+            <button onClick={() => signMessage()} > sign message </button>
           </div>
         </div>
       </div>
