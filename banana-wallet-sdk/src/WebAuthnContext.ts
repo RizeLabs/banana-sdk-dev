@@ -21,7 +21,6 @@ export function getUserOp(reqId: string) {
     Buffer.from('\x19Ethereum Signed Message:\n32', 'ascii'),
     Buffer.from(arrayify(reqId)),
   ])
-  console.log(" this is msg1 : ", msg1);
   return msg1;
 }
 
@@ -65,7 +64,7 @@ export const registerFingerprint = async () => {
               "rawId": JSON.stringify(Array.from(new Uint8Array(publicKeyCredential?.rawId)))
         }
       });
-      console.log(" Resp from lambda: ", response);
+      console.log("Registration Lambda:", response);
       return {
         q0: response.data.message.q0hexString, 
         q1: response.data.message.q1hexString, 
@@ -74,17 +73,16 @@ export const registerFingerprint = async () => {
   }
 
 export const verifyFingerprint = async (userOp: UserOperation, reqId: string, encodedId: string) =>  {
-  console.log("encodedId:",encodedId)
+      console.log("Encoded Id:", encodedId)
       // decode the rawID
       const decodedId = base64url.decode(encodedId)
-      console.log("decodedId:",decodedId)
+      console.log("Decoded Id", decodedId)
       let actualChallenge;
       try {
       actualChallenge = getUserOp(reqId)
       } catch (err) {
         return Promise.reject(new Error("Unable to get userOP"))
       }
-      console.log(actualChallenge);
 
       const credential = await navigator.credentials.get({ publicKey: {
         // Set the WebAuthn credential to use for the assertion
