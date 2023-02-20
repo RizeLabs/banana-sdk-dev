@@ -74,8 +74,7 @@ export class Banana {
         this.createBananaSignerInstance();
         return;
       } else {
-        const walletCreds = ''
-        // await getUserCredentials(walletIdentifier);
+        const walletCreds = await getUserCredentials(walletIdentifier);
         // get and check cred here
         // else of below if should not be triggered as we are already getting wallet name from cookie means the creds are initialized
         if (!!walletCreds) {
@@ -95,8 +94,7 @@ export class Banana {
       }
     } else {
       // when nothing in cookie or cred is there but with no username in that case fetching key from user provided walletname
-      const walletCreds = '';
-      // await getUserCredentials(walletIdentifier);
+      const walletCreds = await getUserCredentials(walletIdentifier);
       if (!!walletCreds) {
         this.cookieObject = walletCreds;
         const q0Value = this.cookieObject.q0;
@@ -170,7 +168,6 @@ export class Banana {
   };
 
   private getAccountInitCode(factory: MyWalletDeployer, salt = 0): BytesLike {
-    console.log(" this is fctory ", factory.address);
     return hexConcat([
       factory.address,
       factory.interface.encodeFunctionData("deployWallet", [
