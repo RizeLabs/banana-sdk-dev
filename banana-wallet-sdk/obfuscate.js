@@ -44,7 +44,6 @@ walk(directory, (err, files) => {
         const result = JavaScriptObfuscator.obfuscate(data, {
             ignoreImports: true,
             deadCodeInjection: true,
-            disableConsoleOutput: true,
             renameGlobals: true,
             sourceMap: false,
         });

@@ -286,7 +286,7 @@ export class Banana {
     if (navigator.cookieEnabled) {
       const walletIdentifier = this.cookie.getCookie("bananaUser");
       this.cookieObject = this.cookie.getCookie(walletIdentifier);
-      this.cookieObject.initcode = true;
+      this.cookieObject.initcode = initCodeSetStatus;
       this.cookie.setCookie(
         walletIdentifier,
         JSON.stringify(this.cookieObject)
