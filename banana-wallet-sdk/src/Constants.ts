@@ -30,7 +30,8 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
                 // "entryPointAddress": "0x11Ed65bbc8361E0a7869F51Fb9A7FC15bd44a8F6",
                 // "entryPointAddress": "0x1a42Ed84517EB963108668CF3B557d3Ecce52D10",
                 // "entryPointAddress": "0x471EdC1967bffBfe9213083B062F1F27d8C31324",
-                "entryPointAddress": "0x11ed65bbc8361e0a7869f51fb9a7fc15bd44a8f6",
+                // "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
+                "entryPointAddress": "0x6FE1ee9520cc8F5F1060B267B889a6d66E2ca5f8",
                 "bundlerUrl": "http://localhost:80/rpc"
             }
     }
