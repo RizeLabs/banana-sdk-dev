@@ -355,13 +355,13 @@ export class Banana {
     }
     if(!isInitCode && finalUserOp) {
       finalUserOp.callGasLimit = 3e6;
-      finalUserOp.verificationGasLimit = 10e6;
+      finalUserOp.verificationGasLimit = 3e6;
     }
     const uHash: string = await this.sendUserOpToBundler(finalUserOp as any) || '';
     let initCodeSetStatus = false;;
     if(!!uHash) {
       if(uHash.length === 66) {
-        initCodeSetStatus = false;
+        initCodeSetStatus = true;
       }
     }
     if(isInitCode) {
