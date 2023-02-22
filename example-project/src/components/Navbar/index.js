@@ -19,7 +19,7 @@ const Navbar = () => {
 
   const [scwAddress, setSCWAddress] = useState("");
   const [load, setLoad] = useState(false);
-  let nullBanana = new Banana(Chains.goerli, 'https://eth-goerli.g.alchemy.com/v2/V5p1PckEwUqIq5s5rA2zvwRKH0V9Hslr');
+  let nullBanana = new Banana(Chains.optimismTestnet, 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas');
   const [banana, setbanana] = useState(nullBanana)
   const signerContext = useContext(SignerContext);
   const [isOpenModal, setIsOpenModal] = useState(false);

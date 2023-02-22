@@ -14,6 +14,8 @@ const Staking = () => {
   const [isLoading, setIsLoading] = useState(false);
   const signerContext = useContext(SignerContext);
   const [showPopover, setShowPopover] = useState(false);
+
+  // goerli stake address
   const stakeAddress = '0x1CA35dB18E7f594864b703107FeaE4a24974FCb5'
 
 
@@ -23,6 +25,8 @@ const Staking = () => {
     const signedMesage = await bananaInstance.signMessage(sampleMsg);
     console.log("Signed message and status: ", signedMesage);
   }
+  const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
+  
   const handleStake = () => {
     setShowPopover(true);
   };
