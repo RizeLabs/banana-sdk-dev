@@ -25,3 +25,8 @@ export interface CookieObject {
     scwAddress: string;
     initContract: boolean;
 }
+
+export interface ChainConfig {
+    MyWalletDeployer: string;
+    Elliptic: string;
+}

@@ -68,7 +68,7 @@ export type UserOperationStructOutput = [
   signature: string;
 };
 
-export interface MyWalletInterface extends utils.Interface {
+export interface TouchIdWalletInterface extends utils.Interface {
   functions: {
     "addDeposit()": FunctionFragment;
     "entryPoint()": FunctionFragment;
@@ -76,18 +76,12 @@ export interface MyWalletInterface extends utils.Interface {
     "execBatch(address[],bytes[])": FunctionFragment;
     "execFromEntryPoint(address,uint256,bytes)": FunctionFragment;
     "getDeposit()": FunctionFragment;
-    "lastUsedTime()": FunctionFragment;
     "nonce()": FunctionFragment;
     "owner()": FunctionFragment;
-    "root()": FunctionFragment;
-    "setMerkleRootAndVerifier(uint256,address)": FunctionFragment;
-    "testTransfer(uint256[2],uint256[2][2],uint256[2],uint256[2],address,uint256)": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "updateEntryPoint(address)": FunctionFragment;
     "validateUserOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,address,uint256)": FunctionFragment;
-    "verifierAddr()": FunctionFragment;
     "withdrawDepositTo(address,uint256)": FunctionFragment;
-    "zkProof(uint256[2],uint256[2][2],uint256[2],uint256[2],uint256,address)": FunctionFragment;
   };
 
   getFunction(
@@ -98,18 +92,12 @@ export interface MyWalletInterface extends utils.Interface {
       | "execBatch"
       | "execFromEntryPoint"
       | "getDeposit"
-      | "lastUsedTime"
       | "nonce"
       | "owner"
-      | "root"
-      | "setMerkleRootAndVerifier"
-      | "testTransfer"
       | "transfer"
       | "updateEntryPoint"
       | "validateUserOp"
-      | "verifierAddr"
       | "withdrawDepositTo"
-      | "zkProof"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -144,31 +132,8 @@ export interface MyWalletInterface extends utils.Interface {
     functionFragment: "getDeposit",
     values?: undefined
   ): string;
-  encodeFunctionData(
-    functionFragment: "lastUsedTime",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "nonce", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
-  encodeFunctionData(functionFragment: "root", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "setMerkleRootAndVerifier",
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "testTransfer",
-    values: [
-      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      [
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
-      ],
-      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
-  ): string;
   encodeFunctionData(
     functionFragment: "transfer",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
@@ -187,26 +152,8 @@ export interface MyWalletInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "verifierAddr",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "withdrawDepositTo",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "zkProof",
-    values: [
-      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      [
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
-      ],
-      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<string>
-    ]
   ): string;
 
   decodeFunctionResult(functionFragment: "addDeposit", data: BytesLike): Result;
@@ -218,21 +165,8 @@ export interface MyWalletInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getDeposit", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "lastUsedTime",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "nonce", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "root", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "setMerkleRootAndVerifier",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "testTransfer",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "updateEntryPoint",
@@ -243,14 +177,9 @@ export interface MyWalletInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "verifierAddr",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "withdrawDepositTo",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "zkProof", data: BytesLike): Result;
 
   events: {
     "EntryPointChanged(address,address)": EventFragment;
@@ -271,12 +200,12 @@ export type EntryPointChangedEvent = TypedEvent<
 export type EntryPointChangedEventFilter =
   TypedEventFilter<EntryPointChangedEvent>;
 
-export interface MyWallet extends BaseContract {
+export interface TouchIdWallet extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: MyWalletInterface;
+  interface: TouchIdWalletInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -326,32 +255,9 @@ export interface MyWallet extends BaseContract {
 
     getDeposit(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    lastUsedTime(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     nonce(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
-
-    root(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    setMerkleRootAndVerifier(
-      _root: PromiseOrValue<BigNumberish>,
-      _verifier: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    testTransfer(
-      a: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      b: [
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
-      ],
-      c: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      input: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      to: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
 
     transfer(
       dest: PromiseOrValue<string>,
@@ -372,24 +278,9 @@ export interface MyWallet extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    verifierAddr(overrides?: CallOverrides): Promise<[string]>;
-
     withdrawDepositTo(
       withdrawAddress: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    zkProof(
-      a: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      b: [
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
-      ],
-      c: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      d: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      value: PromiseOrValue<BigNumberish>,
-      dest: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
@@ -422,32 +313,9 @@ export interface MyWallet extends BaseContract {
 
   getDeposit(overrides?: CallOverrides): Promise<BigNumber>;
 
-  lastUsedTime(overrides?: CallOverrides): Promise<BigNumber>;
-
   nonce(overrides?: CallOverrides): Promise<BigNumber>;
 
   owner(overrides?: CallOverrides): Promise<string>;
-
-  root(overrides?: CallOverrides): Promise<BigNumber>;
-
-  setMerkleRootAndVerifier(
-    _root: PromiseOrValue<BigNumberish>,
-    _verifier: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  testTransfer(
-    a: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-    b: [
-      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
-    ],
-    c: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-    input: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-    to: PromiseOrValue<string>,
-    value: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
 
   transfer(
     dest: PromiseOrValue<string>,
@@ -468,24 +336,9 @@ export interface MyWallet extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  verifierAddr(overrides?: CallOverrides): Promise<string>;
-
   withdrawDepositTo(
     withdrawAddress: PromiseOrValue<string>,
     amount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  zkProof(
-    a: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-    b: [
-      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
-    ],
-    c: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-    d: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-    value: PromiseOrValue<BigNumberish>,
-    dest: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -516,32 +369,9 @@ export interface MyWallet extends BaseContract {
 
     getDeposit(overrides?: CallOverrides): Promise<BigNumber>;
 
-    lastUsedTime(overrides?: CallOverrides): Promise<BigNumber>;
-
     nonce(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
-
-    root(overrides?: CallOverrides): Promise<BigNumber>;
-
-    setMerkleRootAndVerifier(
-      _root: PromiseOrValue<BigNumberish>,
-      _verifier: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    testTransfer(
-      a: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      b: [
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
-      ],
-      c: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      input: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      to: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     transfer(
       dest: PromiseOrValue<string>,
@@ -562,24 +392,9 @@ export interface MyWallet extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    verifierAddr(overrides?: CallOverrides): Promise<string>;
-
     withdrawDepositTo(
       withdrawAddress: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    zkProof(
-      a: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      b: [
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
-      ],
-      c: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      d: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      value: PromiseOrValue<BigNumberish>,
-      dest: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -624,32 +439,9 @@ export interface MyWallet extends BaseContract {
 
     getDeposit(overrides?: CallOverrides): Promise<BigNumber>;
 
-    lastUsedTime(overrides?: CallOverrides): Promise<BigNumber>;
-
     nonce(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
-
-    root(overrides?: CallOverrides): Promise<BigNumber>;
-
-    setMerkleRootAndVerifier(
-      _root: PromiseOrValue<BigNumberish>,
-      _verifier: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    testTransfer(
-      a: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      b: [
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
-      ],
-      c: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      input: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      to: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
 
     transfer(
       dest: PromiseOrValue<string>,
@@ -670,24 +462,9 @@ export interface MyWallet extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    verifierAddr(overrides?: CallOverrides): Promise<BigNumber>;
-
     withdrawDepositTo(
       withdrawAddress: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    zkProof(
-      a: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      b: [
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
-      ],
-      c: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      d: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      value: PromiseOrValue<BigNumberish>,
-      dest: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
   };
@@ -721,32 +498,9 @@ export interface MyWallet extends BaseContract {
 
     getDeposit(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    lastUsedTime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     nonce(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    root(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    setMerkleRootAndVerifier(
-      _root: PromiseOrValue<BigNumberish>,
-      _verifier: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    testTransfer(
-      a: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      b: [
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
-      ],
-      c: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      input: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      to: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
 
     transfer(
       dest: PromiseOrValue<string>,
@@ -767,24 +521,9 @@ export interface MyWallet extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    verifierAddr(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     withdrawDepositTo(
       withdrawAddress: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    zkProof(
-      a: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      b: [
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-        [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
-      ],
-      c: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      d: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      value: PromiseOrValue<BigNumberish>,
-      dest: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };
