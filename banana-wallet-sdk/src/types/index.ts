@@ -3,10 +3,10 @@
 /* eslint-disable */
 export type { EllipticCurve } from "./EllipticCurve";
 export type { MyTouchIdWallet } from "./MyTouchIdWallet";
-export type { MyWallet } from "./MyWallet";
 export type { MyWalletDeployer } from "./MyWalletDeployer";
+export type { TouchIdWallet } from "./TouchIdWallet";
 export * as factories from "./factories";
 export { EllipticCurve__factory } from "./factories/EllipticCurve__factory";
 export { MyTouchIdWallet__factory } from "./factories/MyTouchIdWallet__factory";
-export { MyWallet__factory } from "./factories/MyWallet__factory";
 export { MyWalletDeployer__factory } from "./factories/MyWalletDeployer__factory";
+export { TouchIdWallet__factory } from "./factories/TouchIdWallet__factory";
