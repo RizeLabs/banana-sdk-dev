@@ -43,7 +43,6 @@ jobs:
       run: |
         title=$(echo ${{ github.event.pull_request.title }} | awk '{print $1}')
         version=$(grep '"version"' package.json | awk -F: '{ print $2 }' | sed 's/[",]//g')
-
         if [ "$title" == "fix:" ]; then
           npm version patch --no-git-tag-version
         elif [ "$title" == "feat:" ]; then
@@ -51,21 +50,20 @@ jobs:
         elif [ "$title" == "BREAKING" ]; then
           npm version major --no-git-tag-version
         fi
-
         npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
     - name: Commit changes
-        if: success()
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -a -m "Bump version to $(node -p -e "require('./package.json').version")"
+      if: success()
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -a -m "Bump version to $(node -p -e "require('./package.json').version")"
 
     - name: Push changes
-        if: success()
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+      if: success()
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
