@@ -438,7 +438,21 @@ export class Banana {
     }
   }
 
-  signMessage = async (message: string) => {
-    return await this.bananaSigner.signUserMessage(message, this.cookieObject.encodedId);
+  signMessage = async(message:string) =>{
+    // To generate signature, first calculate the keccak256 hash of encodePacked message
+    const messageHash = ethers.utils.keccak256(ethers.utils.solidityPack(["string"],[message]))
+    const signatureAndMessage = await this.bananaSigner.signMessage(messageHash, this.cookieObject.encodedId)
+    const abi = ethers.utils.defaultAbiCoder
+    const decoded = abi.decode(["uint256", "uint256", "uint256"], signatureAndMessage);
+    const signedMessage = decoded[2];
+    const rHex = decoded[0].toHexString();
+    const sHex = decoded[1].toHexString();
+    const finalSignature = rHex + sHex.slice(2);
+    /**
+     * Note:
+     * the `message` is signed using secp256r1 instead of secp256k1, hence to verify
+     * signedMessage we cannot use ecrecover!
+     */
+    return {signedMessage:signedMessage.toHexString(), signature: finalSignature}
   }
 }

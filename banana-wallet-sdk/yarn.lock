@@ -431,7 +431,14 @@
   "resolved" "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz"
   "version" "2.0.0"
 
-"@types/chai@^4.3.4":
+"@types/chai-as-promised@^7.1.5":
+  "integrity" "sha512-jStwss93SITGBwt/niYrkf2C+/1KTeZCZl1LaeezTlqppAKeoQC7jxyqYuP72sxBGKCIbw7oHgbYssIRzT5FCQ=="
+  "resolved" "https://registry.npmjs.org/@types/chai-as-promised/-/chai-as-promised-7.1.5.tgz"
+  "version" "7.1.5"
+  dependencies:
+    "@types/chai" "*"
+
+"@types/chai@*", "@types/chai@^4.3.4":
   "integrity" "sha512-KnRanxnpfpjUTqTCXslZSEdLfXExwgNxYPdiO2WGUj8+HDjFi8R3k5RVKPeSCzLjCcshCAtVO2QBbVuAV4kTnw=="
   "resolved" "https://registry.npmjs.org/@types/chai/-/chai-4.3.4.tgz"
   "version" "4.3.4"
@@ -703,7 +710,14 @@
   "resolved" "https://registry.npmjs.org/camelcase/-/camelcase-6.3.0.tgz"
   "version" "6.3.0"
 
-"chai@^4.3.7":
+"chai-as-promised@^7.1.1":
+  "integrity" "sha512-azL6xMoi+uxu6z4rhWQ1jbdUhOMhis2PvscD/xjLqNMkv3BPPp2JyyuTHOrf9BOosGpNQ11v6BKv/g57RXbiaA=="
+  "resolved" "https://registry.npmjs.org/chai-as-promised/-/chai-as-promised-7.1.1.tgz"
+  "version" "7.1.1"
+  dependencies:
+    "check-error" "^1.0.2"
+
+"chai@^4.3.7", "chai@>= 2.1.2 < 5":
   "integrity" "sha512-HLnAzZ2iupm25PlN0xFreAlBA5zaBSv3og0DdeGA4Ar6h6rJ3A0rolRUKJhSF2V10GZKDgWF/VmAEsNWjCRB+A=="
   "resolved" "https://registry.npmjs.org/chai/-/chai-4.3.7.tgz"
   "version" "4.3.7"
