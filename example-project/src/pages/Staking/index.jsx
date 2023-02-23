@@ -15,6 +15,9 @@ const Staking = () => {
   const signerContext = useContext(SignerContext);
   const [showPopover, setShowPopover] = useState(false);
 
+  // optimism staking
+  const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
+
 
   // goerli stake address
   // const stakeAddress = '0x1CA35dB18E7f594864b703107FeaE4a24974FCb5'
@@ -29,7 +32,7 @@ const Staking = () => {
   // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
   
   // polygo staking 
-  const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
+  // const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
 
   const handleStake = () => {
     setShowPopover(true);
