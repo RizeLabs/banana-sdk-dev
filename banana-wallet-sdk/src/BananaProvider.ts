@@ -357,8 +357,7 @@ export class Banana {
       finalUserOp.callGasLimit = 3e6;
       finalUserOp.verificationGasLimit = 3e6;
     }
-    //@ts-ignore
-    // finalUserOp.callData = '0x'
+    
     const uHash: string = await this.sendUserOpToBundler(finalUserOp as any) || '';
     let initCodeSetStatus = false;;
     if(!!uHash) {
