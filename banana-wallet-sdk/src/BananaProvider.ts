@@ -363,7 +363,7 @@ export class Banana {
     let initCodeSetStatus = false;;
     if(!!uHash) {
       if(uHash.length === 66) {
-        initCodeSetStatus = false;
+        initCodeSetStatus = true;
       }
     }
     if(isInitCode) {
