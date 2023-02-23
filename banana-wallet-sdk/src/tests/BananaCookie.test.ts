@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { BananaCookie } from "../BananaCookie";
 import { JUNK_CREDENTIALS, JUNK_USERNAME, DUMMY_Q0, DUMMY_Q1,JUNK_ID, JUNK_ADDRESS } from "./BananaConstants";
+import { JSDOM } from "jsdom";
 
 export interface WalletCredentialObject {
   q0: string;
@@ -17,6 +18,8 @@ describe("BananaCookie", () => {
 
   const setupBananaCookie = () =>{
     bananaCookie = new BananaCookie()
+    const dom = new JSDOM(``, { url: "http://localhost" });
+    global.document = dom.window.document;
   }
   
   describe("setCookie", () =>{

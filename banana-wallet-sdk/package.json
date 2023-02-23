@@ -1,6 +1,6 @@
 {
   "name": "@rize-labs/banana-wallet-sdk",
-  "version": "0.0.1",
+  "version": "0.1.8",
   "description": "Smart contract wallet package by Banana Wallet",
   "main": "index.js",
   "scripts": {
@@ -44,12 +44,14 @@
   },
   "devDependencies": {
     "@types/chai": "^4.3.4",
+    "@types/jsdom": "^21.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.18",
     "@types/sinon": "^10.0.13",
     "@types/uuid": "^9.0.0",
     "chai": "^4.3.7",
     "javascript-obfuscator": "^4.0.0",
+    "jsdom": "^21.1.0",
     "mocha": "^10.2.0",
     "sinon": "^15.0.1",
     "uglify-js": "^3.17.4"

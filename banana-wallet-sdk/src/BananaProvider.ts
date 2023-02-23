@@ -438,4 +438,8 @@ export class Banana {
       throw err;
     }
   }
+
+  signMessage = async (message: string) => {
+    return await this.bananaSigner.signUserMessage(message, this.cookieObject.encodedId);
+  }
 }
