@@ -26,7 +26,7 @@ const Staking = () => {
   const signMessage = async () => {
     const sampleMsg = "Hello message";
     const bananaInstance = signerContext.bananaInstance;
-    const signedMesage = await bananaInstance.signMessage(sampleMsg);
+    const signedMesage = await bananaInstance.signMessage(sampleMsg, true);
     console.log("Signed message and status: ", signedMesage);
   }
   // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
