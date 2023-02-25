@@ -29,8 +29,7 @@ export const registerFingerprint = async () => {
       const chanllenge = uuidv4()
       const isPlatformSupported = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
       const authenticationSupport = isPlatformSupported ? 'platform': 'cross-platform';
-
-      const publicKeyCredential = await navigator.credentials.create({publicKey: {
+      const publicKeyParams = {
         challenge: Uint8Array.from(chanllenge, c => c.charCodeAt(0)),
         rp: {
           name: 'Banana Smart Wallet',
@@ -47,7 +46,19 @@ export const registerFingerprint = async () => {
         },
         timeout: 60000,
         attestation: 'none',
-      }})
+      } as PublicKeyCredentialCreationOptions;
+
+      let publicKeyCredential;
+      try{
+        publicKeyCredential = await navigator.credentials.create({publicKey: publicKeyParams })        
+      }
+      catch(err){
+        console.log("algo not supported, trying again", err)
+        // @ts-ignore
+        publicKeyParams.authenticatorSelection.authenticatorAttachment = 'cross-platform'
+        console.log("new public key params", publicKeyParams)
+        publicKeyCredential = await navigator.credentials.create({publicKey: publicKeyParams })
+      }
 
       if (publicKeyCredential === null) {
         // alert('Failed to get credential')
