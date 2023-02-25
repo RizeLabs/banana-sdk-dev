@@ -73,11 +73,12 @@ export interface MyTouchIdWalletInterface extends utils.Interface {
     "addDeposit()": FunctionFragment;
     "entryPoint()": FunctionFragment;
     "exec(address,uint256,bytes[])": FunctionFragment;
-    "execBatch(address[],bytes[])": FunctionFragment;
+    "execBatch(address[],uint256[],bytes[])": FunctionFragment;
     "execFromEntryPoint(address,uint256,bytes)": FunctionFragment;
     "getDeposit()": FunctionFragment;
     "lastUsedTime()": FunctionFragment;
     "nonce()": FunctionFragment;
+    "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
     "owner()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "updateEntryPoint(address)": FunctionFragment;
@@ -95,6 +96,7 @@ export interface MyTouchIdWalletInterface extends utils.Interface {
       | "getDeposit"
       | "lastUsedTime"
       | "nonce"
+      | "onERC721Received"
       | "owner"
       | "transfer"
       | "updateEntryPoint"
@@ -120,7 +122,11 @@ export interface MyTouchIdWalletInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "execBatch",
-    values: [PromiseOrValue<string>[], PromiseOrValue<BytesLike>[]]
+    values: [
+      PromiseOrValue<string>[],
+      PromiseOrValue<BigNumberish>[],
+      PromiseOrValue<BytesLike>[]
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "execFromEntryPoint",
@@ -139,6 +145,15 @@ export interface MyTouchIdWalletInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "nonce", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "onERC721Received",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "transfer",
@@ -176,6 +191,10 @@ export interface MyTouchIdWalletInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "nonce", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "onERC721Received",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
   decodeFunctionResult(
@@ -252,6 +271,7 @@ export interface MyTouchIdWallet extends BaseContract {
 
     execBatch(
       dest: PromiseOrValue<string>[],
+      values: PromiseOrValue<BigNumberish>[],
       func: PromiseOrValue<BytesLike>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -268,6 +288,14 @@ export interface MyTouchIdWallet extends BaseContract {
     lastUsedTime(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     nonce(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    onERC721Received(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<string>,
+      arg2: PromiseOrValue<BigNumberish>,
+      arg3: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -312,6 +340,7 @@ export interface MyTouchIdWallet extends BaseContract {
 
   execBatch(
     dest: PromiseOrValue<string>[],
+    values: PromiseOrValue<BigNumberish>[],
     func: PromiseOrValue<BytesLike>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -328,6 +357,14 @@ export interface MyTouchIdWallet extends BaseContract {
   lastUsedTime(overrides?: CallOverrides): Promise<BigNumber>;
 
   nonce(overrides?: CallOverrides): Promise<BigNumber>;
+
+  onERC721Received(
+    arg0: PromiseOrValue<string>,
+    arg1: PromiseOrValue<string>,
+    arg2: PromiseOrValue<BigNumberish>,
+    arg3: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -370,6 +407,7 @@ export interface MyTouchIdWallet extends BaseContract {
 
     execBatch(
       dest: PromiseOrValue<string>[],
+      values: PromiseOrValue<BigNumberish>[],
       func: PromiseOrValue<BytesLike>[],
       overrides?: CallOverrides
     ): Promise<void>;
@@ -386,6 +424,14 @@ export interface MyTouchIdWallet extends BaseContract {
     lastUsedTime(overrides?: CallOverrides): Promise<BigNumber>;
 
     nonce(overrides?: CallOverrides): Promise<BigNumber>;
+
+    onERC721Received(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<string>,
+      arg2: PromiseOrValue<BigNumberish>,
+      arg3: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -442,6 +488,7 @@ export interface MyTouchIdWallet extends BaseContract {
 
     execBatch(
       dest: PromiseOrValue<string>[],
+      values: PromiseOrValue<BigNumberish>[],
       func: PromiseOrValue<BytesLike>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -458,6 +505,14 @@ export interface MyTouchIdWallet extends BaseContract {
     lastUsedTime(overrides?: CallOverrides): Promise<BigNumber>;
 
     nonce(overrides?: CallOverrides): Promise<BigNumber>;
+
+    onERC721Received(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<string>,
+      arg2: PromiseOrValue<BigNumberish>,
+      arg3: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -503,6 +558,7 @@ export interface MyTouchIdWallet extends BaseContract {
 
     execBatch(
       dest: PromiseOrValue<string>[],
+      values: PromiseOrValue<BigNumberish>[],
       func: PromiseOrValue<BytesLike>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
@@ -519,6 +575,14 @@ export interface MyTouchIdWallet extends BaseContract {
     lastUsedTime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     nonce(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    onERC721Received(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<string>,
+      arg2: PromiseOrValue<BigNumberish>,
+      arg3: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

@@ -304,6 +304,7 @@ export class Banana {
 
   private sendUserOpToBundler = async (userOp: UserOperationStruct) => {
     try {
+      console.log(" This is final UserOp:", userOp);
       const uHash = await this.httpRpcClient.sendUserOpToBundler(
         userOp as any
       );
@@ -313,13 +314,28 @@ export class Banana {
     }
   }
 
-  private constructuUserOp = async (callDataProof: string, functionCallData: string, value:string, destination: string, isInitCode: boolean, initCode: BytesLike) => {
-    const userOpCallData = this.SCWContract.interface.encodeFunctionData(
-      "exec",
+  private constructuUserOp = async (callDataProof: string, functionCallData: string, value:string, destination: string, isInitCode: boolean, initCode: BytesLike, isBundled: boolean, values?: string[], callDataArray?: string[], destinations?: string[]) => {
+
+    let userOpCallData;
+    if(!isBundled) {
+      userOpCallData = this.SCWContract.interface.encodeFunctionData(
+        "exec",
+        [
+          destination,
+          ethers.utils.parseEther(value),
+          [functionCallData, callDataProof],
+        ]
+      );
+    }
+    console.log("Values:", values);
+    const parsedValues = (values || []).map(value => ethers.utils.parseEther(value));
+    console.log("Parsed values:", parsedValues);
+    userOpCallData = this.SCWContract.interface.encodeFunctionData(
+      "execBatch",
       [
-        destination,
-        ethers.utils.parseEther(value),
-        [functionCallData, callDataProof],
+        destinations,
+        parsedValues,
+        callDataArray
       ]
     );
     if(isInitCode) {
@@ -348,9 +364,9 @@ export class Banana {
     return userOp;
   }
 
-  private constructAndSendUserOp = async (funcCallData: string, destination:string, value: string, isInitCode: boolean, initCode: BytesLike) => {
+  private constructAndSendUserOp = async (funcCallData: string, destination:string, value: string, isInitCode: boolean, initCode: BytesLike, isBundled: boolean, values?: string[], callDataArray?: string[], destinations?: string[]) => {
     const callDataProof = this.getZkProof();
-    const userOp = await this.constructuUserOp(callDataProof, funcCallData, value, destination, isInitCode, initCode);
+    const userOp = await this.constructuUserOp(callDataProof, funcCallData, value, destination, isInitCode, initCode, isBundled, values, callDataArray, destinations);
     const reqId = await this.accountApi.getUserOpHash(userOp as any);
     let processStatus = true;
     let finalUserOp;
@@ -382,7 +398,11 @@ export class Banana {
   private initWalletAndTransact = async (
     funcCallData: string,
     destination: string,
-    value: string
+    value: string,
+    isBundled: boolean,
+    values?: string[],
+    callDataArray?: string[],
+    destinations?: string[],
   ) => {
     const MyWalletDeployer = MyWalletDeployer__factory.connect(
       this.addresses.MyWalletDeployer,
@@ -393,7 +413,7 @@ export class Banana {
       this.bananaSigner
     );
     const initCode = this.getAccountInitCode(MyWalletDeployer);
-    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, true, initCode);
+    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, true, initCode, isBundled, values, callDataArray, destinations);
     return transactionHash;
   };
 
@@ -409,7 +429,8 @@ export class Banana {
         let uHash = await this.initWalletAndTransact(
           funcCallData,
           destination,
-          value
+          value,
+          false
         );
         return uHash;
       }
@@ -419,7 +440,8 @@ export class Banana {
         let uHash = await this.initWalletAndTransact(
           funcCallData,
           destination,
-          value
+          value,
+          false,
         );
         return uHash;
       }
@@ -432,9 +454,60 @@ export class Banana {
       this.bananaSigner
     );
     this.SCWContract = this.SCWContract.connect(aaSigner);
-    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, false, '');
+    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, false, '', false);
     return transactionHash;
   };
+
+ /*
+  * executeBatch to enable dapps to execute a batch of transactions in a single go
+  * takes in (destination: string[], functionCallData: string[], value: int | double)
+  */
+ executeBatch = async (
+  callDataArray: string[],
+  destinations: string[],
+  values: string[]) => {
+    const walletCreds = this.cookie.getCookie(this.walletIdentifier);
+
+    if(walletCreds) {
+      if(!walletCreds.initcode) {
+        let uHash = await this.initWalletAndTransact(
+          '',
+          '',
+          '',
+          true,
+          values,
+          callDataArray,
+          destinations
+        );
+        return uHash;
+      }
+    } else {
+      const initCodeStatus = await checkInitCodeStatus(this.walletIdentifier);
+      if(!initCodeStatus.isInitCode) {
+        let uHash = await this.initWalletAndTransact(
+          '',
+          '',
+          '',
+          true,
+          values,
+          callDataArray,
+          destinations
+        );
+        return uHash;
+      }
+    }
+
+    const aaProvider = await this.getAAProvider();
+    const aaSigner = aaProvider.getSigner();
+    this.SCWContract = MyTouchIdWallet__factory.connect(
+      this.walletAddress || "",
+      this.bananaSigner
+    );
+    this.SCWContract = this.SCWContract.connect(aaSigner);
+    const transactionHash = await this.constructAndSendUserOp('', '', '', false, '', true, values, callDataArray, destinations);
+    return transactionHash;
+  }
+
 
   isWalletNameUnique = async (walletName: string) => {
     try {

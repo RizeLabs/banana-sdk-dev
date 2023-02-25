@@ -8,6 +8,7 @@ import StakingArtifact from '../../abi/Staking.json'
 import { ethers } from "ethers";
 import { SignerContext } from '../../context/signerProvider'
 import TransactionPopover from "../../components/Popup/index"
+import BananaToken from '../../abi/BananaToken.json'
 
 const Staking = () => {
   const [amount, setAmount] = useState("");
@@ -31,8 +32,10 @@ const Staking = () => {
   }
   // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
   
-  // polygo staking 
-  // const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
+  // polygon staking 
+  const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
+  // const stakeAddress = '0xf8041Fb3Ec95820527e5498c5D654B077D6666A4';
+  const bananaAddress = '0x4ccE86ebeAf7c764E71aDCd80DBDA1C1c55133Bb';
 
   const handleStake = () => {
     setShowPopover(true);
@@ -68,7 +71,19 @@ const Staking = () => {
         "stake",
         []
       );
-      const txn = await bananaInstance.execute(stakingCallData, stakeAddress, amount)
+      let bananContract = new ethers.Contract(
+        bananaAddress,
+        BananaToken.abi,
+        aaSigner
+      );
+      const walletName = bananaInstance.getWalletName();
+      const walletAddress = await bananaInstance.getWalletAddress(walletName); 
+      const mintingCallData = bananContract.interface.encodeFunctionData("mint", [
+        walletAddress,
+      ]);
+
+      // const txn = await bananaInstance.execute(stakingCallData, stakeAddress, amount)
+      const txn = await bananaInstance.executeBatch([stakingCallData, mintingCallData], [stakeAddress, bananaAddress], [amount, "0"]);
       console.log(" this is txn ", txn);
       toast.success("Successfully staked your funds !!");
     // } else {
