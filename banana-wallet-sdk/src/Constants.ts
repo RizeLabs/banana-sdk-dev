@@ -27,10 +27,10 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
             };
         case Chains.optimismTestnet:
             return {
-                "entryPointAddress": "0x17583e7Ff84f336B305D470900C716DCd02627e3",
-                "bundlerUrl": "http://localhost:80/rpc"
+                "entryPointAddress": "0x11Ed65bbc8361E0a7869F51Fb9A7FC15bd44a8F6",
+                "bundlerUrl": "https://optimism.eip4337-bunder.xyz/rpc"
             }
-    }
+     }
 }
 
 export function getChainSpecificAddress(chain: Chains): ChainConfig {
@@ -42,7 +42,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         };
         case Chains.optimismTestnet:
         return {
-            "MyWalletDeployer": "0xeccfb3b25378f80Df99da1Bc4d826A6C4c6eC73B",
+            "MyWalletDeployer": "0xb282af5b2f3DF6e0540ccC8F61Db95fa2fe7045D",
             "Elliptic": "0x91703a4b78A084B479294634F37A0eA5924D1Ad0"
         };
         case Chains.matic: 

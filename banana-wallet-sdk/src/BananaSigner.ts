@@ -6,7 +6,7 @@ import {JsonRpcProvider} from "@ethersproject/providers"
 import { ethers } from "ethers";
 import {  Deferrable } from "@ethersproject/properties";
 import { Bytes} from "@ethersproject/bytes";
-import { verifyFingerprint, verifyFingerPrintAndSignMessage } from "./WebAuthnContext";
+import { verifyFingerprint } from "./WebAuthnContext";
 import { PublicKey } from "./interfaces/Banana.interface";
 import UserOperation from './utils/userOperation'
 const logger = new Logger("abstract-signer/5.7.0");
@@ -33,7 +33,6 @@ export class BananaSigner extends Signer {
     getAddress(): Promise<string> {
         const uncompressedPublicKey = `0x04${this.publicKey.q0.slice(2)}${this.publicKey.q1.slice(2)}`;
         this.address = ethers.utils.computeAddress(uncompressedPublicKey)
-        console.log("Hardware address: ", this.address);
         return Promise.resolve(this.address)
     }
 
@@ -43,20 +42,21 @@ export class BananaSigner extends Signer {
         });
     }
 
-    // TODO: implement this for just message signing
-    signMessage(message: Bytes | string): Promise<string> {
-        return logger.throwError("signing message is unsupported", Logger.errors.UNSUPPORTED_OPERATION, {
-            operation: "signTransaction"
-        });
+    async signMessage(message: Bytes | string, encodedId?: string): Promise<string> {
+        if(!encodedId){
+            return Promise.reject(new Error("encoded ID not provided"))
+        }
+        let userOpWithSignatureAndMessage: any
+        try {
+            userOpWithSignatureAndMessage = await verifyFingerprint({} as UserOperation, message as string, encodedId as string);
+          } catch (err) {
+            return Promise.reject(err);
+          }
+        return Promise.resolve(userOpWithSignatureAndMessage.newUserOp.signature)
     }
 
     async signUserOp(userOp: UserOperation, reqId: string, encodedId: string) {
         const signedUserOp = await verifyFingerprint(userOp as any, reqId, encodedId)
         return signedUserOp
-    }
-
-    async signUserMessage(message: string, encodedId: string) {
-        const signedMessage = await verifyFingerPrintAndSignMessage(message, encodedId);
-        return signedMessage;
     }
 }
