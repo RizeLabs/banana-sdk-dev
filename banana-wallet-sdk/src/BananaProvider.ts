@@ -26,6 +26,14 @@ import {
   UserCredentialObject,
   ChainConfig
 } from "./interfaces/Banana.interface";
+import Axios from 'axios';
+import { K1_SIGNATURE_LAMBDA_URL  } from './routes'
+
+
+// import {generateK1Signature} from './GenerateK1Signature';
+import { Bytes, concat } from "@ethersproject/bytes";
+import { keccak256 } from "@ethersproject/keccak256";
+import { toUtf8Bytes } from "@ethersproject/strings";
 
 export class Banana {
   Provider: ClientConfig;
@@ -438,7 +446,49 @@ export class Banana {
     }
   }
 
-  signMessage = async (message: string) => {
-    return await this.bananaSigner.signUserMessage(message, this.cookieObject.encodedId);
+  signMessage = async(message:string, isK1Signature?:boolean) =>{
+    // To generate signature, first calculate the keccak256 hash of encodePacked message
+    const messageHash = ethers.utils.keccak256(ethers.utils.solidityPack(["string"],[message]))
+    if(isK1Signature){
+      console.log('string message', message)
+      const response = await Axios({
+        url: K1_SIGNATURE_LAMBDA_URL,
+        method: 'post',
+        params: {
+              "walletIdentifier": this.walletIdentifier,
+              "message": message,
+              "hostname": window.location.hostname,
+        }
+      });
+      //const signature = await generateK1Signature(this.walletIdentifier, message)
+      console.log("signedMessage", this.hashMessage(message))
+      console.log("response", response)
+      return {signedMessage:this.hashMessage(message), signature: response.data.message.signature}
+    }
+    else{
+      const signatureAndMessage = await this.bananaSigner.signMessage(messageHash, this.cookieObject.encodedId)
+      const abi = ethers.utils.defaultAbiCoder
+      const decoded = abi.decode(["uint256", "uint256", "uint256"], signatureAndMessage);
+      const signedMessage = decoded[2];
+      const rHex = decoded[0].toHexString();
+      const sHex = decoded[1].toHexString();
+      const finalSignature = rHex + sHex.slice(2);
+      /**
+       * Note:
+       * the `message` is signed using secp256r1 instead of secp256k1, hence to verify
+       * signedMessage we cannot use ecrecover!
+       */
+      return {signedMessage:signedMessage.toHexString(), signature: finalSignature}
+    }
+  }
+
+ hashMessage = (message: Bytes | string): string =>{
+  const messagePrefix = "\x19Ethereum Signed Message:\n";
+    if (typeof(message) === "string") { message = toUtf8Bytes(message); }
+    return keccak256(concat([
+        toUtf8Bytes(messagePrefix),
+        toUtf8Bytes(String(message.length)),
+        message
+    ]));
   }
 }
