@@ -52,8 +52,8 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         };
         case Chains.mumbai: 
         return {
-            "MyWalletDeployer": "0xeccfb3b25378f80Df99da1Bc4d826A6C4c6eC73B",
-            "Elliptic": "0x91703a4b78A084B479294634F37A0eA5924D1Ad0"
+            "MyWalletDeployer": "0x590a372ab760F37D8287694f9EC41436aE4747b2",
+            "Elliptic": "0x7efd1b4C0469f43AbbE1a5946eBD4A1734d1b79E"
         };
     }
 }
