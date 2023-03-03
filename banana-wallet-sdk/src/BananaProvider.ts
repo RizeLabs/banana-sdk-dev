@@ -29,8 +29,6 @@ import {
 } from "./interfaces/Banana.interface";
 import Axios from 'axios';
 import { K1_SIGNATURE_LAMBDA_URL  } from './routes'
-
-
 // import {generateK1Signature} from './GenerateK1Signature';
 import { Bytes, concat } from "@ethersproject/bytes";
 import { keccak256 } from "@ethersproject/keccak256";
@@ -131,7 +129,6 @@ export class Banana {
     if(!isPointOnCurve){
        throw new Error("ERROR: Device does not support R1 curve")
     }
-
     this.bananaSigner = new BananaSigner(this.jsonRpcProvider, this.publicKey);
   };
 
@@ -202,8 +199,8 @@ export class Banana {
   getWalletAddress = async (walletIdentifier: string) => {
     try {
       await this.initiateSigner(walletIdentifier);
-    }catch(err){
-      console.log(err)
+    } catch(err) {
+      console.log("Error while initiating signer",err)
       return err;
     }
     
@@ -250,7 +247,7 @@ export class Banana {
         );
         if (!setCredentialsStatus.success) {
           //! Raise a popup here in case it fails to save
-          console.log("Some error ocured while saving");
+          console.log("Some error ocured while saving cookie");
           return { error: 'Failed to save wallet creds to serever' }
         }
       } catch (err) {
@@ -377,16 +374,12 @@ export class Banana {
     while(processStatus) {
       if(!isContractDeployed && userOp) {
         userOp.callGasLimit = 3e6;
-        // console.log((userOp.initCode).toString().substring(42))
-        // if(userOp.sender === this.getWalletAddress())
       }
-      console.log(userOp)
       let minGasRequired =  ethers.BigNumber.from(userOp?.callGasLimit)
                             .add(ethers.BigNumber.from(userOp?.verificationGasLimit))
                             .add(ethers.BigNumber.from(userOp?.callGasLimit));
       let currentGasPrice = await this.jsonRpcProvider.getGasPrice()
       let minBalanceRequired = minGasRequired.mul(currentGasPrice)
-      console.log(`minBalanceRequired: ${minBalanceRequired.toString()}`)
       //@ts-ignore
       let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(userOp?.sender);
       if(userBalance.lt(minBalanceRequired)){
