@@ -330,7 +330,7 @@ export class Banana {
     }
   }
 
-  private constructuUserOp = async (callDataProof: string, functionCallData: string, value:string, destination: string, isInitCode: boolean, initCode: BytesLike) => {
+  private constructuUserOp = async (callDataProof: string, functionCallData: string, value:string, destination: string, isContractDeployed: boolean, initCode: BytesLike) => {
     const userOpCallData = this.SCWContract.interface.encodeFunctionData(
       "exec",
       [
@@ -339,7 +339,7 @@ export class Banana {
         [functionCallData, callDataProof],
       ]
     );
-    if(isInitCode) {
+    if(!isContractDeployed) {
       const encodedCallData = this.SCWContract.interface.encodeFunctionData(
         "execFromEntryPoint",
         [this.SCWContract.address, 0, userOpCallData]
@@ -365,27 +365,31 @@ export class Banana {
     return userOp;
   }
 
-  private constructAndSendUserOp = async (funcCallData: string, destination:string, value: string, isInitCode: boolean, initCode: BytesLike) => {
+   
+  private constructAndSendUserOp = async (funcCallData: string, destination:string, value: string, isContractDeployed: boolean, initCode: BytesLike) => {
     const callDataProof = this.getZkProof();
-    const userOp = await this.constructuUserOp(callDataProof, funcCallData, value, destination, isInitCode, initCode);
+    const userOp = await this.constructuUserOp(callDataProof, funcCallData, value, destination, isContractDeployed, initCode);
+    //@ts-ignore
+    userOp.verificationGasLimit = 3e6;
     const reqId = await this.accountApi.getUserOpHash(userOp as any);
     let processStatus = true;
     let finalUserOp;
     while(processStatus) {
-      if(!isInitCode && userOp) {
+      if(!isContractDeployed && userOp) {
         userOp.callGasLimit = 3e6;
-        userOp.verificationGasLimit = 3e6;
-        if(userOp.sender === this.getWalletAddress())
+        // console.log((userOp.initCode).toString().substring(42))
+        // if(userOp.sender === this.getWalletAddress())
       }
-      let minGasRequired = BigNumber.from(userOp?.preVerificationGas).add(BigNumber.from(userOp?.verificationGasLimit)).add(BigNumber.from(userOp?.callGasLimit))
+      console.log(userOp)
+      let minGasRequired =  ethers.BigNumber.from(userOp?.callGasLimit)
+                            .add(ethers.BigNumber.from(userOp?.verificationGasLimit))
+                            .add(ethers.BigNumber.from(userOp?.callGasLimit));
       let currentGasPrice = await this.jsonRpcProvider.getGasPrice()
       let minBalanceRequired = minGasRequired.mul(currentGasPrice)
       console.log(`minBalanceRequired: ${minBalanceRequired.toString()}`)
-      console.log(`currentGasPrice: ${currentGasPrice}`)
       //@ts-ignore
-      let userBalance = await this.jsonRpcProvider.getBalance(userOp?.sender);
-      console.log(`userBalance: ${userBalance}`)
-      if(userBalance < minBalanceRequired){
+      let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(userOp?.sender);
+      if(userBalance.lt(minBalanceRequired)){
         throw new Error("ERROR: Insufficient balance in Wallet")
       }
       
@@ -403,7 +407,7 @@ export class Banana {
         initCodeSetStatus = true;
       }
     }
-    if(isInitCode) {
+    if(!isContractDeployed) {
       this.setCookieOnceWalletDeployed(initCodeSetStatus);
     }
     return uHash;
@@ -423,7 +427,7 @@ export class Banana {
       this.bananaSigner
     );
     const initCode = this.getAccountInitCode(MyWalletDeployer);
-    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, true, initCode);
+    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, false, initCode);
     return transactionHash;
   };
 
@@ -462,7 +466,7 @@ export class Banana {
       this.bananaSigner
     );
     this.SCWContract = this.SCWContract.connect(aaSigner);
-    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, false, '');
+    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, true, '');
     return transactionHash;
   };
 
