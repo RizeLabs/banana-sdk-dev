@@ -11,7 +11,8 @@ import { Chains, getClientConfigInfo, getChainSpecificAddress  } from "./Constan
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
 import { hexConcat } from "ethers/lib/utils.js";
-import { MyWalletDeployer } from "./types";
+import { EllipticCurve__factory, MyWalletDeployer } from "./types";
+import { EllipticCurve } from "./types"
 import constructUserOpWithInitCode from "./initUserOp";
 import { BananaCookie } from "./BananaCookie";
 import {
@@ -28,12 +29,11 @@ import {
 } from "./interfaces/Banana.interface";
 import Axios from 'axios';
 import { K1_SIGNATURE_LAMBDA_URL  } from './routes'
-
-
 // import {generateK1Signature} from './GenerateK1Signature';
 import { Bytes, concat } from "@ethersproject/bytes";
 import { keccak256 } from "@ethersproject/keccak256";
 import { toUtf8Bytes } from "@ethersproject/strings";
+import { BigNumber } from "ethers";
 
 export class Banana {
   Provider: ClientConfig;
@@ -121,6 +121,14 @@ export class Banana {
     }
     this.walletIdentifier = walletIdentifier;
     this.publicKey = await registerFingerprint();
+    const EC = EllipticCurve__factory.connect(
+      this.addresses.Elliptic,
+      this.jsonRpcProvider
+    );
+    const isPointOnCurve = await EC.isOnCurve(this.publicKey.q0, this.publicKey.q1)
+    if(!isPointOnCurve){
+       throw new Error("ERROR: Device does not support R1 curve")
+    }
     this.bananaSigner = new BananaSigner(this.jsonRpcProvider, this.publicKey);
   };
 
@@ -189,7 +197,13 @@ export class Banana {
   }
 
   getWalletAddress = async (walletIdentifier: string) => {
-    await this.initiateSigner(walletIdentifier);
+    try {
+      await this.initiateSigner(walletIdentifier);
+    } catch(err) {
+      console.log("Error while initiating signer",err)
+      return err;
+    }
+    
     this.walletIdentifier = walletIdentifier; //  repetation
     let signer = this.bananaSigner;
     let ownerAddress = await signer.getAddress();
@@ -233,8 +247,8 @@ export class Banana {
         );
         if (!setCredentialsStatus.success) {
           //! Raise a popup here in case it fails to save
-          console.log("Some error ocured while saving");
-          return { error: 'Failed to save wallet creds to serever' }
+          console.log("Some error ocured while saving cookie");
+          return { error: 'Failed to save wallet creds to server' }
         }
       } catch (err) {
         console.log(err);
@@ -313,7 +327,7 @@ export class Banana {
     }
   }
 
-  private constructuUserOp = async (callDataProof: string, functionCallData: string, value:string, destination: string, isInitCode: boolean, initCode: BytesLike) => {
+  private constructuUserOp = async (callDataProof: string, functionCallData: string, value:string, destination: string, isContractDeployed: boolean, initCode: BytesLike) => {
     const userOpCallData = this.SCWContract.interface.encodeFunctionData(
       "exec",
       [
@@ -322,7 +336,7 @@ export class Banana {
         [functionCallData, callDataProof],
       ]
     );
-    if(isInitCode) {
+    if(!isContractDeployed) {
       const encodedCallData = this.SCWContract.interface.encodeFunctionData(
         "execFromEntryPoint",
         [this.SCWContract.address, 0, userOpCallData]
@@ -348,22 +362,35 @@ export class Banana {
     return userOp;
   }
 
-  private constructAndSendUserOp = async (funcCallData: string, destination:string, value: string, isInitCode: boolean, initCode: BytesLike) => {
+   
+  private constructAndSendUserOp = async (funcCallData: string, destination:string, value: string, isContractDeployed: boolean, initCode: BytesLike) => {
     const callDataProof = this.getZkProof();
-    const userOp = await this.constructuUserOp(callDataProof, funcCallData, value, destination, isInitCode, initCode);
+    const userOp = await this.constructuUserOp(callDataProof, funcCallData, value, destination, isContractDeployed, initCode);
+    //@ts-ignore
+    userOp.verificationGasLimit = 3e6;
     const reqId = await this.accountApi.getUserOpHash(userOp as any);
     let processStatus = true;
     let finalUserOp;
     while(processStatus) {
+      if(!isContractDeployed && userOp) {
+        userOp.callGasLimit = 3e6;
+      }
+      let minGasRequired =  ethers.BigNumber.from(userOp?.callGasLimit)
+                            .add(ethers.BigNumber.from(userOp?.verificationGasLimit))
+                            .add(ethers.BigNumber.from(userOp?.callGasLimit));
+      let currentGasPrice = await this.jsonRpcProvider.getGasPrice()
+      let minBalanceRequired = minGasRequired.mul(currentGasPrice)
+      //@ts-ignore
+      let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(userOp?.sender);
+      if(userBalance.lt(minBalanceRequired)){
+        throw new Error("ERROR: Insufficient balance in Wallet")
+      }
+      
       const { newUserOp, process } = await this.bananaSigner.signUserOp(userOp as any, reqId, this.cookieObject.encodedId);
       if(process === 'success') { 
         finalUserOp = newUserOp;
         processStatus = false; 
       }
-    }
-    if(!isInitCode && finalUserOp) {
-      finalUserOp.callGasLimit = 3e6;
-      finalUserOp.verificationGasLimit = 3e6;
     }
     
     const uHash: string = await this.sendUserOpToBundler(finalUserOp as any) || '';
@@ -373,7 +400,7 @@ export class Banana {
         initCodeSetStatus = true;
       }
     }
-    if(isInitCode) {
+    if(!isContractDeployed) {
       this.setCookieOnceWalletDeployed(initCodeSetStatus);
     }
     return uHash;
@@ -392,8 +419,9 @@ export class Banana {
       this.walletAddress || "",
       this.bananaSigner
     );
+    const isContractDeployed = false;
     const initCode = this.getAccountInitCode(MyWalletDeployer);
-    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, true, initCode);
+    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, isContractDeployed, initCode);
     return transactionHash;
   };
 
@@ -431,8 +459,9 @@ export class Banana {
       this.walletAddress || "",
       this.bananaSigner
     );
+    const isContractDeployed = true;
     this.SCWContract = this.SCWContract.connect(aaSigner);
-    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, false, '');
+    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, isContractDeployed, '');
     return transactionHash;
   };
 
