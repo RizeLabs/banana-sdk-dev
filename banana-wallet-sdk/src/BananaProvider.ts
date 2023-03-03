@@ -248,7 +248,7 @@ export class Banana {
         if (!setCredentialsStatus.success) {
           //! Raise a popup here in case it fails to save
           console.log("Some error ocured while saving cookie");
-          return { error: 'Failed to save wallet creds to serever' }
+          return { error: 'Failed to save wallet creds to server' }
         }
       } catch (err) {
         console.log(err);
@@ -419,8 +419,9 @@ export class Banana {
       this.walletAddress || "",
       this.bananaSigner
     );
+    const isContractDeployed = false;
     const initCode = this.getAccountInitCode(MyWalletDeployer);
-    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, false, initCode);
+    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, isContractDeployed, initCode);
     return transactionHash;
   };
 
@@ -458,8 +459,9 @@ export class Banana {
       this.walletAddress || "",
       this.bananaSigner
     );
+    const isContractDeployed = true;
     this.SCWContract = this.SCWContract.connect(aaSigner);
-    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, true, '');
+    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, isContractDeployed, '');
     return transactionHash;
   };
 
