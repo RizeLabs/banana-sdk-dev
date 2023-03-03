@@ -11,7 +11,8 @@ import { Chains, getClientConfigInfo, getChainSpecificAddress  } from "./Constan
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
 import { hexConcat } from "ethers/lib/utils.js";
-import { MyWalletDeployer } from "./types";
+import { EllipticCurve__factory, MyWalletDeployer } from "./types";
+import { EllipticCurve } from "./types"
 import constructUserOpWithInitCode from "./initUserOp";
 import { BananaCookie } from "./BananaCookie";
 import {
@@ -34,6 +35,7 @@ import { K1_SIGNATURE_LAMBDA_URL  } from './routes'
 import { Bytes, concat } from "@ethersproject/bytes";
 import { keccak256 } from "@ethersproject/keccak256";
 import { toUtf8Bytes } from "@ethersproject/strings";
+import { BigNumber } from "ethers";
 
 export class Banana {
   Provider: ClientConfig;
@@ -121,6 +123,15 @@ export class Banana {
     }
     this.walletIdentifier = walletIdentifier;
     this.publicKey = await registerFingerprint();
+    const EC = EllipticCurve__factory.connect(
+      this.addresses.Elliptic,
+      this.jsonRpcProvider
+    );
+    const isPointOnCurve = await EC.isOnCurve(this.publicKey.q0, this.publicKey.q1)
+    if(!isPointOnCurve){
+       throw new Error("ERROR: Device does not support R1 curve")
+    }
+
     this.bananaSigner = new BananaSigner(this.jsonRpcProvider, this.publicKey);
   };
 
@@ -189,7 +200,13 @@ export class Banana {
   }
 
   getWalletAddress = async (walletIdentifier: string) => {
-    await this.initiateSigner(walletIdentifier);
+    try {
+      await this.initiateSigner(walletIdentifier);
+    }catch(err){
+      console.log(err)
+      return err;
+    }
+    
     this.walletIdentifier = walletIdentifier; //  repetation
     let signer = this.bananaSigner;
     let ownerAddress = await signer.getAddress();
@@ -355,15 +372,28 @@ export class Banana {
     let processStatus = true;
     let finalUserOp;
     while(processStatus) {
+      if(!isInitCode && userOp) {
+        userOp.callGasLimit = 3e6;
+        userOp.verificationGasLimit = 3e6;
+        if(userOp.sender === this.getWalletAddress())
+      }
+      let minGasRequired = BigNumber.from(userOp?.preVerificationGas).add(BigNumber.from(userOp?.verificationGasLimit)).add(BigNumber.from(userOp?.callGasLimit))
+      let currentGasPrice = await this.jsonRpcProvider.getGasPrice()
+      let minBalanceRequired = minGasRequired.mul(currentGasPrice)
+      console.log(`minBalanceRequired: ${minBalanceRequired.toString()}`)
+      console.log(`currentGasPrice: ${currentGasPrice}`)
+      //@ts-ignore
+      let userBalance = await this.jsonRpcProvider.getBalance(userOp?.sender);
+      console.log(`userBalance: ${userBalance}`)
+      if(userBalance < minBalanceRequired){
+        throw new Error("ERROR: Insufficient balance in Wallet")
+      }
+      
       const { newUserOp, process } = await this.bananaSigner.signUserOp(userOp as any, reqId, this.cookieObject.encodedId);
       if(process === 'success') { 
         finalUserOp = newUserOp;
         processStatus = false; 
       }
-    }
-    if(!isInitCode && finalUserOp) {
-      finalUserOp.callGasLimit = 3e6;
-      finalUserOp.verificationGasLimit = 3e6;
     }
     
     const uHash: string = await this.sendUserOpToBundler(finalUserOp as any) || '';
