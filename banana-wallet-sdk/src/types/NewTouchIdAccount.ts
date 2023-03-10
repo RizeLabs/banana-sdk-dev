@@ -68,19 +68,23 @@ export type UserOperationStructOutput = [
   signature: string;
 };
 
-export interface TouchIdWalletInterface extends utils.Interface {
+export interface NewTouchIdAccountInterface extends utils.Interface {
   functions: {
     "addDeposit()": FunctionFragment;
     "entryPoint()": FunctionFragment;
     "exec(address,uint256,bytes[])": FunctionFragment;
     "execBatch(address[],bytes[])": FunctionFragment;
     "execFromEntryPoint(address,uint256,bytes)": FunctionFragment;
+    "execute(address,uint256,bytes)": FunctionFragment;
+    "executeBatch(address[],bytes[])": FunctionFragment;
     "getDeposit()": FunctionFragment;
+    "initialize(address,uint256[2],address)": FunctionFragment;
     "nonce()": FunctionFragment;
     "owner()": FunctionFragment;
-    "transfer(address,uint256)": FunctionFragment;
-    "updateEntryPoint(address)": FunctionFragment;
-    "validateUserOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,address,uint256)": FunctionFragment;
+    "proxiableUUID()": FunctionFragment;
+    "upgradeTo(address)": FunctionFragment;
+    "upgradeToAndCall(address,bytes)": FunctionFragment;
+    "validateUserOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,uint256)": FunctionFragment;
     "withdrawDepositTo(address,uint256)": FunctionFragment;
   };
 
@@ -91,11 +95,15 @@ export interface TouchIdWalletInterface extends utils.Interface {
       | "exec"
       | "execBatch"
       | "execFromEntryPoint"
+      | "execute"
+      | "executeBatch"
       | "getDeposit"
+      | "initialize"
       | "nonce"
       | "owner"
-      | "transfer"
-      | "updateEntryPoint"
+      | "proxiableUUID"
+      | "upgradeTo"
+      | "upgradeToAndCall"
       | "validateUserOp"
       | "withdrawDepositTo"
   ): FunctionFragment;
@@ -129,25 +137,48 @@ export interface TouchIdWalletInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "execute",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "executeBatch",
+    values: [PromiseOrValue<string>[], PromiseOrValue<BytesLike>[]]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getDeposit",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "initialize",
+    values: [
+      PromiseOrValue<string>,
+      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      PromiseOrValue<string>
+    ]
   ): string;
   encodeFunctionData(functionFragment: "nonce", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "transfer",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    functionFragment: "proxiableUUID",
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "updateEntryPoint",
+    functionFragment: "upgradeTo",
     values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "upgradeToAndCall",
+    values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "validateUserOp",
     values: [
       UserOperationStruct,
       PromiseOrValue<BytesLike>,
-      PromiseOrValue<string>,
       PromiseOrValue<BigNumberish>
     ]
   ): string;
@@ -164,12 +195,22 @@ export interface TouchIdWalletInterface extends utils.Interface {
     functionFragment: "execFromEntryPoint",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "execute", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "executeBatch",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getDeposit", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "nonce", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "updateEntryPoint",
+    functionFragment: "proxiableUUID",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "upgradeTo", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "upgradeToAndCall",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -182,30 +223,73 @@ export interface TouchIdWalletInterface extends utils.Interface {
   ): Result;
 
   events: {
-    "EntryPointChanged(address,address)": EventFragment;
+    "AdminChanged(address,address)": EventFragment;
+    "BeaconUpgraded(address)": EventFragment;
+    "Initialized(uint8)": EventFragment;
+    "SimpleAccountInitialized(address,address)": EventFragment;
+    "Upgraded(address)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "EntryPointChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "AdminChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SimpleAccountInitialized"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Upgraded"): EventFragment;
 }
 
-export interface EntryPointChangedEventObject {
-  oldEntryPoint: string;
-  newEntryPoint: string;
+export interface AdminChangedEventObject {
+  previousAdmin: string;
+  newAdmin: string;
 }
-export type EntryPointChangedEvent = TypedEvent<
+export type AdminChangedEvent = TypedEvent<
   [string, string],
-  EntryPointChangedEventObject
+  AdminChangedEventObject
 >;
 
-export type EntryPointChangedEventFilter =
-  TypedEventFilter<EntryPointChangedEvent>;
+export type AdminChangedEventFilter = TypedEventFilter<AdminChangedEvent>;
 
-export interface TouchIdWallet extends BaseContract {
+export interface BeaconUpgradedEventObject {
+  beacon: string;
+}
+export type BeaconUpgradedEvent = TypedEvent<
+  [string],
+  BeaconUpgradedEventObject
+>;
+
+export type BeaconUpgradedEventFilter = TypedEventFilter<BeaconUpgradedEvent>;
+
+export interface InitializedEventObject {
+  version: number;
+}
+export type InitializedEvent = TypedEvent<[number], InitializedEventObject>;
+
+export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
+
+export interface SimpleAccountInitializedEventObject {
+  entryPoint: string;
+  owner: string;
+}
+export type SimpleAccountInitializedEvent = TypedEvent<
+  [string, string],
+  SimpleAccountInitializedEventObject
+>;
+
+export type SimpleAccountInitializedEventFilter =
+  TypedEventFilter<SimpleAccountInitializedEvent>;
+
+export interface UpgradedEventObject {
+  implementation: string;
+}
+export type UpgradedEvent = TypedEvent<[string], UpgradedEventObject>;
+
+export type UpgradedEventFilter = TypedEventFilter<UpgradedEvent>;
+
+export interface NewTouchIdAccount extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: TouchIdWalletInterface;
+  interface: NewTouchIdAccountInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -253,28 +337,49 @@ export interface TouchIdWallet extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    execute(
+      dest: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      func: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    executeBatch(
+      dest: PromiseOrValue<string>[],
+      func: PromiseOrValue<BytesLike>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     getDeposit(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    initialize(
+      anOwner: PromiseOrValue<string>,
+      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      _ellipticCurve: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
     nonce(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
-    transfer(
-      dest: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+    proxiableUUID(overrides?: CallOverrides): Promise<[string]>;
+
+    upgradeTo(
+      newImplementation: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    updateEntryPoint(
-      newEntryPoint: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    upgradeToAndCall(
+      newImplementation: PromiseOrValue<string>,
+      data: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     validateUserOp(
       userOp: UserOperationStruct,
-      requestId: PromiseOrValue<BytesLike>,
-      aggregator: PromiseOrValue<string>,
-      missingWalletFunds: PromiseOrValue<BigNumberish>,
+      userOpHash: PromiseOrValue<BytesLike>,
+      missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -311,28 +416,49 @@ export interface TouchIdWallet extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  execute(
+    dest: PromiseOrValue<string>,
+    value: PromiseOrValue<BigNumberish>,
+    func: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  executeBatch(
+    dest: PromiseOrValue<string>[],
+    func: PromiseOrValue<BytesLike>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   getDeposit(overrides?: CallOverrides): Promise<BigNumber>;
+
+  initialize(
+    anOwner: PromiseOrValue<string>,
+    _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+    _ellipticCurve: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   nonce(overrides?: CallOverrides): Promise<BigNumber>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
-  transfer(
-    dest: PromiseOrValue<string>,
-    amount: PromiseOrValue<BigNumberish>,
+  proxiableUUID(overrides?: CallOverrides): Promise<string>;
+
+  upgradeTo(
+    newImplementation: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  updateEntryPoint(
-    newEntryPoint: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  upgradeToAndCall(
+    newImplementation: PromiseOrValue<string>,
+    data: PromiseOrValue<BytesLike>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   validateUserOp(
     userOp: UserOperationStruct,
-    requestId: PromiseOrValue<BytesLike>,
-    aggregator: PromiseOrValue<string>,
-    missingWalletFunds: PromiseOrValue<BigNumberish>,
+    userOpHash: PromiseOrValue<BytesLike>,
+    missingAccountFunds: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -367,30 +493,51 @@ export interface TouchIdWallet extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    execute(
+      dest: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      func: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    executeBatch(
+      dest: PromiseOrValue<string>[],
+      func: PromiseOrValue<BytesLike>[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     getDeposit(overrides?: CallOverrides): Promise<BigNumber>;
+
+    initialize(
+      anOwner: PromiseOrValue<string>,
+      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      _ellipticCurve: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     nonce(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
-    transfer(
-      dest: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+    proxiableUUID(overrides?: CallOverrides): Promise<string>;
+
+    upgradeTo(
+      newImplementation: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    updateEntryPoint(
-      newEntryPoint: PromiseOrValue<string>,
+    upgradeToAndCall(
+      newImplementation: PromiseOrValue<string>,
+      data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     validateUserOp(
       userOp: UserOperationStruct,
-      requestId: PromiseOrValue<BytesLike>,
-      aggregator: PromiseOrValue<string>,
-      missingWalletFunds: PromiseOrValue<BigNumberish>,
+      userOpHash: PromiseOrValue<BytesLike>,
+      missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<BigNumber>;
 
     withdrawDepositTo(
       withdrawAddress: PromiseOrValue<string>,
@@ -400,14 +547,40 @@ export interface TouchIdWallet extends BaseContract {
   };
 
   filters: {
-    "EntryPointChanged(address,address)"(
-      oldEntryPoint?: PromiseOrValue<string> | null,
-      newEntryPoint?: PromiseOrValue<string> | null
-    ): EntryPointChangedEventFilter;
-    EntryPointChanged(
-      oldEntryPoint?: PromiseOrValue<string> | null,
-      newEntryPoint?: PromiseOrValue<string> | null
-    ): EntryPointChangedEventFilter;
+    "AdminChanged(address,address)"(
+      previousAdmin?: null,
+      newAdmin?: null
+    ): AdminChangedEventFilter;
+    AdminChanged(
+      previousAdmin?: null,
+      newAdmin?: null
+    ): AdminChangedEventFilter;
+
+    "BeaconUpgraded(address)"(
+      beacon?: PromiseOrValue<string> | null
+    ): BeaconUpgradedEventFilter;
+    BeaconUpgraded(
+      beacon?: PromiseOrValue<string> | null
+    ): BeaconUpgradedEventFilter;
+
+    "Initialized(uint8)"(version?: null): InitializedEventFilter;
+    Initialized(version?: null): InitializedEventFilter;
+
+    "SimpleAccountInitialized(address,address)"(
+      entryPoint?: PromiseOrValue<string> | null,
+      owner?: PromiseOrValue<string> | null
+    ): SimpleAccountInitializedEventFilter;
+    SimpleAccountInitialized(
+      entryPoint?: PromiseOrValue<string> | null,
+      owner?: PromiseOrValue<string> | null
+    ): SimpleAccountInitializedEventFilter;
+
+    "Upgraded(address)"(
+      implementation?: PromiseOrValue<string> | null
+    ): UpgradedEventFilter;
+    Upgraded(
+      implementation?: PromiseOrValue<string> | null
+    ): UpgradedEventFilter;
   };
 
   estimateGas: {
@@ -437,28 +610,49 @@ export interface TouchIdWallet extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    execute(
+      dest: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      func: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    executeBatch(
+      dest: PromiseOrValue<string>[],
+      func: PromiseOrValue<BytesLike>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     getDeposit(overrides?: CallOverrides): Promise<BigNumber>;
+
+    initialize(
+      anOwner: PromiseOrValue<string>,
+      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      _ellipticCurve: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
 
     nonce(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
-    transfer(
-      dest: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+    proxiableUUID(overrides?: CallOverrides): Promise<BigNumber>;
+
+    upgradeTo(
+      newImplementation: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    updateEntryPoint(
-      newEntryPoint: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    upgradeToAndCall(
+      newImplementation: PromiseOrValue<string>,
+      data: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     validateUserOp(
       userOp: UserOperationStruct,
-      requestId: PromiseOrValue<BytesLike>,
-      aggregator: PromiseOrValue<string>,
-      missingWalletFunds: PromiseOrValue<BigNumberish>,
+      userOpHash: PromiseOrValue<BytesLike>,
+      missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -496,28 +690,49 @@ export interface TouchIdWallet extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    execute(
+      dest: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      func: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    executeBatch(
+      dest: PromiseOrValue<string>[],
+      func: PromiseOrValue<BytesLike>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     getDeposit(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    initialize(
+      anOwner: PromiseOrValue<string>,
+      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      _ellipticCurve: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
 
     nonce(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    transfer(
-      dest: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
+    proxiableUUID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    upgradeTo(
+      newImplementation: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    updateEntryPoint(
-      newEntryPoint: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    upgradeToAndCall(
+      newImplementation: PromiseOrValue<string>,
+      data: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     validateUserOp(
       userOp: UserOperationStruct,
-      requestId: PromiseOrValue<BytesLike>,
-      aggregator: PromiseOrValue<string>,
-      missingWalletFunds: PromiseOrValue<BigNumberish>,
+      userOpHash: PromiseOrValue<BytesLike>,
+      missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
