@@ -1,17 +1,20 @@
 import { BytesLike, ethers } from "ethers";
 import { EntryPoint__factory, UserOperationStruct } from "@account-abstraction/contracts";
 import { MyWalletDeployer__factory } from "./types/factories/MyWalletDeployer__factory"; // ---
+import { NewTouchIdAccountDeployer__factory } from "./types/factories/NewTouchIdAccountDeployer__factory"; // ---
 import { MyPaymasterApi } from "./MyPayMasterApi";
 import { MyWalletApi } from "./MyWalletApi";
 import { HttpRpcClient } from "@account-abstraction/sdk/dist/src/HttpRpcClient";
 import { ERC4337EthersProvider } from "@account-abstraction/sdk";
 import { MyTouchIdWallet__factory } from "./types/factories/MyTouchIdWallet__factory"; // --
+import { NewTouchIdAccount__factory } from "./types/factories/NewTouchIdAccount__factory"; // --
 import { getGasFee } from "./utils/GetGasFee";
 import { Chains, getClientConfigInfo, getChainSpecificAddress  } from "./Constants";
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
 import { hexConcat } from "ethers/lib/utils.js";
 import { EllipticCurve__factory, MyWalletDeployer } from "./types";
+import { NewTouchIdAccountDeployer } from "./types";
 import { EllipticCurve } from "./types"
 import constructUserOpWithInitCode from "./initUserOp";
 import { BananaCookie } from "./BananaCookie";
@@ -143,7 +146,7 @@ export class Banana {
       this.jsonRpcProvider
     );
 
-    const MyWalletDeployer = MyWalletDeployer__factory.connect(
+    const MyWalletDeployer = NewTouchIdAccountDeployer__factory.connect(
       this.addresses.MyWalletDeployer,
       signer
     );
@@ -183,15 +186,14 @@ export class Banana {
     return this.aaProvider;
   };
 
-  private getAccountInitCode(factory: MyWalletDeployer, salt = 0): BytesLike {
+  private getAccountInitCode(factory: NewTouchIdAccountDeployer, salt = 0): BytesLike {
     return hexConcat([
       factory.address,
-      factory.interface.encodeFunctionData("deployWallet", [
-        this.Provider.entryPointAddress,
+      factory.interface.encodeFunctionData("createAccount", [
         this.bananaSigner.address,
-        0,
         [this.publicKey.q0, this.publicKey.q1],
         this.addresses.Elliptic,
+        0
       ]),
     ]);
   }
@@ -209,17 +211,16 @@ export class Banana {
     let ownerAddress = await signer.getAddress();
 
     if (!this.cookieObject) {
-      const MyWalletDeployer = MyWalletDeployer__factory.connect(
+      const MyWalletDeployer = NewTouchIdAccountDeployer__factory.connect(
         this.addresses.MyWalletDeployer,
         signer // we require signer here as we are deploying the SCW with q0 and q1 and for getting it we need to register user if he is not already registered
       );
       try {
-        this.walletAddress = await MyWalletDeployer.getDeploymentAddress(
-          this.Provider.entryPointAddress,
+        this.walletAddress = await MyWalletDeployer.getAddress(
           ownerAddress,
-          0,
           [this.publicKey.q0, this.publicKey.q1],
-          this.addresses.Elliptic
+          this.addresses.Elliptic,
+          0
         );
         // cred generation complete here now we need to save it in cookie and server
         this.cookieObject = {
@@ -411,11 +412,11 @@ export class Banana {
     destination: string,
     value: string
   ) => {
-    const MyWalletDeployer = MyWalletDeployer__factory.connect(
+    const MyWalletDeployer = NewTouchIdAccountDeployer__factory.connect(
       this.addresses.MyWalletDeployer,
       this.bananaSigner
     );
-    this.SCWContract = MyTouchIdWallet__factory.connect(
+    this.SCWContract = NewTouchIdAccount__factory.connect(
       this.walletAddress || "",
       this.bananaSigner
     );
