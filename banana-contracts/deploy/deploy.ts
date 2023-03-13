@@ -5,12 +5,14 @@ const fs = require('fs')
 const { BigNumber } = require('ethers')
 const { NewTouchIdAccountSafe } = require('../src/types')
 const { NewTouchIdAccountSafe__factory } = require('../src/types/factories')
-const NewTouchIdAccountProxyFactory = require('../artifacts/contracts/samples/NewTouchIdSafeAccountProxyFactory.sol/NewTouchIdSafeAccountProxyFactory.json');
-// const snarkjs = require("snarkjs")
-// const ethers = require('ethers')
+const NewTouchIdAccountProxyFactory = require('./factory.json')
+// const abi = require('./factory.json')
+const newAbi = require('./factory.json')
+// require('../artifacts/contracts/samples/NewTouchIdSafeAccountProxyFactory.sol/NewTouchIdSafeAccountProxyFactory.json')
 
 async function main() {
 	const accounts = await hre.ethers.getSigners()
+	// const abi = NewTouchIdAccountProxyFactory;
 	
 	// FOR NEW DEPLOYMENT //
 	// const [owner, heir, lawyer] = accounts
@@ -29,41 +31,52 @@ async function main() {
 	const provider = new ethers.providers.JsonRpcProvider('https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4');
 	const wallet = new ethers.Wallet("a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74", provider);
 
-	const NewTouchIdAccountProxyFactoryContract = new ethers.Contract(
-		"0x8bd7A25A0f3dC4E3b9b465E130A9117299D5e4b6",
-		NewTouchIdAccountProxyFactory.abi,
-		wallet
-	)
-
 	const singletonContract = "0xe75Ea15be97753bc9d7F2A70dfE0fd0EB4a5AB51";
-
 
 	const NewTouchIdAccountSafeInstance = NewTouchIdAccountSafe__factory.connect(
 		singletonContract,
 		provider
       );
 
-	//   console.log("Instance: ", NewTouchIdAccountSafeInstance.interface);
-
-	// setupWithEntrypoint(address[],uint256,address,bytes,address,address,uint256,address,address
 	const encodedSetupEntryPoint = NewTouchIdAccountSafeInstance.interface.encodeFunctionData('setupWithEntrypoint',
 	[
 		["0x288d1d682311018736B820294D22Ed0DBE372188"],
 		1,
-		"0x288d1d682311018736B820294D22Ed0DBE372188",
+		"0x0000000000000000000000000000000000000000",
 		"0x",
-		"0x288d1d682311018736B820294D22Ed0DBE372188",
-		"0x288d1d682311018736B820294D22Ed0DBE372188",
+		"0x0000000000000000000000000000000000000000",
+		"0x0000000000000000000000000000000000000000",
 		0,
 		"0x288d1d682311018736B820294D22Ed0DBE372188",
-		"0x288d1d682311018736B820294D22Ed0DBE372188"
+		"0x0576a174D229E3cFA37253523E645A78A0C91B57"
 	]);
 
+
+	const NewTouchIdAccountProxyFactoryContract = new ethers.Contract(
+		// "0x8bd7A25A0f3dC4E3b9b465E130A9117299D5e4b6",
+	// "0xfF5667604BE1C5424c9E472366B2ABC18049eC6C",
+	"0xBb2343B1dd233783022c7496C667B3F99b400f08",
+	newAbi.abi,
+	// NewTouchIdAccountProxyFactory.abi,
+		wallet
+	)
+
+
+
+
+	//   console.log("Instance: ", NewTouchIdAccountSafeInstance.interface);
+
+	// setupWithEntrypoint(address[],uint256,address,bytes,address,address,uint256,address,address
 	// console.log("Contract ", NewTouchIdAccountProxyFactoryContract);
 
+	console.log("Encoded Setup ep: ", encodedSetupEntryPoint);
+
+	const address = await NewTouchIdAccountProxyFactoryContract.getAddress(singletonContract, "4", encodedSetupEntryPoint);
+	console.log("precompute; ", address);
+
 	const txn = await NewTouchIdAccountProxyFactoryContract.createProxyWithNonce(singletonContract,
-		"0x",
-		"1",
+		encodedSetupEntryPoint,
+		"4",
 		{
 			gasLimit: 10000000
 		});

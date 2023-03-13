@@ -103,4 +103,27 @@ contract NewTouchIdSafeAccountProxyFactory {
         }
         return id;
     }
+
+     function getBytecode(address _owner, uint _foo) public pure returns (bytes memory) {
+        bytes memory bytecode = type(NewTouchIdSafeAccountProxy).creationCode;
+
+        return abi.encodePacked(bytecode, abi.encode(_owner, _foo));
+    }
+
+    // 2. Compute the address of the contract to be deployed
+    // NOTE: _salt is a random number used to create an address
+    function getAddress(
+        address _singleton,
+        uint _salt,
+        bytes memory initializer
+    ) public view returns (address) {
+        bytes32 salt = keccak256(abi.encodePacked(keccak256(initializer), _salt, getChainId()));
+        bytes memory bytecode = abi.encodePacked(type(NewTouchIdSafeAccountProxy).creationCode, uint256(uint160(_singleton)));
+        bytes32 hash = keccak256(
+            abi.encodePacked(bytes1(0xff), address(this), salt, keccak256(bytecode))
+        );
+
+        // NOTE: cast last 20 bytes of hash to address
+        return address(uint160(uint(hash)));
+    }
 }

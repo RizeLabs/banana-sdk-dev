@@ -33,6 +33,8 @@ export interface NewTouchIdSafeAccountProxyFactoryInterface
     "createChainSpecificProxyWithNonce(address,bytes,uint256)": FunctionFragment;
     "createProxyWithCallback(address,bytes,uint256,address)": FunctionFragment;
     "createProxyWithNonce(address,bytes,uint256)": FunctionFragment;
+    "getAddress(address,uint256,bytes)": FunctionFragment;
+    "getBytecode(address,uint256)": FunctionFragment;
     "getChainId()": FunctionFragment;
     "proxyCreationCode()": FunctionFragment;
   };
@@ -42,6 +44,8 @@ export interface NewTouchIdSafeAccountProxyFactoryInterface
       | "createChainSpecificProxyWithNonce"
       | "createProxyWithCallback"
       | "createProxyWithNonce"
+      | "getAddress"
+      | "getBytecode"
       | "getChainId"
       | "proxyCreationCode"
   ): FunctionFragment;
@@ -72,6 +76,18 @@ export interface NewTouchIdSafeAccountProxyFactoryInterface
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "getAddress",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getBytecode",
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getChainId",
     values?: undefined
   ): string;
@@ -90,6 +106,11 @@ export interface NewTouchIdSafeAccountProxyFactoryInterface
   ): Result;
   decodeFunctionResult(
     functionFragment: "createProxyWithNonce",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "getAddress", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getBytecode",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getChainId", data: BytesLike): Result;
@@ -165,6 +186,19 @@ export interface NewTouchIdSafeAccountProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    getAddress(
+      _singleton: PromiseOrValue<string>,
+      _salt: PromiseOrValue<BigNumberish>,
+      initializer: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    getBytecode(
+      _owner: PromiseOrValue<string>,
+      _foo: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     getChainId(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     proxyCreationCode(overrides?: CallOverrides): Promise<[string]>;
@@ -192,6 +226,19 @@ export interface NewTouchIdSafeAccountProxyFactory extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  getAddress(
+    _singleton: PromiseOrValue<string>,
+    _salt: PromiseOrValue<BigNumberish>,
+    initializer: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  getBytecode(
+    _owner: PromiseOrValue<string>,
+    _foo: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   getChainId(overrides?: CallOverrides): Promise<BigNumber>;
 
   proxyCreationCode(overrides?: CallOverrides): Promise<string>;
@@ -216,6 +263,19 @@ export interface NewTouchIdSafeAccountProxyFactory extends BaseContract {
       _singleton: PromiseOrValue<string>,
       initializer: PromiseOrValue<BytesLike>,
       saltNonce: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    getAddress(
+      _singleton: PromiseOrValue<string>,
+      _salt: PromiseOrValue<BigNumberish>,
+      initializer: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    getBytecode(
+      _owner: PromiseOrValue<string>,
+      _foo: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
 
@@ -255,6 +315,19 @@ export interface NewTouchIdSafeAccountProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    getAddress(
+      _singleton: PromiseOrValue<string>,
+      _salt: PromiseOrValue<BigNumberish>,
+      initializer: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getBytecode(
+      _owner: PromiseOrValue<string>,
+      _foo: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getChainId(overrides?: CallOverrides): Promise<BigNumber>;
 
     proxyCreationCode(overrides?: CallOverrides): Promise<BigNumber>;
@@ -281,6 +354,19 @@ export interface NewTouchIdSafeAccountProxyFactory extends BaseContract {
       initializer: PromiseOrValue<BytesLike>,
       saltNonce: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    getAddress(
+      _singleton: PromiseOrValue<string>,
+      _salt: PromiseOrValue<BigNumberish>,
+      initializer: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getBytecode(
+      _owner: PromiseOrValue<string>,
+      _foo: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getChainId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
