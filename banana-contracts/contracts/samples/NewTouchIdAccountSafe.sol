@@ -12,6 +12,8 @@ import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 import "../core/BaseAccount.sol";
 import "../safe-contracts/Safe.sol";
 import "./EllipticCurve.sol";
+import "../utils/Exec.sol";
+
 
 interface IVerifier {
     function verifyProof(
@@ -38,7 +40,7 @@ contract NewTouchIdAccountSafe is Safe {
     //explicit sizes of nonce, to fit a single storage cell with "owner"
     address public owner;
 
-    IEntryPoint private immutable _entryPoint;
+    address public entryPoint;
     uint[2] qValues;
     address ellipticCurve;
 
@@ -46,10 +48,10 @@ contract NewTouchIdAccountSafe is Safe {
     //return value in case of signature failure, with no time-range.
     uint256 constant internal SIG_VALIDATION_FAILED = 1;
 
-    event SimpleAccountInitialized(
-        IEntryPoint indexed entryPoint,
-        address indexed owner
-    );
+    // event SimpleAccountInitialized(
+    //     IEntryPoint indexed entryPoint,
+    //     address indexed owner
+    // );
 
     modifier onlyOwner() {
         _onlyOwner();
@@ -60,18 +62,17 @@ contract NewTouchIdAccountSafe is Safe {
     //     return _nonce;
     // }
 
-    /// @inheritdoc BaseAccount
-    function entryPoint() public view virtual override returns (IEntryPoint) {
-        return _entryPoint;
-    }
+    // function entryPoint() public view virtual override returns (IEntryPoint) {
+    //     return _entryPoint;
+    // }
 
     // solhint-disable-next-line no-empty-blocks
-    receive() external payable {}
+    // receive() external payable {}
 
-    constructor(IEntryPoint anEntryPoint) {
-        _entryPoint = anEntryPoint;
-        _disableInitializers();
-    }
+    // constructor(IEntryPoint anEntryPoint) {
+    //     _entryPoint = anEntryPoint;
+    //     // _disableInitializers();
+    // }
 
     function _onlyOwner() internal view {
         //directly from EOA owner, or through the account itself (which gets redirected through execute())
@@ -90,7 +91,7 @@ contract NewTouchIdAccountSafe is Safe {
     /// @param paymentToken Token that should be used for the payment (0 is ETH)
     /// @param payment Value that should be paid
     /// @param paymentReceiver Address that should receive the payment (or 0 if tx.origin)
-    /// @param entryPoint Address for the trusted EIP4337 entrypoint
+    /// @param _entryPoint Address for the trusted EIP4337 entrypoint
     function setupWithEntrypoint(
         address[] calldata _owners,
         uint256 _threshold,
@@ -100,9 +101,9 @@ contract NewTouchIdAccountSafe is Safe {
         address paymentToken,
         uint256 payment,
         address payable paymentReceiver,
-        address entryPoint
+        address _entryPoint
     ) external {
-        _entryPoint = entryPoint;
+        entryPoint = _entryPoint;
 
         _executeAndRevert(
             address(this),
@@ -167,14 +168,14 @@ contract NewTouchIdAccountSafe is Safe {
     /**
      * execute a transaction (called directly from owner, or by entryPoint)
      */
-    function execute(
-        address dest,
-        uint256 value,
-        bytes calldata func
-    ) external {
-        _requireFromEntryPointOrOwner();
-        _call(dest, value, func);
-    }
+    // function execute(
+    //     address dest,
+    //     uint256 value,
+    //     bytes calldata func
+    // ) external {
+    //     _requireFromEntryPointOrOwner();
+    //     _call(dest, value, func);
+    // }
 
     /**
      * execute a sequence of transactions
@@ -220,7 +221,7 @@ contract NewTouchIdAccountSafe is Safe {
     // Require the function call went through EntryPoint or owner
     function _requireFromEntryPointOrOwner() internal view {
         require(
-            msg.sender == address(entryPoint()) || msg.sender == owner,
+            msg.sender == entryPoint || msg.sender == owner,
             "account: not Owner or EntryPoint"
         );
     }
@@ -228,15 +229,15 @@ contract NewTouchIdAccountSafe is Safe {
     /// implement template method of BaseAccount
     function _validateAndUpdateNonce(
         UserOperation calldata userOp
-    ) internal override {
-        require(_nonce++ == userOp.nonce, "account: invalid nonce");
+    ) internal {
+        require(nonce++ == userOp.nonce, "account: invalid nonce");
     }
 
     /// implement template method of BaseAccount
     function _validateSignature(
         UserOperation calldata userOp,
         bytes32 userOpHash
-    ) internal virtual override returns (uint256 validationData) {
+    ) internal virtual returns (uint256 validationData) {
         (uint r, uint s, bytes32 message) = abi.decode(
             userOp.signature,
             (uint, uint, bytes32)
@@ -264,14 +265,14 @@ contract NewTouchIdAccountSafe is Safe {
      * check current account deposit in the entryPoint
      */
     function getDeposit() public view returns (uint256) {
-        return entryPoint().balanceOf(address(this));
+        return IEntryPoint(entryPoint).balanceOf(address(this));
     }
 
     /**
      * deposit more funds for this account in the entryPoint
      */
     function addDeposit() public payable {
-        entryPoint().depositTo{value: msg.value}(address(this));
+        IEntryPoint(entryPoint).depositTo{value: msg.value}(address(this));
     }
 
     /**
@@ -283,7 +284,7 @@ contract NewTouchIdAccountSafe is Safe {
         address payable withdrawAddress,
         uint256 amount
     ) public onlyOwner {
-        entryPoint().withdrawTo(withdrawAddress, amount);
+        IEntryPoint(entryPoint).withdrawTo(withdrawAddress, amount);
     }
 
     function _executeAndRevert(
@@ -317,12 +318,12 @@ contract NewTouchIdAccountSafe is Safe {
     /// @dev so this function should only be used if there is a problem with
     /// @dev the main entrypoint
     function replaceEntrypoint(address newEntrypoint) public authorized {
-        _entryPoint = newEntrypoint;
+        entryPoint = newEntrypoint;
     }
 
     function _authorizeUpgrade(
         address newImplementation
-    ) internal view override {
+    ) internal view {
         (newImplementation);
         _onlyOwner();
     }
