@@ -64,37 +64,37 @@ async function main() {
 
 
 
-	//   console.log("Instance: ", NewTouchIdAccountSafeInstance.interface);
+	  console.log("Instance: ", NewTouchIdAccountSafeInstance.interface);
 
 	// setupWithEntrypoint(address[],uint256,address,bytes,address,address,uint256,address,address
-	// console.log("Contract ", NewTouchIdAccountProxyFactoryContract);
+	console.log("Contract ", NewTouchIdAccountProxyFactoryContract);
 
 	console.log("Encoded Setup ep: ", encodedSetupEntryPoint);
 
-	const address = await NewTouchIdAccountProxyFactoryContract.getAddress(singletonContract, "4", encodedSetupEntryPoint);
+	const address = await NewTouchIdAccountProxyFactoryContract.getAddress(singletonContract, "5", encodedSetupEntryPoint);
 	console.log("precompute; ", address);
 
-	const txn = await NewTouchIdAccountProxyFactoryContract.createProxyWithNonce(singletonContract,
+	const txn = await NewTouchIdAccountProxyFactoryContract.createChainSpecificProxyWithNonce(singletonContract,
 		encodedSetupEntryPoint,
-		"4",
+		"5",
 		{
 			gasLimit: 10000000
 		});
 		await txn.wait();
 		console.log(txn);
-	// await txn.wait();
-	// console.log("Hash ", txn.hash());
-	// const NewTouchIdAccountDeployer = await ethers.getContractFactory('NewTouchIdAccountSafe');
-	// const newTouchIdAccountDeployer = await NewTouchIdAccountDeployer.deploy();
-	// console.log('NewTouchIdAccountSafe :', newTouchIdAccountDeployer.address);
+	await txn.wait();
+	console.log("Hash ", txn.hash());
+	const NewTouchIdAccountDeployer = await ethers.getContractFactory('NewTouchIdAccountSafe');
+	const newTouchIdAccountDeployer = await NewTouchIdAccountDeployer.deploy();
+	console.log('Singleton :', newTouchIdAccountDeployer.address);
 
 	// const NewTouchIdAccountProxy = await ethers.getContractFactory('NewTouchIdSafeAccountProxy');
 	// const newTouchIdAccountProxy = await NewTouchIdAccountProxy.deploy(newTouchIdAccountDeployer.address);
 	// console.log('NewTouchIdAccountProxy :', newTouchIdAccountProxy.address);
 
-	// const NewTouchIdAccountProxyFactory = await ethers.getContractFactory('NewTouchIdSafeAccountProxyFactory');
-	// const newTouchIdAccountProxyFactory = await NewTouchIdAccountProxyFactory.deploy();
-	// console.log('NewTouchIdAccountProxy Factory :', newTouchIdAccountProxyFactory.address);
+	const NewTouchIdAccountProxyFactory = await ethers.getContractFactory('NewTouchIdSafeAccountProxyFactory');
+	const newTouchIdAccountProxyFactory = await NewTouchIdAccountProxyFactory.deploy();
+	console.log('NewTouchIdAccountProxy Factory :', newTouchIdAccountProxyFactory.address);
 
 	
 

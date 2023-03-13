@@ -101,9 +101,13 @@ contract NewTouchIdAccountSafe is Safe {
         address paymentToken,
         uint256 payment,
         address payable paymentReceiver,
-        address _entryPoint
+        address _entryPoint,
+        uint256[2] memory _qValues,
+        address _ellipticCurve
     ) external {
         entryPoint = _entryPoint;
+        qValues = _qValues;
+        ellipticCurve = _ellipticCurve;
 
         _executeAndRevert(
             address(this),
@@ -139,15 +143,15 @@ contract NewTouchIdAccountSafe is Safe {
         uint256 value,
         bytes[] calldata func
     ) external onlyOwner {
-        (
-            uint256[2] memory a,
-            uint256[2][2] memory b,
-            uint256[2] memory c,
-            uint256[2] memory input
-        ) = abi.decode(
-                func[1],
-                (uint256[2], uint256[2][2], uint256[2], uint256[2])
-            );
+        // (
+        //     uint256[2] memory a,
+        //     uint256[2][2] memory b,
+        //     uint256[2] memory c,
+        //     uint256[2] memory input
+        // ) = abi.decode(
+        //         func[1],
+        //         (uint256[2], uint256[2][2], uint256[2], uint256[2])
+        //     );
         // require(isProofValid(a, b, c, input), "Invalid proof");
         _call(dest, value, func[0]);
     }

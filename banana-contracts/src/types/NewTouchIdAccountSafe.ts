@@ -66,7 +66,7 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     "setFallbackHandler(address)": FunctionFragment;
     "setGuard(address)": FunctionFragment;
     "setup(address[],uint256,address,bytes,address,address,uint256,address)": FunctionFragment;
-    "setupWithEntrypoint(address[],uint256,address,bytes,address,address,uint256,address,address)": FunctionFragment;
+    "setupWithEntrypoint(address[],uint256,address,bytes,address,address,uint256,address,address,uint256[2],address)": FunctionFragment;
     "signedMessages(bytes32)": FunctionFragment;
     "simulateAndRevert(address,bytes)": FunctionFragment;
     "swapOwner(address,address,address)": FunctionFragment;
@@ -334,6 +334,8 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
       PromiseOrValue<string>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
       PromiseOrValue<string>
     ]
   ): string;
@@ -912,6 +914,8 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       payment: PromiseOrValue<BigNumberish>,
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
+      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      _ellipticCurve: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -1160,6 +1164,8 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     payment: PromiseOrValue<BigNumberish>,
     paymentReceiver: PromiseOrValue<string>,
     _entryPoint: PromiseOrValue<string>,
+    _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+    _ellipticCurve: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1406,6 +1412,8 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       payment: PromiseOrValue<BigNumberish>,
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
+      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      _ellipticCurve: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1750,6 +1758,8 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       payment: PromiseOrValue<BigNumberish>,
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
+      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      _ellipticCurve: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1999,6 +2009,8 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       payment: PromiseOrValue<BigNumberish>,
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
+      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      _ellipticCurve: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
