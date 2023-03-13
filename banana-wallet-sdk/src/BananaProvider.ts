@@ -30,6 +30,10 @@ import {
   UserCredentialObject,
   ChainConfig
 } from "./interfaces/Banana.interface";
+import { NewTouchIdAccountSafe, NewTouchIdSafeAccountProxyFactory } from './safe-types'
+import { NewTouchIdAccountSafe__factory, NewTouchIdSafeAccountProxyFactory__factory} from './safe-types/factories'
+// const { NewTouchIdAccountSafe } = require('../src/types')
+// const { NewTouchIdAccountSafe__factory } = require('../src/types/factories')
 import Axios from 'axios';
 import { K1_SIGNATURE_LAMBDA_URL  } from './routes'
 // import {generateK1Signature} from './GenerateK1Signature';
@@ -53,6 +57,8 @@ export class Banana {
   walletIdentifier!: string;
   jsonRpcProviderUrl: string;
   addresses: ChainConfig;
+  safeAddress!: string;
+  encodedId!: string;
 
   constructor(readonly chain: Chains, readonly jsonRpcProvideurl: string) {
     this.Provider = getClientConfigInfo(chain);
@@ -198,7 +204,108 @@ export class Banana {
     ]);
   }
 
+
+  private getSafeInitCode() {
+    const proxyFactoryAddress = "0x074E09E9B4313a5cfE63bA1C70309F65442395bb";
+	  const singletonContract = "0xf8B5d995E3322D80Cc78Bfb1bc5205429292CB79";
+    const proxyFactoryContract: NewTouchIdSafeAccountProxyFactory = NewTouchIdSafeAccountProxyFactory__factory.connect(
+      proxyFactoryAddress,
+      this.jsonRpcProvider
+    );
+    return hexConcat([
+      proxyFactoryAddress,
+      proxyFactoryContract.interface.encodeFunctionData(
+        'createChainSpecificProxyWithNonce',
+        [
+          singletonContract,
+          this.getInitializer(),
+          "6" //salt
+        ]
+      )]);
+    // const txn = await NewTouchIdAccountProxyFactoryContract.createChainSpecificProxyWithNonce(singletonContract,
+    //   encodedSetupEntryPoint,
+    //   "5",
+    //   {
+    //     gasLimit: 10000000
+    //   });
+    //   await txn.wait();
+  }
+
+  private getInitializer() {
+	  const singletonContract = "0xf8B5d995E3322D80Cc78Bfb1bc5205429292CB79";
+    const proxyFactoryAddress = "0x074E09E9B4313a5cfE63bA1C70309F65442395bb";
+    const NewTouchIdAccountSafeInstance: NewTouchIdAccountSafe = NewTouchIdAccountSafe__factory.connect(
+      singletonContract,
+      this.jsonRpcProvider
+    );
+    console.log("pub key: ", this.publicKey)
+    const pubArray = [this.publicKey.q0, this.publicKey.q1];
+    //@ts-ignore
+    const encodedSetupEntryPoint = NewTouchIdAccountSafeInstance.interface.encodeFunctionData('setupWithEntrypoint',
+    [
+      ["0x288d1d682311018736B820294D22Ed0DBE372188"], // owners 
+      1, // thresold will remain fix 
+      "0x0000000000000000000000000000000000000000", // to address 
+      "0x", // modules setup calldata
+      "0x0000000000000000000000000000000000000000", // fallback
+      "0x0000000000000000000000000000000000000000", // payment token
+      0, // payment 
+      "0x288d1d682311018736B820294D22Ed0DBE372188", // payment receiver
+      "0x0576a174D229E3cFA37253523E645A78A0C91B57", // entrypoint
+      // @ts-ignore
+      pubArray, // q values 
+      this.addresses.Elliptic // elliptic curve
+    ]);
+
+    return encodedSetupEntryPoint
+  };
+
+  executeWithSafe = async ( funcCallData: string,
+    destination: string,
+    value: string) => {
+    const initCode = this.getSafeInitCode();
+    console.log(" this is initcode ", initCode);
+    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, false, initCode);
+    console.log(" this is txn hash ", transactionHash);
+  }
+
+
+
+  getSafeWalletAddress = async  () => {
+    const proxyFactoryAddress = "0x074E09E9B4313a5cfE63bA1C70309F65442395bb";
+	  const singletonContract = "0xf8B5d995E3322D80Cc78Bfb1bc5205429292CB79";
+    const walletIdentifier = "sample-safe-wallet";
+    try {
+      await this.initiateSigner(walletIdentifier);
+      console.log("Above done ");
+    } catch(err) {
+      console.log("Error while initiating signer",err)
+      return err;
+    }
+    const encodedSetupEntryPoint = this.getInitializer();
+    console.log("encoded ep: ", encodedSetupEntryPoint);
+
+    // const NewTouchIdAccountProxyFactoryContract = new ethers.Contract(
+    //   // "0x8bd7A25A0f3dC4E3b9b465E130A9117299D5e4b6",
+    // // "0xfF5667604BE1C5424c9E472366B2ABC18049eC6C",
+    // "0xBb2343B1dd233783022c7496C667B3F99b400f08",
+    // newAbi.abi,
+    // // NewTouchIdAccountProxyFactory.abi,
+    //   wallet
+    // )
+    let signer = this.bananaSigner;
+    const proxyFactoryContract = NewTouchIdSafeAccountProxyFactory__factory.connect(
+      proxyFactoryAddress,
+      signer
+    );
+
+    const walletAddress = await proxyFactoryContract.getAddress(singletonContract, "6", encodedSetupEntryPoint);
+    this.safeAddress = walletAddress;
+    return walletAddress;
+  }
+
   getWalletAddress = async (walletIdentifier: string) => {
+    return this.getSafeWalletAddress();
     try {
       await this.initiateSigner(walletIdentifier);
     } catch(err) {
@@ -319,6 +426,7 @@ export class Banana {
 
   private sendUserOpToBundler = async (userOp: UserOperationStruct) => {
     try {
+      console.log("userop: ", userOp);
       const uHash = await this.httpRpcClient.sendUserOpToBundler(
         userOp as any
       );
@@ -329,25 +437,30 @@ export class Banana {
   }
 
   private constructuUserOp = async (callDataProof: string, functionCallData: string, value:string, destination: string, isContractDeployed: boolean, initCode: BytesLike) => {
-    const userOpCallData = this.SCWContract.interface.encodeFunctionData(
+    const NewTouchIdAccountSafe: NewTouchIdAccountSafe = NewTouchIdAccountSafe__factory.connect(
+      this.safeAddress,
+      this.jsonRpcProvider
+    );
+    const userOpCallData = NewTouchIdAccountSafe.interface.encodeFunctionData(
       "exec",
       [
         destination,
         ethers.utils.parseEther(value),
-        [functionCallData, callDataProof],
+        [functionCallData],
       ]
     );
     if(!isContractDeployed) {
-      const encodedCallData = this.SCWContract.interface.encodeFunctionData(
+      const encodedCallData = NewTouchIdAccountSafe.interface.encodeFunctionData(
         "execFromEntryPoint",
-        [this.SCWContract.address, 0, userOpCallData]
+        [this.safeAddress, 0, userOpCallData]
       );
       const userOp = await constructUserOpWithInitCode(
           this.jsonRpcProvider,
-          this.walletAddress,
+          this.safeAddress,
           encodedCallData,
           initCode
       ); 
+      console.log('final userop ', userOp);
       return userOp;
     }
     let userOp;
@@ -383,11 +496,11 @@ export class Banana {
       let minBalanceRequired = minGasRequired.mul(currentGasPrice)
       //@ts-ignore
       let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(userOp?.sender);
-      if(userBalance.lt(minBalanceRequired)){
-        throw new Error("ERROR: Insufficient balance in Wallet")
-      }
+      // if(userBalance.lt(minBalanceRequired)){
+      //   throw new Error("ERROR: Insufficient balance in Wallet")
+      // }
       
-      const { newUserOp, process } = await this.bananaSigner.signUserOp(userOp as any, reqId, this.cookieObject.encodedId);
+      const { newUserOp, process } = await this.bananaSigner.signUserOp(userOp as any, reqId, this.publicKey.encodedId);
       if(process === 'success') { 
         finalUserOp = newUserOp;
         processStatus = false; 
@@ -396,14 +509,14 @@ export class Banana {
     
     const uHash: string = await this.sendUserOpToBundler(finalUserOp as any) || '';
     let initCodeSetStatus = false;;
-    if(!!uHash) {
-      if(uHash.length === 66) {
-        initCodeSetStatus = true;
-      }
-    }
-    if(!isContractDeployed) {
-      this.setCookieOnceWalletDeployed(initCodeSetStatus);
-    }
+    // if(!!uHash) {
+    //   if(uHash.length === 66) {
+    //     initCodeSetStatus = true;
+    //   }
+    // }
+    // if(!isContractDeployed) {
+    //   this.setCookieOnceWalletDeployed(initCodeSetStatus);
+    // }
     return uHash;
   } 
 
@@ -431,6 +544,11 @@ export class Banana {
     destination: string,
     value: string
   ) => {
+    console.log("calldata: ", funcCallData);
+    console.log("destination: ", destination)
+    console.log("values: ", value);
+    await this.executeWithSafe(funcCallData, destination, value);
+    return;
     const walletCreds = this.cookie.getCookie(this.walletIdentifier);
 
     if(walletCreds) {
