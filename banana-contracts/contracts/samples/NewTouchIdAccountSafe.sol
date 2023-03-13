@@ -36,12 +36,15 @@ contract NewTouchIdAccountSafe is Safe {
     bytes28 private _filler;
 
     //explicit sizes of nonce, to fit a single storage cell with "owner"
-    uint96 private _nonce;
     address public owner;
 
     IEntryPoint private immutable _entryPoint;
     uint[2] qValues;
     address ellipticCurve;
+
+
+    //return value in case of signature failure, with no time-range.
+    uint256 constant internal SIG_VALIDATION_FAILED = 1;
 
     event SimpleAccountInitialized(
         IEntryPoint indexed entryPoint,
@@ -53,10 +56,9 @@ contract NewTouchIdAccountSafe is Safe {
         _;
     }
 
-    /// @inheritdoc BaseAccount
-    function nonce() public view virtual override returns (uint256) {
-        return _nonce;
-    }
+    // function nonce() public view virtual override returns (uint256) {
+    //     return _nonce;
+    // }
 
     /// @inheritdoc BaseAccount
     function entryPoint() public view virtual override returns (IEntryPoint) {
@@ -78,6 +80,43 @@ contract NewTouchIdAccountSafe is Safe {
             "only owner"
         );
     }
+
+    /// @dev Setup function sets initial storage of contract.
+    /// @param _owners List of Safe owners.
+    /// @param _threshold Number of required confirmations for a Safe transaction.
+    /// @param to Contract address for optional delegate call.
+    /// @param data Data payload for optional delegate call.
+    /// @param fallbackHandler Handler for fallback calls to this contract
+    /// @param paymentToken Token that should be used for the payment (0 is ETH)
+    /// @param payment Value that should be paid
+    /// @param paymentReceiver Address that should receive the payment (or 0 if tx.origin)
+    /// @param entryPoint Address for the trusted EIP4337 entrypoint
+    function setupWithEntrypoint(
+        address[] calldata _owners,
+        uint256 _threshold,
+        address to,
+        bytes calldata data,
+        address fallbackHandler,
+        address paymentToken,
+        uint256 payment,
+        address payable paymentReceiver,
+        address entryPoint
+    ) external {
+        _entryPoint = entryPoint;
+
+        _executeAndRevert(
+            address(this),
+            0,
+            abi.encodeCall(Safe.setup, (
+                _owners, _threshold,
+                to, data,
+                fallbackHandler,paymentToken,
+                payment, paymentReceiver
+            )),
+            Enum.Operation.DelegateCall
+        );
+    }
+
 
     // called by entryPoint, only after validateUserOp succeeded.
     function execFromEntryPoint(
@@ -151,29 +190,32 @@ contract NewTouchIdAccountSafe is Safe {
         }
     }
 
-    /**
-     * @dev The _entryPoint member is immutable, to reduce gas consumption.  To upgrade EntryPoint,
-     * a new implementation of SimpleAccount must be deployed with the new EntryPoint address, then upgrading
-     * the implementation by calling `upgradeTo()`
-     */
-    function initialize(
-        address anOwner,
-        uint[2] memory _qValues,
-        address _ellipticCurve
-    ) public virtual initializer {
-        _initialize(anOwner, _qValues, _ellipticCurve);
+    function _payPrefund(uint256 missingAccountFunds) internal {
+        if (missingAccountFunds != 0) {
+            (bool success,) = payable(msg.sender).call{value : missingAccountFunds, gas : type(uint256).max}("");
+            (success);
+            //ignore failure (its EntryPoint's job to verify, not account.)
+        }
     }
 
-    function _initialize(
-        address anOwner,
-        uint[2] memory _qValues,
-        address _ellipticCurve
-    ) internal virtual {
-        owner = anOwner;
-        qValues = _qValues;
-        ellipticCurve = _ellipticCurve;
-        emit SimpleAccountInitialized(_entryPoint, owner);
-    }
+    // function initialize(
+    //     address anOwner,
+    //     uint[2] memory _qValues,
+    //     address _ellipticCurve
+    // ) public virtual initializer {
+    //     _initialize(anOwner, _qValues, _ellipticCurve);
+    // }
+
+    // function _initialize(
+    //     address anOwner,
+    //     uint[2] memory _qValues,
+    //     address _ellipticCurve
+    // ) internal virtual {
+    //     owner = anOwner;
+    //     qValues = _qValues;
+    //     ellipticCurve = _ellipticCurve;
+    //     emit SimpleAccountInitialized(_entryPoint, owner);
+    // }
 
     // Require the function call went through EntryPoint or owner
     function _requireFromEntryPointOrOwner() internal view {
@@ -242,6 +284,40 @@ contract NewTouchIdAccountSafe is Safe {
         uint256 amount
     ) public onlyOwner {
         entryPoint().withdrawTo(withdrawAddress, amount);
+    }
+
+    function _executeAndRevert(
+        address to,
+        uint256 value,
+        bytes memory data,
+        Enum.Operation operation
+    ) internal {
+
+        bool success = execute(
+            to,
+            value,
+            data,
+            operation,
+            type(uint256).max
+        );
+
+        bytes memory returnData = Exec.getReturnData(type(uint256).max);
+        // Revert with the actual reason string
+        // Adopted from: https://github.com/Uniswap/v3-periphery/blob/464a8a49611272f7349c970e0fadb7ec1d3c1086/contracts/base/Multicall.sol#L16-L23
+        if (!success) {
+            if (returnData.length < 68) revert();
+            assembly {
+                returnData := add(returnData, 0x04)
+            }
+            revert(abi.decode(returnData, (string)));
+        }
+    }
+
+    /// @dev There should be only one verified entrypoint per chain
+    /// @dev so this function should only be used if there is a problem with
+    /// @dev the main entrypoint
+    function replaceEntrypoint(address newEntrypoint) public authorized {
+        _entryPoint = newEntrypoint;
     }
 
     function _authorizeUpgrade(
