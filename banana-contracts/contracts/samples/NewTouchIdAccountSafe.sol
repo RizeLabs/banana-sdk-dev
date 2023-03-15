@@ -203,6 +203,16 @@ contract NewTouchIdAccountSafe is Safe {
         }
     }
 
+    function validateUserOp(UserOperation calldata userOp, bytes32 userOpHash, uint256 missingAccountFunds)
+    external  returns (uint256 validationData) {
+        // _requireFromEntryPoint();
+        validationData = _validateSignature(userOp, userOpHash);
+        if (userOp.initCode.length == 0) {
+            _validateAndUpdateNonce(userOp);
+        }
+        _payPrefund(missingAccountFunds);
+    }
+
     // function initialize(
     //     address anOwner,
     //     uint[2] memory _qValues,

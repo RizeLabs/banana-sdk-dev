@@ -28,62 +28,62 @@ async function main() {
 	// const verifier = await Verifier.deploy();
 	// console.log('verifier :', verifier.address);
 
-	const provider = new ethers.providers.JsonRpcProvider('https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4');
-	const wallet = new ethers.Wallet("a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74", provider);
+	// const provider = new ethers.providers.JsonRpcProvider('https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4');
+	// const wallet = new ethers.Wallet("a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74", provider);
 
-	const singletonContract = "0xe75Ea15be97753bc9d7F2A70dfE0fd0EB4a5AB51";
+	// const singletonContract = "0xe75Ea15be97753bc9d7F2A70dfE0fd0EB4a5AB51";
 
-	const NewTouchIdAccountSafeInstance = NewTouchIdAccountSafe__factory.connect(
-		singletonContract,
-		provider
-      );
+	// const NewTouchIdAccountSafeInstance = NewTouchIdAccountSafe__factory.connect(
+	// 	singletonContract,
+	// 	provider
+    //   );
 
-	const encodedSetupEntryPoint = NewTouchIdAccountSafeInstance.interface.encodeFunctionData('setupWithEntrypoint',
-	[
-		["0x288d1d682311018736B820294D22Ed0DBE372188"],
-		1,
-		"0x0000000000000000000000000000000000000000",
-		"0x",
-		"0x0000000000000000000000000000000000000000",
-		"0x0000000000000000000000000000000000000000",
-		0,
-		"0x288d1d682311018736B820294D22Ed0DBE372188",
-		"0x0576a174D229E3cFA37253523E645A78A0C91B57"
-	]);
-
-
-	const NewTouchIdAccountProxyFactoryContract = new ethers.Contract(
-		// "0x8bd7A25A0f3dC4E3b9b465E130A9117299D5e4b6",
-	// "0xfF5667604BE1C5424c9E472366B2ABC18049eC6C",
-	"0xBb2343B1dd233783022c7496C667B3F99b400f08",
-	newAbi.abi,
-	// NewTouchIdAccountProxyFactory.abi,
-		wallet
-	)
+	// const encodedSetupEntryPoint = NewTouchIdAccountSafeInstance.interface.encodeFunctionData('setupWithEntrypoint',
+	// [
+	// 	["0x288d1d682311018736B820294D22Ed0DBE372188"],
+	// 	1,
+	// 	"0x0000000000000000000000000000000000000000",
+	// 	"0x",
+	// 	"0x0000000000000000000000000000000000000000",
+	// 	"0x0000000000000000000000000000000000000000",
+	// 	0,
+	// 	"0x288d1d682311018736B820294D22Ed0DBE372188",
+	// 	"0x0576a174D229E3cFA37253523E645A78A0C91B57"
+	// ]);
 
 
+	// const NewTouchIdAccountProxyFactoryContract = new ethers.Contract(
+	// 	// "0x8bd7A25A0f3dC4E3b9b465E130A9117299D5e4b6",
+	// // "0xfF5667604BE1C5424c9E472366B2ABC18049eC6C",
+	// "0xBb2343B1dd233783022c7496C667B3F99b400f08",
+	// newAbi.abi,
+	// // NewTouchIdAccountProxyFactory.abi,
+	// 	wallet
+	// )
 
 
-	  console.log("Instance: ", NewTouchIdAccountSafeInstance.interface);
 
-	// setupWithEntrypoint(address[],uint256,address,bytes,address,address,uint256,address,address
-	console.log("Contract ", NewTouchIdAccountProxyFactoryContract);
 
-	console.log("Encoded Setup ep: ", encodedSetupEntryPoint);
+	//   console.log("Instance: ", NewTouchIdAccountSafeInstance.interface);
 
-	const address = await NewTouchIdAccountProxyFactoryContract.getAddress(singletonContract, "5", encodedSetupEntryPoint);
-	console.log("precompute; ", address);
+	// // setupWithEntrypoint(address[],uint256,address,bytes,address,address,uint256,address,address
+	// console.log("Contract ", NewTouchIdAccountProxyFactoryContract);
 
-	const txn = await NewTouchIdAccountProxyFactoryContract.createChainSpecificProxyWithNonce(singletonContract,
-		encodedSetupEntryPoint,
-		"5",
-		{
-			gasLimit: 10000000
-		});
-		await txn.wait();
-		console.log(txn);
-	await txn.wait();
-	console.log("Hash ", txn.hash());
+	// console.log("Encoded Setup ep: ", encodedSetupEntryPoint);
+
+	// const address = await NewTouchIdAccountProxyFactoryContract.getAddress(singletonContract, "5", encodedSetupEntryPoint);
+	// console.log("precompute; ", address);
+
+	// const txn = await NewTouchIdAccountProxyFactoryContract.createChainSpecificProxyWithNonce(singletonContract,
+	// 	encodedSetupEntryPoint,
+	// 	"5",
+	// 	{
+	// 		gasLimit: 10000000
+	// 	});
+	// 	await txn.wait();
+	// 	console.log(txn);
+	// await txn.wait();
+	// console.log("Hash ", txn.hash());
 	const NewTouchIdAccountDeployer = await ethers.getContractFactory('NewTouchIdAccountSafe');
 	const newTouchIdAccountDeployer = await NewTouchIdAccountDeployer.deploy();
 	console.log('Singleton :', newTouchIdAccountDeployer.address);
@@ -92,9 +92,9 @@ async function main() {
 	// const newTouchIdAccountProxy = await NewTouchIdAccountProxy.deploy(newTouchIdAccountDeployer.address);
 	// console.log('NewTouchIdAccountProxy :', newTouchIdAccountProxy.address);
 
-	const NewTouchIdAccountProxyFactory = await ethers.getContractFactory('NewTouchIdSafeAccountProxyFactory');
-	const newTouchIdAccountProxyFactory = await NewTouchIdAccountProxyFactory.deploy();
-	console.log('NewTouchIdAccountProxy Factory :', newTouchIdAccountProxyFactory.address);
+	// const NewTouchIdAccountProxyFactory = await ethers.getContractFactory('NewTouchIdSafeAccountProxyFactory');
+	// const newTouchIdAccountProxyFactory = await NewTouchIdAccountProxyFactory.deploy();
+	// console.log('NewTouchIdAccountProxy Factory :', newTouchIdAccountProxyFactory.address);
 
 	
 

@@ -10,7 +10,7 @@ const constructUserOpWithInitCode = async (jsonRpcProvider: ethers.providers.Jso
         initCode: initCode,
         callData: callData,
         callGasLimit: 1e5,
-        verificationGasLimit: 3e6,
+        verificationGasLimit: 10e6,
         maxFeePerGas: gasFees.maxFeePerGas,
         maxPriorityFeePerGas: gasFees.maxPriorityFeePerGas,
         preVerificationGas: 210000,
