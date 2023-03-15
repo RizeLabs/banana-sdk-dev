@@ -28,6 +28,46 @@ import type {
   PromiseOrValue,
 } from "./common";
 
+export type UserOperationStruct = {
+  sender: PromiseOrValue<string>;
+  nonce: PromiseOrValue<BigNumberish>;
+  initCode: PromiseOrValue<BytesLike>;
+  callData: PromiseOrValue<BytesLike>;
+  callGasLimit: PromiseOrValue<BigNumberish>;
+  verificationGasLimit: PromiseOrValue<BigNumberish>;
+  preVerificationGas: PromiseOrValue<BigNumberish>;
+  maxFeePerGas: PromiseOrValue<BigNumberish>;
+  maxPriorityFeePerGas: PromiseOrValue<BigNumberish>;
+  paymasterAndData: PromiseOrValue<BytesLike>;
+  signature: PromiseOrValue<BytesLike>;
+};
+
+export type UserOperationStructOutput = [
+  string,
+  BigNumber,
+  string,
+  string,
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  string,
+  string
+] & {
+  sender: string;
+  nonce: BigNumber;
+  initCode: string;
+  callData: string;
+  callGasLimit: BigNumber;
+  verificationGasLimit: BigNumber;
+  preVerificationGas: BigNumber;
+  maxFeePerGas: BigNumber;
+  maxPriorityFeePerGas: BigNumber;
+  paymasterAndData: string;
+  signature: string;
+};
+
 export interface NewTouchIdAccountSafeInterface extends utils.Interface {
   functions: {
     "VERSION()": FunctionFragment;
@@ -47,6 +87,7 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     "execBatch(address[],bytes[])": FunctionFragment;
     "execFromEntryPoint(address,uint256,bytes)": FunctionFragment;
     "execTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes)": FunctionFragment;
+    "execTransactionFromEntrypoint(address,uint256,bytes,uint8)": FunctionFragment;
     "execTransactionFromModule(address,uint256,bytes,uint8)": FunctionFragment;
     "execTransactionFromModuleReturnData(address,uint256,bytes,uint8)": FunctionFragment;
     "executeBatch(address[],bytes[])": FunctionFragment;
@@ -70,6 +111,7 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     "signedMessages(bytes32)": FunctionFragment;
     "simulateAndRevert(address,bytes)": FunctionFragment;
     "swapOwner(address,address,address)": FunctionFragment;
+    "validateUserOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,uint256)": FunctionFragment;
     "withdrawDepositTo(address,uint256)": FunctionFragment;
   };
 
@@ -92,6 +134,7 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
       | "execBatch"
       | "execFromEntryPoint"
       | "execTransaction"
+      | "execTransactionFromEntrypoint"
       | "execTransactionFromModule"
       | "execTransactionFromModuleReturnData"
       | "executeBatch"
@@ -115,6 +158,7 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
       | "signedMessages"
       | "simulateAndRevert"
       | "swapOwner"
+      | "validateUserOp"
       | "withdrawDepositTo"
   ): FunctionFragment;
 
@@ -220,6 +264,15 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "execTransactionFromEntrypoint",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BigNumberish>
     ]
   ): string;
   encodeFunctionData(
@@ -356,6 +409,14 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "validateUserOp",
+    values: [
+      UserOperationStruct,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "withdrawDepositTo",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
@@ -411,6 +472,10 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "execTransaction",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "execTransactionFromEntrypoint",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -478,6 +543,10 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "swapOwner", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "validateUserOp",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "withdrawDepositTo",
     data: BytesLike
@@ -800,6 +869,14 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    execTransactionFromEntrypoint(
+      to: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      data: PromiseOrValue<BytesLike>,
+      operation: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     execTransactionFromModule(
       to: PromiseOrValue<string>,
       value: PromiseOrValue<BigNumberish>,
@@ -937,6 +1014,13 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    validateUserOp(
+      userOp: UserOperationStruct,
+      userOpHash: PromiseOrValue<BytesLike>,
+      missingAccountFunds: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     withdrawDepositTo(
       withdrawAddress: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
@@ -1048,6 +1132,14 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     refundReceiver: PromiseOrValue<string>,
     signatures: PromiseOrValue<BytesLike>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  execTransactionFromEntrypoint(
+    to: PromiseOrValue<string>,
+    value: PromiseOrValue<BigNumberish>,
+    data: PromiseOrValue<BytesLike>,
+    operation: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   execTransactionFromModule(
@@ -1187,6 +1279,13 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  validateUserOp(
+    userOp: UserOperationStruct,
+    userOpHash: PromiseOrValue<BytesLike>,
+    missingAccountFunds: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   withdrawDepositTo(
     withdrawAddress: PromiseOrValue<string>,
     amount: PromiseOrValue<BigNumberish>,
@@ -1297,6 +1396,14 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       signatures: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    execTransactionFromEntrypoint(
+      to: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      data: PromiseOrValue<BytesLike>,
+      operation: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     execTransactionFromModule(
       to: PromiseOrValue<string>,
@@ -1434,6 +1541,13 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       newOwner: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    validateUserOp(
+      userOp: UserOperationStruct,
+      userOpHash: PromiseOrValue<BytesLike>,
+      missingAccountFunds: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     withdrawDepositTo(
       withdrawAddress: PromiseOrValue<string>,
@@ -1644,6 +1758,14 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    execTransactionFromEntrypoint(
+      to: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      data: PromiseOrValue<BytesLike>,
+      operation: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     execTransactionFromModule(
       to: PromiseOrValue<string>,
       value: PromiseOrValue<BigNumberish>,
@@ -1781,6 +1903,13 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    validateUserOp(
+      userOp: UserOperationStruct,
+      userOpHash: PromiseOrValue<BytesLike>,
+      missingAccountFunds: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     withdrawDepositTo(
       withdrawAddress: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
@@ -1893,6 +2022,14 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       refundReceiver: PromiseOrValue<string>,
       signatures: PromiseOrValue<BytesLike>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    execTransactionFromEntrypoint(
+      to: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      data: PromiseOrValue<BytesLike>,
+      operation: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     execTransactionFromModule(
@@ -2029,6 +2166,13 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       prevOwner: PromiseOrValue<string>,
       oldOwner: PromiseOrValue<string>,
       newOwner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    validateUserOp(
+      userOp: UserOperationStruct,
+      userOpHash: PromiseOrValue<BytesLike>,
+      missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

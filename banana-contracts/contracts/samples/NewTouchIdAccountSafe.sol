@@ -301,6 +301,18 @@ contract NewTouchIdAccountSafe is Safe {
         IEntryPoint(entryPoint).withdrawTo(withdrawAddress, amount);
     }
 
+    function execTransactionFromEntrypoint(
+        address to,
+        uint256 value,
+        bytes memory data,
+        Enum.Operation operation
+    ) public {
+        // Only Entrypoint is allowed.
+        require(msg.sender == entryPoint, "account: not from EntryPoint");
+        // Execute transaction without further confirmations.
+        _executeAndRevert(to, value, data, operation);
+    }
+
     function _executeAndRevert(
         address to,
         uint256 value,

@@ -210,7 +210,7 @@ export class Banana {
 
   private getSafeInitCode() {
     const proxyFactoryAddress = "0x074E09E9B4313a5cfE63bA1C70309F65442395bb";
-	  const singletonContract = "0x9A78596D9C80FfD0685CBCccC34f81eb3FaC98B9";
+	  const singletonContract = "0x43E016b8498A6b27B162B4578aD6096E0dac4900";
     const proxyFactoryContract: NewTouchIdSafeAccountProxyFactory = NewTouchIdSafeAccountProxyFactory__factory.connect(
       proxyFactoryAddress,
       this.jsonRpcProvider
@@ -276,7 +276,7 @@ export class Banana {
 
   getSafeWalletAddress = async  () => {
     const proxyFactoryAddress = "0x074E09E9B4313a5cfE63bA1C70309F65442395bb";
-	  const singletonContract = "0x9A78596D9C80FfD0685CBCccC34f81eb3FaC98B9";
+	  const singletonContract = "0x43E016b8498A6b27B162B4578aD6096E0dac4900";
     const walletIdentifier = "sample-safe-wallet";
     try {
       await this.initiateSigner(walletIdentifier);
@@ -430,9 +430,9 @@ export class Banana {
   private sendUserOpToBundler = async (userOp: UserOperationStruct) => {
     try {
       //@ts-ignore
-      const hexifiedUserOp = (0, utils_2.deepHexlify)(await (0, utils_1.resolveProperties)(userOp));
-      const jsonRequestData = [hexifiedUserOp, "0x0576a174D229E3cFA37253523E645A78A0C91B57"];
-      console.log("jsonRequestData: ", jsonRequestData);
+      // const hexifiedUserOp = (0, utils_2.deepHexlify)(await (0, utils_1.resolveProperties)(userOp));
+      // const jsonRequestData = [hexifiedUserOp, "0x0576a174D229E3cFA37253523E645A78A0C91B57"];
+      // console.log("jsonRequestData: ", jsonRequestData);
       const uHash = await this.httpRpcClient.sendUserOpToBundler(
         userOp as any
       );
@@ -447,18 +447,20 @@ export class Banana {
       this.safeAddress,
       this.jsonRpcProvider
     );
-    const userOpCallData = NewTouchIdAccountSafe.interface.encodeFunctionData(
-      "exec",
-      [
-        destination,
-        ethers.utils.parseEther(value),
-        [functionCallData],
-      ]
-    );
+    // const userOpCallData = NewTouchIdAccountSafe.interface.encodeFunctionData(
+    //   "execTransactionFromEntrypoint",
+    //   [
+    //     destination,
+    //     ethers.utils.parseEther(value),
+    //     [functionCallData],
+    //   ]
+    // );
+    // execTransactionFromEntrypoint
     if(!isContractDeployed) {
+      const delegateCall = ethers.BigNumber.from("1")
       const encodedCallData = NewTouchIdAccountSafe.interface.encodeFunctionData(
-        "execFromEntryPoint",
-        [this.safeAddress, 0, userOpCallData]
+        "execTransactionFromEntrypoint",
+        [destination, ethers.utils.parseEther(value), functionCallData, delegateCall]
       );
       const userOp = await constructUserOpWithInitCode(
           this.jsonRpcProvider,
@@ -470,15 +472,15 @@ export class Banana {
       return userOp;
     }
     let userOp;
-    try {
-      userOp = await this.accountApi.createUnsignedUserOp({
-        target: this.walletAddress,
-        data: userOpCallData,
-        ...(await getGasFee(this.jsonRpcProvider)),
-      });
-    } catch (err) {
-      console.log(err);
-    }
+    // try {
+    //   userOp = await this.accountApi.createUnsignedUserOp({
+    //     target: this.walletAddress,
+    //     data: userOpCallData,
+    //     ...(await getGasFee(this.jsonRpcProvider)),
+    //   });
+    // } catch (err) {
+    //   console.log(err);
+    // }
     return userOp;
   }
 
