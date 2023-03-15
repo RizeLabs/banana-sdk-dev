@@ -27,6 +27,7 @@ export interface CookieObject {
 }
 
 export interface ChainConfig {
-    MyWalletDeployer: string;
     Elliptic: string;
+    TouchIdSafeProxyFactoryAddress: string;
+    TouchidSafeSingletonContract: string
 }

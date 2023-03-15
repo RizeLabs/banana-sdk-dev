@@ -222,16 +222,9 @@ export class Banana {
         [
           singletonContract,
           this.getInitializer(),
-          "5967" //salt
+          "0" // as qValues will change the address now
         ]
       )]);
-    // const txn = await NewTouchIdAccountProxyFactoryContract.createChainSpecificProxyWithNonce(singletonContract,
-    //   encodedSetupEntryPoint,
-    //   "5",
-    //   {
-    //     gasLimit: 10000000
-    //   });
-    //   await txn.wait();
   }
 
   private getInitializer() {
@@ -447,15 +440,7 @@ export class Banana {
       this.safeAddress,
       this.jsonRpcProvider
     );
-    // const userOpCallData = NewTouchIdAccountSafe.interface.encodeFunctionData(
-    //   "execTransactionFromEntrypoint",
-    //   [
-    //     destination,
-    //     ethers.utils.parseEther(value),
-    //     [functionCallData],
-    //   ]
-    // );
-    // execTransactionFromEntrypoint
+
     if(!isContractDeployed) {
       const delegateCall = ethers.BigNumber.from("1")
       const encodedCallData = NewTouchIdAccountSafe.interface.encodeFunctionData(
@@ -472,6 +457,8 @@ export class Banana {
       return userOp;
     }
     let userOp;
+
+    //! Need to create our own createUnsignedUserOp function as current aa sdk function won't work
     // try {
     //   userOp = await this.accountApi.createUnsignedUserOp({
     //     target: this.walletAddress,
@@ -489,7 +476,7 @@ export class Banana {
     const callDataProof = this.getZkProof();
     const userOp = await this.constructuUserOp(callDataProof, funcCallData, value, destination, isContractDeployed, initCode);
     //@ts-ignore
-    userOp.verificationGasLimit = 10e6;
+    userOp.verificationGasLimit = 3e6;
     const reqId = await this.accountApi.getUserOpHash(userOp as any);
     let processStatus = true;
     let finalUserOp;
@@ -517,14 +504,14 @@ export class Banana {
     
     const uHash: string = await this.sendUserOpToBundler(finalUserOp as any) || '';
     let initCodeSetStatus = false;;
-    // if(!!uHash) {
-    //   if(uHash.length === 66) {
-    //     initCodeSetStatus = true;
-    //   }
-    // }
-    // if(!isContractDeployed) {
-    //   this.setCookieOnceWalletDeployed(initCodeSetStatus);
-    // }
+    if(!!uHash) {
+      if(uHash.length === 66) {
+        initCodeSetStatus = true;
+      }
+    }
+    if(!isContractDeployed) {
+      this.setCookieOnceWalletDeployed(initCodeSetStatus);
+    }
     return uHash;
   } 
 
