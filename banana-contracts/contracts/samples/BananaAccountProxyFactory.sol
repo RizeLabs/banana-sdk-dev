@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 pragma solidity >=0.7.0 <0.9.0;
 
-import "./NewTouchIdSafeAccountProxy.sol";
+import "./BananaAccountProxy.sol";
 import "./IProxyCreationCallback.sol";
 
 /// @title Proxy Factory - Allows to create a new proxy contract and execute a message call to the new proxy within one transaction.
 /// @author Stefan George - <stefan@gnosis.pm>
 /// @author modified by CandideWallet Team
-contract NewTouchIdSafeAccountProxyFactory {
-    event ProxyCreation(NewTouchIdSafeAccountProxy proxy, address singleton);
+contract BananaAccountProxyFactory {
+    event ProxyCreation(BananaAccountProxy proxy, address singleton);
 
     /// @dev Allows to retrieve the creation code used for the Proxy deployment. With this it is easily possible to calculate predicted address.
     function proxyCreationCode() public pure returns (bytes memory) {
-        return type(NewTouchIdSafeAccountProxy).creationCode;
+        return type(BananaAccountProxy).creationCode;
     }
 
     /// @dev Allows to create a new proxy contract using CREATE2. Optionally executes an initializer call to a new proxy.
@@ -20,10 +20,10 @@ contract NewTouchIdSafeAccountProxyFactory {
     /// @param _singleton Address of singleton contract. Must be deployed at the time of execution.
     /// @param initializer Payload for a message call to be sent to a new proxy contract.
     /// @param salt Create2 salt to use for calculating the address of the new proxy contract.
-    function deployProxy(address _singleton, bytes memory initializer, bytes32 salt) internal returns (NewTouchIdSafeAccountProxy proxy) {
+    function deployProxy(address _singleton, bytes memory initializer, bytes32 salt) internal returns (BananaAccountProxy proxy) {
         require(isContract(_singleton), "Singleton contract not deployed");
 
-        bytes memory deploymentData = abi.encodePacked(type(NewTouchIdSafeAccountProxy).creationCode, uint256(uint160(_singleton)));
+        bytes memory deploymentData = abi.encodePacked(type(BananaAccountProxy).creationCode, uint256(uint160(_singleton)));
         // solhint-disable-next-line no-inline-assembly
         assembly {
             proxy := create2(0x0, add(0x20, deploymentData), mload(deploymentData), salt)
@@ -44,7 +44,7 @@ contract NewTouchIdSafeAccountProxyFactory {
     /// @param _singleton Address of singleton contract. Must be deployed at the time of execution.
     /// @param initializer Payload for a message call to be sent to a new proxy contract.
     /// @param saltNonce Nonce that will be used to generate the salt to calculate the address of the new proxy contract.
-    function createProxyWithNonce(address _singleton, bytes memory initializer, uint256 saltNonce) public returns (NewTouchIdSafeAccountProxy proxy) {
+    function createProxyWithNonce(address _singleton, bytes memory initializer, uint256 saltNonce) public returns (BananaAccountProxy proxy) {
         // If the initializer changes the proxy address should change too. Hashing the initializer data is cheaper than just concatinating it
         bytes32 salt = keccak256(abi.encodePacked(keccak256(initializer), saltNonce));
         proxy = deployProxy(_singleton, initializer, salt);
@@ -60,7 +60,7 @@ contract NewTouchIdSafeAccountProxyFactory {
         address _singleton,
         bytes memory initializer,
         uint256 saltNonce
-    ) public returns (NewTouchIdSafeAccountProxy proxy) {
+    ) public returns (BananaAccountProxy proxy) {
         // If the initializer changes the proxy address should change too. Hashing the initializer data is cheaper than just concatinating it
         bytes32 salt = keccak256(abi.encodePacked(keccak256(initializer), saltNonce, getChainId()));
         proxy = deployProxy(_singleton, initializer, salt);
@@ -77,7 +77,7 @@ contract NewTouchIdSafeAccountProxyFactory {
         bytes memory initializer,
         uint256 saltNonce,
         IProxyCreationCallback callback
-    ) public returns (NewTouchIdSafeAccountProxy proxy) {
+    ) public returns (BananaAccountProxy proxy) {
         uint256 saltNonceWithCallback = uint256(keccak256(abi.encodePacked(saltNonce, callback)));
         proxy = createProxyWithNonce(_singleton, initializer, saltNonceWithCallback);
         if (address(callback) != address(0)) callback.proxyCreated(proxy, _singleton, initializer, saltNonce);
@@ -105,7 +105,7 @@ contract NewTouchIdSafeAccountProxyFactory {
     }
 
      function getBytecode(address _owner, uint _foo) public pure returns (bytes memory) {
-        bytes memory bytecode = type(NewTouchIdSafeAccountProxy).creationCode;
+        bytes memory bytecode = type(BananaAccountProxy).creationCode;
 
         return abi.encodePacked(bytecode, abi.encode(_owner, _foo));
     }
@@ -118,7 +118,7 @@ contract NewTouchIdSafeAccountProxyFactory {
         bytes memory initializer
     ) public view returns (address) {
         bytes32 salt = keccak256(abi.encodePacked(keccak256(initializer), _salt, getChainId()));
-        bytes memory bytecode = abi.encodePacked(type(NewTouchIdSafeAccountProxy).creationCode, uint256(uint160(_singleton)));
+        bytes memory bytecode = abi.encodePacked(type(BananaAccountProxy).creationCode, uint256(uint160(_singleton)));
         bytes32 hash = keccak256(
             abi.encodePacked(bytes1(0xff), address(this), salt, keccak256(bytecode))
         );
