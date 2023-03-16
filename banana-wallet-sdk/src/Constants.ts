@@ -39,28 +39,28 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         return {
             // "MyWalletDeployer": "0xe6a89A44d41d0C91eCD4E85367cca622A8000457",
             "Elliptic": "0xa5d0D7e820F6f8A0DC68722e41801a1dcfAE2403",
-            "TouchIdSafeProxyFactoryAddress": "0x074E09E9B4313a5cfE63bA1C70309F65442395bb",
-            "TouchidSafeSingletonContract": "0x43E016b8498A6b27B162B4578aD6096E0dac4900",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x074E09E9B4313a5cfE63bA1C70309F65442395bb",
+            "TouchIdSafeWalletContractSingletonAddress": "0x43E016b8498A6b27B162B4578aD6096E0dac4900",
         };
         case Chains.optimismTestnet:
         return {
             // "MyWalletDeployer": "0xb282af5b2f3DF6e0540ccC8F61Db95fa2fe7045D",
             "Elliptic": "0x91703a4b78A084B479294634F37A0eA5924D1Ad0",
-            "TouchIdSafeProxyFactoryAddress": "0x074E09E9B4313a5cfE63bA1C70309F65442395bb",
-            "TouchidSafeSingletonContract": "0x43E016b8498A6b27B162B4578aD6096E0dac4900",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x074E09E9B4313a5cfE63bA1C70309F65442395bb",
+            "TouchIdSafeWalletContractSingletonAddress": "0x43E016b8498A6b27B162B4578aD6096E0dac4900",
         };
         case Chains.matic: 
         return {
             "Elliptic": "0x91703a4b78A084B479294634F37A0eA5924D1Ad0",
-            "TouchIdSafeProxyFactoryAddress": "0x074E09E9B4313a5cfE63bA1C70309F65442395bb",
-            "TouchidSafeSingletonContract": "0x43E016b8498A6b27B162B4578aD6096E0dac4900",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x074E09E9B4313a5cfE63bA1C70309F65442395bb",
+            "TouchIdSafeWalletContractSingletonAddress": "0x43E016b8498A6b27B162B4578aD6096E0dac4900",
         };
         case Chains.mumbai: 
         return {
             // "MyWalletDeployer": "0xe83CaCA2F76979A76Ba0Cf3ac0EE1fB7e1E56AA4",
             "Elliptic": "0x7efd1b4C0469f43AbbE1a5946eBD4A1734d1b79E",
-            "TouchIdSafeProxyFactoryAddress": "0x074E09E9B4313a5cfE63bA1C70309F65442395bb",
-            "TouchidSafeSingletonContract": "0x43E016b8498A6b27B162B4578aD6096E0dac4900",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x074E09E9B4313a5cfE63bA1C70309F65442395bb",
+            "TouchIdSafeWalletContractSingletonAddress": "0x43E016b8498A6b27B162B4578aD6096E0dac4900",
         };
     }
 }

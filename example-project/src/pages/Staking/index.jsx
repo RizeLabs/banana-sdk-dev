@@ -56,7 +56,7 @@ const Staking = () => {
 
     // if (scwAddress) {
       console.log("Here !!");
-      let aaProvider = await bananaInstance.getAAProvider();
+      let aaProvider = await bananaInstance.getBananaProvider();
       console.log("AA Provider",aaProvider)
       let aaSigner = aaProvider.getSigner();
       let StakingContract = new ethers.Contract(
