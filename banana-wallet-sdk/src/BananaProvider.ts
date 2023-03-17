@@ -515,6 +515,10 @@ export class Banana {
     return userOp;
   }
 
+  // createUnsignedUserOp = (userOpEssentials: ) => {
+
+  // }
+
   /**
    * @method constructAndSendUserOp
    * @param { string } functionCallData, { string } value, { string } destination, { boolean } isContractDeployed, { BytesLike }initCode
