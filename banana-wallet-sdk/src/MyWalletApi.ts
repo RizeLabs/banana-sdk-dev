@@ -1,10 +1,11 @@
 // @ts-nocheck
 import { BigNumber, BigNumberish } from 'ethers'
-
 import { arrayify, hexConcat } from 'ethers/lib/utils'
 import { Signer } from '@ethersproject/abstract-signer'
 import { BaseApiParams } from '@account-abstraction/sdk/dist/src/BaseAccountAPI'
 import { SimpleAccountAPI } from '@account-abstraction/sdk'
+import { NewTouchIdAccountSafe__factory, NewTouchIdSafeAccountProxyFactory__factory} from './types/factories'
+import { ethers } from 'ethers'
 
 /**
  * constructor params, added no top of base params:
@@ -16,6 +17,9 @@ export interface MyWalletApiParams extends BaseApiParams {
   owner: Signer
   factoryAddress?: string
   index?: number
+  _EllipticCurveAddress: string
+  _qValues: [string, string]
+  _singletonTouchIdSafeAddress: string
 }
 
 /**
@@ -26,8 +30,14 @@ export interface MyWalletApiParams extends BaseApiParams {
  * - execute method is "execFromEntryPoint()"
  */
 export class MyWalletApi extends SimpleAccountAPI {
+  EllipticCurveAddress: string
+  qValues: [string, string]
+  singletonTouchIdSafeAddress: string
   constructor(params: MyWalletApiParams) {
     super(params)
+    this.EllipticCurveAddress = params._EllipticCurveAddress
+    this.qValues = params._qValues
+    this.singletonTouchIdSafeAddress = params._singletonTouchIdSafeAddress
   }
 
   /**
@@ -37,5 +47,93 @@ export class MyWalletApi extends SimpleAccountAPI {
    */
   async signRequestId(requestId: string): Promise<string> {
     return await this.owner.signMessage(arrayify(requestId))
+  }
+
+
+  async _getAccountContract (): Promise<SimpleAccount> {
+    if (this.accountContract == null) {
+      this.accountContract = NewTouchIdAccountSafe__factory.connect(await this.getAccountAddress(), this.provider)
+    }
+    return this.accountContract
+  }
+
+  getTouchIdSafeWalletContractInitializer = (): string => {
+    const TouchIdSafeWalletContractSingleton: NewTouchIdAccountSafe = NewTouchIdAccountSafe__factory.connect(
+      this.singletonTouchIdSafeAddress,
+      this.provider
+    );
+    const TouchIdSafeWalletContractQValuesArray: Array<string> = [this.qValues[0], this.qValues[1]];
+    //@ts-ignore
+    const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
+    [
+      ["0x288d1d682311018736B820294D22Ed0DBE372188"], // owners 
+      1,                                              // thresold will remain fix 
+      "0x0000000000000000000000000000000000000000",   // to address 
+      "0x",                                           // modules setup calldata
+      "0x0000000000000000000000000000000000000000",   // fallback handler
+      "0x0000000000000000000000000000000000000000",   // payment token
+      0,                                              // payment 
+      "0x288d1d682311018736B820294D22Ed0DBE372188",   // payment receiver
+      "0x0576a174D229E3cFA37253523E645A78A0C91B57",   // entrypoint
+      // @ts-ignore
+      TouchIdSafeWalletContractQValuesArray,          // q values 
+      this.EllipticCurveAddress                         // elliptic curve
+    ]);
+
+    return TouchIdSafeWalletContractInitializer
+  };
+
+  /**
+   * @method getTouchIdSafeWalletContractInitCode
+   * @params none
+   * @returns { string } TouchIdSafeWalletContractInitCode
+   * create initCode for TouchIdSafeWalletContract
+   * 
+   * return the value to put into the "initCode" field, if the account is not yet deployed.
+   * this value holds the "factory" address, followed by this account's information
+   */
+  async getAccountInitCode (): Promise<string> {
+    if (this.factory == null) {
+      if (this.factoryAddress != null && this.factoryAddress !== '') {
+        this.factory = NewTouchIdSafeAccountProxyFactory__factory.connect(this.factoryAddress, this.provider)
+      } else {
+        throw new Error('no factory to get initCode')
+      }
+    }
+    return hexConcat([
+      this.factory.address,
+      this.factory.interface.encodeFunctionData('createChainSpecificProxyWithNonce', [this.singletonTouchIdSafeAddress, this.getTouchIdSafeWalletContractInitializer(), this.index])
+    ])
+  }
+
+  async getNonce (): Promise<BigNumber> {
+    if (await this.checkAccountPhantom()) {
+      return BigNumber.from(0)
+    }
+    const accountContract = await this._getAccountContract()
+    return await accountContract.nonce()
+  }
+
+  /**
+   * encode a method call from entryPoint to our contract
+   * @param target
+   * @param value
+   * @param data
+   */
+  async encodeExecute (target: string, value: BigNumberish, data: string): Promise<string> {
+    const accountContract = await this._getAccountContract()
+    const delegateCall = ethers.BigNumber.from("0")
+    return accountContract.interface.encodeFunctionData(
+      'execTransactionFromEntrypoint',
+      [
+        target,
+        value,
+        data,
+        delegateCall
+      ])
+  }
+
+  async signUserOpHash (userOpHash: string): Promise<string> {
+    return await this.owner.signMessage(arrayify(userOpHash))
   }
 }

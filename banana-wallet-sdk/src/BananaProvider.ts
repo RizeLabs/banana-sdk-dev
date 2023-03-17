@@ -9,12 +9,10 @@ import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
 import { hexConcat } from "ethers/lib/utils.js";
 import { EllipticCurve__factory } from "./types";
-import constructUserOpWithInitCode from "./initUserOp";
 import { BananaCookie } from "./BananaCookie";
 import {
   setUserCredentials,
   getUserCredentials,
-  checkInitCodeStatus,
   checkIsWalletNameExist
 } from "./Controller";
 import {
@@ -34,6 +32,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { BigNumber } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
+import { getGasFee } from "./utils/GetGasFee";
 
 export class Banana {
   Provider: ClientConfig;
@@ -199,7 +198,6 @@ export class Banana {
    * @returns { ERC4337EthersProvider } bananaProvider
    * create ERC4337Provider instance of user's smart contract wallet. Used as BananaProvider.
    */
-
   getBananaProvider = async (): Promise<ERC4337EthersProvider> => {
     if (this.bananaProvider) return this.bananaProvider;
 
@@ -224,6 +222,9 @@ export class Banana {
       owner: signer,
       factoryAddress: TouchIdSafeWalletContractProxyFactoryAddress,
       paymasterAPI: myPaymasterApi,
+      _EllipticCurveAddress: this.addresses.Elliptic,
+      _qValues: [this.publicKey.q0, this.publicKey.q1],
+      _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress
     });
 
     this.accountApi = smartWalletAPI;
@@ -248,31 +249,6 @@ export class Banana {
 
     return this.bananaProvider;
   };
-
-  /**
-   * @method getTouchIdSafeWalletContractInitCode
-   * @params none
-   * @returns { string } TouchIdSafeWalletContractInitCode
-   * create initCode for TouchIdSafeWalletContract
-   */
-
-  private getTouchIdSafeWalletContractInitCode = (): string => {
-    const TouchIdSafeWalletContractProxyFactory: NewTouchIdSafeAccountProxyFactory  = this.getTouchIdSafeWalletContractProxyFactory(this.jsonRpcProvider)
-    const TouchIdSafeWalletContractSingletonAddress: string = this.addresses.TouchIdSafeWalletContractSingletonAddress;
-    const TouchIdSafeWalletContractInitializer: string = this.getTouchIdSafeWalletContractInitializer();
-
-    const TouchIdSafeWalletContractInitCode: string = hexConcat([
-      TouchIdSafeWalletContractProxyFactory.address,
-      TouchIdSafeWalletContractProxyFactory.interface.encodeFunctionData(
-        'createChainSpecificProxyWithNonce',
-        [
-          TouchIdSafeWalletContractSingletonAddress,
-          TouchIdSafeWalletContractInitializer,
-          "0" // as qValues will change the address now
-        ]
-      )]);
-    return TouchIdSafeWalletContractInitCode;
-  }
 
   /**
    * @method getTouchIdSafeWalletContractInitializer
@@ -379,9 +355,6 @@ export class Banana {
   getEOAAddress = async (walletName: string) => {
     const walletMetaData = await getUserCredentials(walletName);
     return [walletMetaData.q0, walletMetaData.q1];
-    // const uncompressedPublicKey = `0x04${walletMetaData.q0.slice(2)}${walletMetaData.q1.slice(2)}`;
-    // const eoaAddress = ethers.utils.computeAddress(uncompressedPublicKey)
-    // return Promise.resolve(eoaAddress);
   }
 
   /**
@@ -424,32 +397,6 @@ export class Banana {
   };
 
   /**
-   * @method setCookieOnceWalletDeployed
-   * @param { boolean } initCodeStatus
-   * @returns none
-   * Updates the initCode status in walletMetaData in local and global storage database.
-   */
-
-  private setCookieOnceWalletDeployed = async (initCodeStatus: boolean) => {
-    if (navigator.cookieEnabled) {
-      const walletIdentifier = this.cookie.getCookie("bananaUser");
-      this.cookieObject = this.cookie.getCookie(walletIdentifier);
-      this.cookieObject.initcode = initCodeStatus;
-      this.cookie.setCookie(
-        walletIdentifier,
-        JSON.stringify(this.cookieObject)
-      );
-      const setCredentialsStatus = await setUserCredentials(
-        walletIdentifier,
-        this.cookieObject
-      );
-      console.log("Cookie set status: ", setCredentialsStatus);
-    } else {
-      console.log("Cookies are not enabled in the browser.");
-    }
-  }
-
-  /**
    * @method sendUserOpToBundler
    * @param { UserOperationStruct } userOp
    * @returns none
@@ -476,48 +423,24 @@ export class Banana {
 
   private contructUserOp = async (
     functionCallData: string, 
-    value:string, 
+    value: string, 
     destination: string, 
-    isContractDeployed: boolean, 
-    initCode: BytesLike) => {
-    const TouchIdSafeWalletContract: NewTouchIdAccountSafe = NewTouchIdAccountSafe__factory.connect(
-      this.walletAddress,
-      this.jsonRpcProvider
-    );
-
-    if(!isContractDeployed) {
-      const delegateCall = ethers.BigNumber.from("1")
-      const encodedCallData = TouchIdSafeWalletContract.interface.encodeFunctionData(
-        "execTransactionFromEntrypoint",
-        [destination, ethers.utils.parseEther(value), functionCallData, delegateCall]
-      );
-      const userOp = await constructUserOpWithInitCode(
-          this.jsonRpcProvider,
-          this.walletAddress,
-          encodedCallData,
-          initCode
-      ); 
-      console.log('final userop ', userOp);
-      return userOp;
-    }
+    ) => {
     let userOp;
 
-    //! Need to create our own createUnsignedUserOp function as current aa sdk function won't work
-    // try {
-    //   userOp = await this.accountApi.createUnsignedUserOp({
-    //     target: this.walletAddress,
-    //     data: userOpCallData,
-    //     ...(await getGasFee(this.jsonRpcProvider)),
-    //   });
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    try {
+      userOp = await this.accountApi.createUnsignedUserOp({
+        target: destination,
+        data: functionCallData,
+        value: ethers.utils.parseEther(value),
+        ...(await getGasFee(this.jsonRpcProvider)),
+      });
+    } catch (err) {
+      console.log(err);
+    }
+    console.log("User op from create unsigned userop ", userOp);
     return userOp;
   }
-
-  // createUnsignedUserOp = (userOpEssentials: ) => {
-
-  // }
 
   /**
    * @method constructAndSendUserOp
@@ -526,17 +449,14 @@ export class Banana {
    * Construct userOp and send to bundler and returns userOp requesId
    */
 
-  private constructAndSendUserOp = async (funcCallData: string, destination:string, value: string, isContractDeployed: boolean, initCode: BytesLike) => {
-    const userOp = await this.contructUserOp(funcCallData, value, destination, isContractDeployed, initCode);
+  private constructAndSendUserOp = async (funcCallData: string, destination:string, value: string) => {
+    const userOp = await this.contructUserOp(funcCallData, value, destination);
     //@ts-ignore
     userOp.verificationGasLimit = 3e6;
     const reqId = await this.accountApi.getUserOpHash(userOp as any);
     let processStatus = true;
     let finalUserOp;
     while(processStatus) {
-      if(!isContractDeployed && userOp) {
-        userOp.callGasLimit = 3e6;
-      }
       let minGasRequired =  ethers.BigNumber.from(userOp?.callGasLimit)
                             .add(ethers.BigNumber.from(userOp?.verificationGasLimit))
                             .add(ethers.BigNumber.from(userOp?.callGasLimit));
@@ -547,7 +467,6 @@ export class Banana {
       if(userBalance.lt(minBalanceRequired)){
         throw new Error("ERROR: Insufficient balance in Wallet")
       }
-      
       const { newUserOp, process } = await this.bananaSigner.signUserOp(userOp as any, reqId, this.publicKey.encodedId);
       if(process === 'success') { 
         finalUserOp = newUserOp;
@@ -556,35 +475,8 @@ export class Banana {
     }
     
     const uHash: string = await this.sendUserOpToBundler(finalUserOp as any) || '';
-    let initCodeSetStatus = false;
-    if(!!uHash) {
-      if(uHash.length === 66) {
-        initCodeSetStatus = true;
-      }
-    }
-    if(!isContractDeployed) {
-      this.setCookieOnceWalletDeployed(initCodeSetStatus);
-    }
     return uHash;
   } 
-
-  /**
-   * @method createWalletAndTransact
-   * @param { string } functionCallData, { string } value, { string } destination
-   * @returns { string } transactionHash
-   * Facilitate the first bundle transaction set's initcode along with callData and forward userOp to bundler
-   */
-
-  private createWalletAndTransact = async (
-    funcCallData: string,
-    destination: string,
-    value: string
-  ) => {
-    const isContractDeployed = false;
-    const initCode = this.getTouchIdSafeWalletContractInitCode();
-    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, isContractDeployed, initCode);
-    return transactionHash;
-  };
 
   /**
    * @method execute
@@ -598,34 +490,13 @@ export class Banana {
     destination: string,
     value: string
   ) => {
-    const walletCreds = this.cookie.getCookie(this.walletIdentifier);
-    if(walletCreds) {
-      if(!walletCreds.initcode) {
-        let uHash = await this.createWalletAndTransact(
-          funcCallData,
-          destination,
-          value
-        );
-        return uHash;
-      }
-    } else {
-      const initCodeStatus = await checkInitCodeStatus(this.walletIdentifier);
-      if(!initCodeStatus.isInitCode) {
-        let uHash = await this.createWalletAndTransact(
-          funcCallData,
-          destination,
-          value
-        );
-        return uHash;
-      }
-    }
-
+    //! incase user not connected wallet walletIdentifier === ''
+    if(!this.walletIdentifier) throw new Error("Error: wallet not connected!");
     const bananaProvider = await this.getBananaProvider();
     const aaSigner = bananaProvider.getSigner();
     this.TouchIdSafeWalletContract = NewTouchIdAccountSafe__factory.connect(this.walletAddress || "", this.bananaSigner);
-    const isContractDeployed = true;
     this.TouchIdSafeWalletContract = this.TouchIdSafeWalletContract.connect(aaSigner);
-    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, isContractDeployed, '');
+    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value);
     return transactionHash;
   };
 
