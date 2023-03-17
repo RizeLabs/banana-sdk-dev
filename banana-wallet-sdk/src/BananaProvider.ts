@@ -1,4 +1,4 @@
-import { BytesLike, ethers } from "ethers";
+import { BigNumberish, BytesLike, ethers } from "ethers";
 import { EntryPoint__factory, UserOperationStruct, EntryPoint } from "@account-abstraction/contracts";
 import { MyPaymasterApi } from "./MyPayMasterApi";
 import { MyWalletApi } from "./MyWalletApi";
@@ -368,6 +368,42 @@ export class Banana {
     const walletName = this.cookie.getCookie("bananaUser");
     return walletName;
   };
+
+  /**
+   * @method getOwnerAddress
+   * @param { string } walletName
+   * @returns { string } eoaAddress
+   * method to return the hardware address for a specific walletName.
+   */
+
+  getEOAAddress = async (walletName: string) => {
+    const walletMetaData = await getUserCredentials(walletName);
+    return [walletMetaData.q0, walletMetaData.q1];
+    // const uncompressedPublicKey = `0x04${walletMetaData.q0.slice(2)}${walletMetaData.q1.slice(2)}`;
+    // const eoaAddress = ethers.utils.computeAddress(uncompressedPublicKey)
+    // return Promise.resolve(eoaAddress);
+  }
+
+  /**
+   * @method verify
+   * @param { string } signaure, { string } mesageSigned, { string } eoaAddress
+   * @returns { boolean } isVerified
+   * method to verify message against signature
+   */
+
+  //! for now assigned eoaAddress as any type
+  verify = async (signature: string, messageToBeSigned: string, eoaAddress: any) => {
+    const rValue = signature.slice(2, 68);
+    const sValue = signature.slice(68, 132);
+    console.log("r part: ", rValue)
+    console.log("s part:", sValue);
+    const EC = EllipticCurve__factory.connect(
+      this.addresses.Elliptic,
+      this.jsonRpcProvider
+    );
+    const isVerified = await EC.validateSignature(messageToBeSigned, [rValue, sValue], eoaAddress);
+    return isVerified;
+  }
 
   /**
    * @method postCookieChecks
