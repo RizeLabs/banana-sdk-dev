@@ -39,15 +39,19 @@ const Navbar = () => {
       setLoad(true);
       let walletName = bananaInstance.getWalletName();
       setWalletName(walletName);
+      console.log(walletName)
       let SCWAddress;
       console.log(" this is uername idenfitier ", userIdentifier)
 
       if(userIdentifier === '') {
-        SCWAddress = await bananaInstance.getWalletAddress(walletName);
+        SCWAddress = (await bananaInstance.connectWallet(walletName)).address
+        console.log('from connect walle ', SCWAddress);
       } else {
         walletName = userIdentifier;
         if(walletName) {
-          SCWAddress = await bananaInstance.getWalletAddress(walletName);
+          SCWAddress = (await bananaInstance.createWallet(walletName)).address
+          // getWalletAddress(walletName);
+          console.log("SCW addrss", SCWAddress)
         } else {
           // dev need to ask for user 
           const walletName = userIdentifier; //
@@ -56,7 +60,7 @@ const Navbar = () => {
             toast.success('please enter wallet identifier ');
             return;
           }
-          SCWAddress = await bananaInstance.getWalletAddress(walletName); 
+          SCWAddress = (await bananaInstance.connectWallet(walletName)).address
           console.log("controlled reach here!!! ");
           setWalletName(walletName);
           toast.success("Successfully deployed wallet !!");

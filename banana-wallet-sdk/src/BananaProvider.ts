@@ -1,27 +1,18 @@
-import { BytesLike, ethers } from "ethers";
-import { EntryPoint__factory, UserOperationStruct } from "@account-abstraction/contracts";
-import { MyWalletDeployer__factory } from "./types/factories/MyWalletDeployer__factory"; // ---
-import { NewTouchIdAccountDeployer__factory } from "./types/factories/NewTouchIdAccountDeployer__factory"; // ---
+import { BigNumberish, BytesLike, ethers } from "ethers";
+import { EntryPoint__factory, UserOperationStruct, EntryPoint } from "@account-abstraction/contracts";
 import { MyPaymasterApi } from "./MyPayMasterApi";
 import { MyWalletApi } from "./MyWalletApi";
 import { HttpRpcClient } from "@account-abstraction/sdk/dist/src/HttpRpcClient";
 import { ERC4337EthersProvider } from "@account-abstraction/sdk";
-import { MyTouchIdWallet__factory } from "./types/factories/MyTouchIdWallet__factory"; // --
-import { NewTouchIdAccount__factory } from "./types/factories/NewTouchIdAccount__factory"; // --
-import { getGasFee } from "./utils/GetGasFee";
 import { Chains, getClientConfigInfo, getChainSpecificAddress  } from "./Constants";
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
 import { hexConcat } from "ethers/lib/utils.js";
-import { EllipticCurve__factory, MyWalletDeployer } from "./types";
-import { NewTouchIdAccountDeployer } from "./types";
-import { EllipticCurve } from "./types"
-import constructUserOpWithInitCode from "./initUserOp";
+import { EllipticCurve__factory } from "./types";
 import { BananaCookie } from "./BananaCookie";
 import {
   setUserCredentials,
   getUserCredentials,
-  checkInitCodeStatus,
   checkIsWalletNameExist
 } from "./Controller";
 import {
@@ -30,38 +21,35 @@ import {
   UserCredentialObject,
   ChainConfig
 } from "./interfaces/Banana.interface";
-import { NewTouchIdAccountSafe, NewTouchIdSafeAccountProxyFactory } from './safe-types'
-import { NewTouchIdAccountSafe__factory, NewTouchIdSafeAccountProxyFactory__factory} from './safe-types/factories'
-// const { NewTouchIdAccountSafe } = require('../src/types')
-// const { NewTouchIdAccountSafe__factory } = require('../src/types/factories')
+import { NewTouchIdAccountSafe, NewTouchIdSafeAccountProxyFactory } from './types'
+import { NewTouchIdAccountSafe__factory, NewTouchIdSafeAccountProxyFactory__factory} from './types/factories'
 import Axios from 'axios';
 import { K1_SIGNATURE_LAMBDA_URL  } from './routes'
-// import {generateK1Signature} from './GenerateK1Signature';
 import { Bytes, concat } from "@ethersproject/bytes";
 import { keccak256 } from "@ethersproject/keccak256";
 import { toUtf8Bytes } from "@ethersproject/strings";
+import { Signer } from "@ethersproject/abstract-signer";
 import { BigNumber } from "ethers";
-const utils_1 = require("ethers/lib/utils");
-const utils_2 = require("@account-abstraction/utils");
+import { JsonRpcProvider } from "@ethersproject/providers";
+import { Network } from "@ethersproject/providers";
+import { getGasFee } from "./utils/GetGasFee";
 
 export class Banana {
   Provider: ClientConfig;
   SCWContract!: ethers.Contract;
-  NewTouchIdAccountSafeContract!: ethers.Contract;
+  TouchIdSafeWalletContract!: ethers.Contract;
   accountApi!: MyWalletApi;
   httpRpcClient!: HttpRpcClient;
   publicKey!: PublicKey;
   bananaSigner!: BananaSigner;
   jsonRpcProvider!: ethers.providers.JsonRpcProvider;
   walletAddress!: string;
-  aaProvider!: ERC4337EthersProvider;
+  bananaProvider!: ERC4337EthersProvider;
   cookieObject!: UserCredentialObject;
   cookie: BananaCookie;
   walletIdentifier!: string;
   jsonRpcProviderUrl: string;
   addresses: ChainConfig;
-  safeAddress!: string;
-  encodedId!: string;
 
   constructor(readonly chain: Chains, readonly jsonRpcProvideurl: string) {
     this.Provider = getClientConfigInfo(chain);
@@ -73,11 +61,70 @@ export class Banana {
     this.cookie = new BananaCookie();
   }
 
+  /**
+   * @method createBananaSignerInstance
+   * @params none
+   * @returns none
+   * create signer for user's smart contract wallet
+   */
   private createBananaSignerInstance = () => {
     this.bananaSigner = new BananaSigner(this.jsonRpcProvider, this.publicKey);
   };
 
-  private initiateSigner = async (walletIdentifier: string) => {
+  /**
+   * @method getTouchIdSafeWalletContractProxyFactory
+   * @params { Signer | JsonRpcProvider } signerOrProvider
+   * @returns { NewTouchIdSafeAccountProxyFactory } TouchIdSafeWalletContractProxyFactory
+   * create factory contract instance for factory contract factory types.
+   */
+  private getTouchIdSafeWalletContractProxyFactory = (signerOrProvider: Signer | JsonRpcProvider ): NewTouchIdSafeAccountProxyFactory => {
+    const TouchIdSafeWalletContractProxyFactory: NewTouchIdSafeAccountProxyFactory = NewTouchIdSafeAccountProxyFactory__factory.connect(
+      this.addresses.TouchIdSafeWalletContractProxyFactoryAddress,
+      signerOrProvider
+    );
+    return TouchIdSafeWalletContractProxyFactory;
+  }
+
+  /**
+   * @method setCookieAfterAddressCreation
+   * @params { string } walletIdentifier
+   * @returns none
+   * Set cookie to local and global storage after wallet creation.
+   */
+  private setCookieAfterAddressCreation = async (walletIdentifier: string) => {
+    this.cookieObject = {
+      q0: this.publicKey.q0,
+      q1: this.publicKey.q1,
+      walletAddress: this.walletAddress,
+      initcode: false,
+      encodedId: this.publicKey.encodedId,
+      username: walletIdentifier,
+    };
+    // saving cookie correspond to user Identifier in cookie
+    this.cookie.setCookie(
+      "bananaUser",
+      JSON.stringify(walletIdentifier)
+    );
+    this.cookie.setCookie(
+      walletIdentifier,
+      JSON.stringify(this.cookieObject)
+    );
+    const setCredentialsStatus = await setUserCredentials(
+      walletIdentifier,
+      this.cookieObject
+    );
+    if(!setCredentialsStatus.success)
+    throw new Error("Error: db update faliure");
+    console.log("Cookie set status: ", setCredentialsStatus);
+  }
+
+  /**
+   * @method createSignerAndCookieObject
+   * @params { string } walletIdentifier
+   * @returns none
+   * Create cookie object and create secure enclave based transaction signer for user's wallet.
+   */
+  private createSignerAndCookieObject = async (walletIdentifier: string) => {
     const walletName = this.cookie.getCookie("bananaUser");
     if (!!walletName) {
       this.cookieObject = this.cookie.getCookie(walletName);
@@ -133,6 +180,7 @@ export class Banana {
     }
     this.walletIdentifier = walletIdentifier;
     this.publicKey = await registerFingerprint();
+    console.log("Saving this obj", this.cookieObject);
     const EC = EllipticCurve__factory.connect(
       this.addresses.Elliptic,
       this.jsonRpcProvider
@@ -144,37 +192,44 @@ export class Banana {
     this.bananaSigner = new BananaSigner(this.jsonRpcProvider, this.publicKey);
   };
 
-  getAAProvider = async () => {
-    if (this.aaProvider) return this.aaProvider;
+  /**
+   * @method getBananaProvider
+   * @params none
+   * @returns { ERC4337EthersProvider } bananaProvider
+   * create ERC4337Provider instance of user's smart contract wallet. Used as BananaProvider.
+   */
+  getBananaProvider = async (): Promise<ERC4337EthersProvider> => {
+    if (this.bananaProvider) return this.bananaProvider;
 
-    let signer = this.bananaSigner;
-    let network = await this.jsonRpcProvider.getNetwork();
+    let signer: Signer = this.bananaSigner;
+    let network: Network = await this.jsonRpcProvider.getNetwork();
 
-    const entryPoint = EntryPoint__factory.connect(
+    const entryPoint: EntryPoint = EntryPoint__factory.connect(
       this.Provider.bundlerUrl,
       this.jsonRpcProvider
     );
 
-    const MyWalletDeployer = NewTouchIdAccountDeployer__factory.connect(
-      this.addresses.MyWalletDeployer,
-      signer
-    );
-    const factoryAddress = MyWalletDeployer.address;
+    const TouchIdSafeWalletContractProxyFactory: NewTouchIdSafeAccountProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(signer)
 
-    const myPaymasterApi = new MyPaymasterApi();
+    const TouchIdSafeWalletContractProxyFactoryAddress: string = TouchIdSafeWalletContractProxyFactory.address;
 
-    const smartWalletAPI = new MyWalletApi({
+    const myPaymasterApi: MyPaymasterApi = new MyPaymasterApi();
+
+    const smartWalletAPI: MyWalletApi = new MyWalletApi({
       provider: this.jsonRpcProvider,
       entryPointAddress: this.Provider.entryPointAddress,
       accountAddress: this.walletAddress,
       owner: signer,
-      factoryAddress: factoryAddress,
+      factoryAddress: TouchIdSafeWalletContractProxyFactoryAddress,
       paymasterAPI: myPaymasterApi,
+      _EllipticCurveAddress: this.addresses.Elliptic,
+      _qValues: [this.publicKey.q0, this.publicKey.q1],
+      _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress
     });
 
     this.accountApi = smartWalletAPI;
 
-    const httpRpcClient = new HttpRpcClient(
+    const httpRpcClient: HttpRpcClient = new HttpRpcClient(
       this.Provider.bundlerUrl,
       this.Provider.entryPointAddress,
       network.chainId
@@ -182,7 +237,7 @@ export class Banana {
 
     this.httpRpcClient = httpRpcClient;
 
-    this.aaProvider = await new ERC4337EthersProvider(
+    this.bananaProvider = await new ERC4337EthersProvider(
       network.chainId,
       this.Provider,
       signer,
@@ -192,193 +247,143 @@ export class Banana {
       smartWalletAPI
     ).init();
 
-    return this.aaProvider;
+    return this.bananaProvider;
   };
 
-  private getAccountInitCode(factory: NewTouchIdAccountDeployer, salt = 0): BytesLike {
-    return hexConcat([
-      factory.address,
-      factory.interface.encodeFunctionData("createAccount", [
-        this.bananaSigner.address,
-        [this.publicKey.q0, this.publicKey.q1],
-        this.addresses.Elliptic,
-        0
-      ]),
-    ]);
-  }
+  /**
+   * @method getTouchIdSafeWalletContractInitializer
+   * @params none
+   * @returns { string } TouchIdSafeWalletContractInitializer
+   * create initializer which is callData for setupWithEntrypoint function
+   */
 
-
-  private getSafeInitCode() {
-    const proxyFactoryAddress = "0x074E09E9B4313a5cfE63bA1C70309F65442395bb";
-	  const singletonContract = "0x43E016b8498A6b27B162B4578aD6096E0dac4900";
-    const proxyFactoryContract: NewTouchIdSafeAccountProxyFactory = NewTouchIdSafeAccountProxyFactory__factory.connect(
-      proxyFactoryAddress,
+  private getTouchIdSafeWalletContractInitializer = (): string => {
+    const TouchIdSafeWalletContractSingleton: NewTouchIdAccountSafe = NewTouchIdAccountSafe__factory.connect(
+      this.addresses.TouchIdSafeWalletContractSingletonAddress,
       this.jsonRpcProvider
     );
-    return hexConcat([
-      proxyFactoryAddress,
-      proxyFactoryContract.interface.encodeFunctionData(
-        'createChainSpecificProxyWithNonce',
-        [
-          singletonContract,
-          this.getInitializer(),
-          "5967" //salt
-        ]
-      )]);
-    // const txn = await NewTouchIdAccountProxyFactoryContract.createChainSpecificProxyWithNonce(singletonContract,
-    //   encodedSetupEntryPoint,
-    //   "5",
-    //   {
-    //     gasLimit: 10000000
-    //   });
-    //   await txn.wait();
-  }
-
-  private getInitializer() {
-	  const singletonContract = "0x9A78596D9C80FfD0685CBCccC34f81eb3FaC98B9";
-    const proxyFactoryAddress = "0x074E09E9B4313a5cfE63bA1C70309F65442395bb";
-    const NewTouchIdAccountSafeInstance: NewTouchIdAccountSafe = NewTouchIdAccountSafe__factory.connect(
-      singletonContract,
-      this.jsonRpcProvider
-    );
-    console.log("pub key: ", this.publicKey)
-    const pubArray = [this.publicKey.q0, this.publicKey.q1];
+    const TouchIdSafeWalletContractQValuesArray: Array<string> = [this.publicKey.q0, this.publicKey.q1];
     //@ts-ignore
-    const encodedSetupEntryPoint = NewTouchIdAccountSafeInstance.interface.encodeFunctionData('setupWithEntrypoint',
+    const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
     [
       ["0x288d1d682311018736B820294D22Ed0DBE372188"], // owners 
-      1, // thresold will remain fix 
-      "0x0000000000000000000000000000000000000000", // to address 
-      "0x", // modules setup calldata
-      "0x0000000000000000000000000000000000000000", // fallback
-      "0x0000000000000000000000000000000000000000", // payment token
-      0, // payment 
-      "0x288d1d682311018736B820294D22Ed0DBE372188", // payment receiver
-      "0x0576a174D229E3cFA37253523E645A78A0C91B57", // entrypoint
+      1,                                              // thresold will remain fix 
+      "0x0000000000000000000000000000000000000000",   // to address 
+      "0x",                                           // modules setup calldata
+      "0x0000000000000000000000000000000000000000",   // fallback handler
+      "0x0000000000000000000000000000000000000000",   // payment token
+      0,                                              // payment 
+      "0x288d1d682311018736B820294D22Ed0DBE372188",   // payment receiver
+      "0x0576a174D229E3cFA37253523E645A78A0C91B57",   // entrypoint
       // @ts-ignore
-      pubArray, // q values 
-      this.addresses.Elliptic // elliptic curve
+      TouchIdSafeWalletContractQValuesArray,          // q values 
+      this.addresses.Elliptic                         // elliptic curve
     ]);
 
-    return encodedSetupEntryPoint
+    return TouchIdSafeWalletContractInitializer
   };
 
-  executeWithSafe = async ( funcCallData: string,
-    destination: string,
-    value: string) => {
-    const initCode = this.getSafeInitCode();
-    console.log(" this is initcode ", initCode);
-    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, false, initCode);
-    console.log(" this is txn hash ", transactionHash);
-  }
+  /**
+   * @method createWallet
+   * @param { string } walletIdentifier
+   * @returns 
+   * sucess: returns { status: success, address: walletAddress }
+   * error: returns { status: error, address: "" }
+   * setup signers and provider along with it create walletmetadata corresponding to the new wallet request.
+   */
 
-
-
-  getSafeWalletAddress = async  () => {
-    const proxyFactoryAddress = "0x074E09E9B4313a5cfE63bA1C70309F65442395bb";
-	  const singletonContract = "0x43E016b8498A6b27B162B4578aD6096E0dac4900";
-    const walletIdentifier = "sample-safe-wallet";
+  createWallet = async (walletIdentifier: string) => {
     try {
-      await this.initiateSigner(walletIdentifier);
-      console.log("Above done ");
-    } catch(err) {
-      console.log("Error while initiating signer",err)
-      return err;
-    }
-    const encodedSetupEntryPoint = this.getInitializer();
-    console.log("encoded ep: ", encodedSetupEntryPoint);
-
-    // const NewTouchIdAccountProxyFactoryContract = new ethers.Contract(
-    //   // "0x8bd7A25A0f3dC4E3b9b465E130A9117299D5e4b6",
-    // // "0xfF5667604BE1C5424c9E472366B2ABC18049eC6C",
-    // "0xBb2343B1dd233783022c7496C667B3F99b400f08",
-    // newAbi.abi,
-    // // NewTouchIdAccountProxyFactory.abi,
-    //   wallet
-    // )
-    let signer = this.bananaSigner;
-    const proxyFactoryContract = NewTouchIdSafeAccountProxyFactory__factory.connect(
-      proxyFactoryAddress,
-      signer
-    );
-
-    const walletAddress = await proxyFactoryContract.getAddress(singletonContract, "5967", encodedSetupEntryPoint);
-    this.safeAddress = walletAddress;
-    return walletAddress;
-  }
-
-  getWalletAddress = async (walletIdentifier: string) => {
-    return this.getSafeWalletAddress();
-    try {
-      await this.initiateSigner(walletIdentifier);
-    } catch(err) {
-      console.log("Error while initiating signer",err)
-      return err;
-    }
-    
-    this.walletIdentifier = walletIdentifier; //  repetation
-    let signer = this.bananaSigner;
-    let ownerAddress = await signer.getAddress();
-
-    if (!this.cookieObject) {
-      const MyWalletDeployer = NewTouchIdAccountDeployer__factory.connect(
-        this.addresses.MyWalletDeployer,
-        signer // we require signer here as we are deploying the SCW with q0 and q1 and for getting it we need to register user if he is not already registered
-      );
-      try {
-        this.walletAddress = await MyWalletDeployer.getAddress(
-          ownerAddress,
-          [this.publicKey.q0, this.publicKey.q1],
-          this.addresses.Elliptic,
-          0
-        );
-        // cred generation complete here now we need to save it in cookie and server
-        this.cookieObject = {
-          q0: this.publicKey.q0,
-          q1: this.publicKey.q1,
-          walletAddress: this.walletAddress,
-          initcode: false,
-          encodedId: this.publicKey.encodedId,
-          username: walletIdentifier,
-        };
-        // saving cookie correspond to user Identifier in cookie
-        this.cookie.setCookie(
-          "bananaUser",
-          JSON.stringify(walletIdentifier)
-        );
-        this.cookie.setCookie(
-          walletIdentifier,
-          JSON.stringify(this.cookieObject)
-        );
-
-        // saving cookie correspond to user Identifier in server
-        const setCredentialsStatus = await setUserCredentials(
-          walletIdentifier,
-          this.cookieObject
-        );
-        if (!setCredentialsStatus.success) {
-          //! Raise a popup here in case it fails to save
-          console.log("Some error ocured while saving cookie");
-          return { error: 'Failed to save wallet creds to server' }
-        }
-      } catch (err) {
-        console.log(err);
-        throw err;
+      await this.createSignerAndCookieObject(walletIdentifier);
+      this.walletIdentifier = walletIdentifier
+      const signer = this.bananaSigner;
+      const TouchIdSafeWalletContractProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(signer);
+      const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
+      const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.addresses.TouchIdSafeWalletContractSingletonAddress, "0", TouchIdSafeWalletContractInitializer);
+      this.walletAddress = TouchIdSafeWalletContractAddress;
+      this.bananaProvider = await this.getBananaProvider();
+      this.setCookieAfterAddressCreation(walletIdentifier);
+      this.postCookieChecks(walletIdentifier);
+      return {
+        status: "success",
+        address: TouchIdSafeWalletContractAddress
       }
-    } else {
-      //@ts-ignore
-      this.walletAddress = this.cookieObject.walletAddress;
+    } catch (err) {
+      return { status: "error", address: "" };
     }
+  }
 
-    // check if cred is there in cookie if not save in cookie && check if username is there in cookie if not save in cookie
-    this.postCookieChecks(walletIdentifier);
-    this.aaProvider = await this.getAAProvider();
-    return this.walletAddress;
-  };
+  /**
+   * @method connectWallet
+   * @param { string } walletIdentifier
+   * @returns 
+   * sucess: returns { status: success, address: walletAddress }
+   * error: returns { status: error, address: "" }
+   * setup providers and signers at the sdk end in case user's already has a wallet created before.
+   */
+
+  connectWallet = async (walletIdentifier: string) => {
+    try {
+      await this.createSignerAndCookieObject(walletIdentifier)
+      this.walletAddress = this.cookieObject.walletAddress;
+      this.postCookieChecks(walletIdentifier);
+      return { status: "success", address: this.walletAddress }
+    } catch (err) {
+      return { status: "error", address: "" }
+    }
+  }
+
+  /**
+   * @method getWalletName
+   * @param none
+   * @returns { string } walletName
+   * method to getWalletName stored in user's cookie storage against bananaUser key
+   */
 
   getWalletName = () => {
-    return this.cookie.getCookie("bananaUser");
+    const walletName = this.cookie.getCookie("bananaUser");
+    return walletName;
   };
+
+  /**
+   * @method getOwnerAddress
+   * @param { string } walletName
+   * @returns { string } eoaAddress
+   * method to return the hardware address for a specific walletName.
+   */
+
+  getEOAAddress = async () => {
+    const walletMetaData = await getUserCredentials(this.walletIdentifier);
+    return [walletMetaData.q0, walletMetaData.q1];
+  }
+
+  /**
+   * @method verify
+   * @param { string } signaure, { string } mesageSigned, { string } eoaAddress
+   * @returns { boolean } isVerified
+   * method to verify message against signature
+   */
+
+  //! for now assigned eoaAddress as any type
+  verifySignature = async (signature: string, messageToBeSigned: string, eoaAddress: any) => {
+    const rValue = ethers.BigNumber.from("0x"+signature.slice(2, 66));
+    const sValue = ethers.BigNumber.from("0x"+signature.slice(66, 132));
+    console.log("r part: ", rValue)
+    console.log("s part:", sValue);
+    const EC = EllipticCurve__factory.connect(
+      this.addresses.Elliptic,
+      this.jsonRpcProvider
+    );
+    const isVerified = await EC.validateSignature(messageToBeSigned, [rValue, sValue], eoaAddress);
+    return isVerified;
+  }
+
+  /**
+   * @method postCookieChecks
+   * @param { string } walletIdentifier
+   * @returns none
+   * handles cookie update
+   */
 
   private postCookieChecks = async (walletIdentifier: string) => {
     // check for username
@@ -391,48 +396,18 @@ export class Banana {
     this.cookie.setCookie(walletIdentifier, JSON.stringify(this.cookieObject));
   };
 
-  getZkProof = ()=> {
-    const abi = ethers.utils.defaultAbiCoder;
-    const callDataProof = abi.encode(
-      ["uint256[2]", "uint256[2][2]", "uint256[2]", "uint256[2]"],
-      [
-        [0, 0],
-        [
-          [0, 0],
-          [0, 0],
-        ],
-        [0, 0],
-        [0, 0],
-      ]
-    );
-    return callDataProof;
-  }
-
-  private setCookieOnceWalletDeployed = async (initCodeStatus: boolean) => {
-    if (navigator.cookieEnabled) {
-      const walletIdentifier = this.cookie.getCookie("bananaUser");
-      this.cookieObject = this.cookie.getCookie(walletIdentifier);
-      this.cookieObject.initcode = initCodeStatus;
-      this.cookie.setCookie(
-        walletIdentifier,
-        JSON.stringify(this.cookieObject)
-      );
-      const setCredentialsStatus = await setUserCredentials(
-        walletIdentifier,
-        this.cookieObject
-      );
-      console.log("Cookie set status: ", setCredentialsStatus);
-    } else {
-      console.log("Cookies are not enabled in the browser.");
-    }
-  }
+  /**
+   * @method sendUserOpToBundler
+   * @param { UserOperationStruct } userOp
+   * @returns none
+   * Updates the initCode status in walletMetaData in local and global storage database.
+   */
 
   private sendUserOpToBundler = async (userOp: UserOperationStruct) => {
     try {
-      //@ts-ignore
-      // const hexifiedUserOp = (0, utils_2.deepHexlify)(await (0, utils_1.resolveProperties)(userOp));
-      // const jsonRequestData = [hexifiedUserOp, "0x0576a174D229E3cFA37253523E645A78A0C91B57"];
-      // console.log("jsonRequestData: ", jsonRequestData);
+      console.log(`userOp.preVerificationGas: ${await userOp.preVerificationGas}`)
+      userOp.preVerificationGas = ethers.BigNumber.from(await userOp.preVerificationGas).add(500);
+      console.log(`userOp: ${JSON.stringify(userOp)}`)
       const uHash = await this.httpRpcClient.sendUserOpToBundler(
         userOp as any
       );
@@ -442,61 +417,49 @@ export class Banana {
     }
   }
 
-  private constructuUserOp = async (callDataProof: string, functionCallData: string, value:string, destination: string, isContractDeployed: boolean, initCode: BytesLike) => {
-    const NewTouchIdAccountSafe: NewTouchIdAccountSafe = NewTouchIdAccountSafe__factory.connect(
-      this.safeAddress,
-      this.jsonRpcProvider
-    );
-    // const userOpCallData = NewTouchIdAccountSafe.interface.encodeFunctionData(
-    //   "execTransactionFromEntrypoint",
-    //   [
-    //     destination,
-    //     ethers.utils.parseEther(value),
-    //     [functionCallData],
-    //   ]
-    // );
-    // execTransactionFromEntrypoint
-    if(!isContractDeployed) {
-      const delegateCall = ethers.BigNumber.from("1")
-      const encodedCallData = NewTouchIdAccountSafe.interface.encodeFunctionData(
-        "execTransactionFromEntrypoint",
-        [destination, ethers.utils.parseEther(value), functionCallData, delegateCall]
-      );
-      const userOp = await constructUserOpWithInitCode(
-          this.jsonRpcProvider,
-          this.safeAddress,
-          encodedCallData,
-          initCode
-      ); 
-      console.log('final userop ', userOp);
-      return userOp;
-    }
+  /**
+   * @method contructUserOp
+   * @param { string } functionCallData, { string } value, { string } destination, { boolean } isContractDeployed, { BytesLike }initCode
+   * @returns { UserOperationStruct } userOp
+   * Construct userOp based on passed parameters
+   */
+
+  private contructUserOp = async (
+    functionCallData: string, 
+    value: string, 
+    destination: string, 
+    ) => {
     let userOp;
-    // try {
-    //   userOp = await this.accountApi.createUnsignedUserOp({
-    //     target: this.walletAddress,
-    //     data: userOpCallData,
-    //     ...(await getGasFee(this.jsonRpcProvider)),
-    //   });
-    // } catch (err) {
-    //   console.log(err);
-    // }
+
+    try {
+      userOp = await this.accountApi.createUnsignedUserOp({
+        target: destination,
+        data: functionCallData,
+        value: ethers.utils.parseEther(value),
+        ...(await getGasFee(this.jsonRpcProvider)),
+      });
+    } catch (err) {
+      console.log(err);
+    }
+    console.log("User op from create unsigned userop ", userOp);
     return userOp;
   }
 
-   
-  private constructAndSendUserOp = async (funcCallData: string, destination:string, value: string, isContractDeployed: boolean, initCode: BytesLike) => {
-    const callDataProof = this.getZkProof();
-    const userOp = await this.constructuUserOp(callDataProof, funcCallData, value, destination, isContractDeployed, initCode);
+  /**
+   * @method constructAndSendUserOp
+   * @param { string } functionCallData, { string } value, { string } destination, { boolean } isContractDeployed, { BytesLike }initCode
+   * @returns { string } uHash
+   * Construct userOp and send to bundler and returns userOp requesId
+   */
+
+  private constructAndSendUserOp = async (funcCallData: string, destination:string, value: string) => {
+    const userOp = await this.contructUserOp(funcCallData, value, destination);
     //@ts-ignore
-    userOp.verificationGasLimit = 10e6;
+    userOp.verificationGasLimit = 3e6;
     const reqId = await this.accountApi.getUserOpHash(userOp as any);
     let processStatus = true;
     let finalUserOp;
     while(processStatus) {
-      if(!isContractDeployed && userOp) {
-        userOp.callGasLimit = 3e6;
-      }
       let minGasRequired =  ethers.BigNumber.from(userOp?.callGasLimit)
                             .add(ethers.BigNumber.from(userOp?.verificationGasLimit))
                             .add(ethers.BigNumber.from(userOp?.callGasLimit));
@@ -504,10 +467,9 @@ export class Banana {
       let minBalanceRequired = minGasRequired.mul(currentGasPrice)
       //@ts-ignore
       let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(userOp?.sender);
-      // if(userBalance.lt(minBalanceRequired)){
-      //   throw new Error("ERROR: Insufficient balance in Wallet")
-      // }
-      
+      if(userBalance.lt(minBalanceRequired)){
+        throw new Error("ERROR: Insufficient balance in Wallet")
+      }
       const { newUserOp, process } = await this.bananaSigner.signUserOp(userOp as any, reqId, this.publicKey.encodedId);
       if(process === 'success') { 
         finalUserOp = newUserOp;
@@ -516,128 +478,64 @@ export class Banana {
     }
     
     const uHash: string = await this.sendUserOpToBundler(finalUserOp as any) || '';
-    let initCodeSetStatus = false;;
-    // if(!!uHash) {
-    //   if(uHash.length === 66) {
-    //     initCodeSetStatus = true;
-    //   }
-    // }
-    // if(!isContractDeployed) {
-    //   this.setCookieOnceWalletDeployed(initCodeSetStatus);
-    // }
     return uHash;
   } 
 
-  private initWalletAndTransact = async (
-    funcCallData: string,
-    destination: string,
-    value: string
-  ) => {
-    // const MyWalletDeployer = NewTouchIdAccountDeployer__factory.connect(
-    //   this.addresses.MyWalletDeployer,
-    //   this.bananaSigner
-    // );
-    // this.SCWContract = NewTouchIdAccount__factory.connect(
-    //   this.walletAddress || "",
-    //   this.bananaSigner
-    // );
-    const isContractDeployed = false;
-    // const initCode = this.getAccountInitCode(MyWalletDeployer);
-    const initCode = this.getSafeInitCode();
-    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, isContractDeployed, initCode);
-    return transactionHash;
-  };
+  /**
+   * @method execute
+   * @param { string } functionCallData, { string } value, { string } destination
+   * @returns { string } transactionHash
+   * handles the transaction to be initiated using user smart contract wallet.
+   */
 
   execute = async (
     funcCallData: string,
     destination: string,
     value: string
   ) => {
-    console.log("calldata: ", funcCallData);
-    console.log("destination: ", destination)
-    console.log("values: ", value);
-    // await this.executeWithSafe(funcCallData, destination, value);
-    // return;
-    const walletCreds = this.cookie.getCookie(this.walletIdentifier);
-
-    if(walletCreds) {
-      if(!walletCreds.initcode) {
-        let uHash = await this.initWalletAndTransact(
-          funcCallData,
-          destination,
-          value
-        );
-        return uHash;
-      }
-    } else {
-      const initCodeStatus = await checkInitCodeStatus(this.walletIdentifier);
-      if(!initCodeStatus.isInitCode) {
-        let uHash = await this.initWalletAndTransact(
-          funcCallData,
-          destination,
-          value
-        );
-        return uHash;
-      }
-    }
-
-    const aaProvider = await this.getAAProvider();
-    const aaSigner = aaProvider.getSigner();
-    // this.SCWContract = MyTouchIdWallet__factory.connect(
-    //   this.walletAddress || "",
-    //   this.bananaSigner
-    // );
-    this.NewTouchIdAccountSafeContract = NewTouchIdAccountSafe__factory.connect(this.safeAddress || "", this.bananaSigner);
-    const isContractDeployed = true;
-    this.NewTouchIdAccountSafeContract = this.NewTouchIdAccountSafeContract.connect(aaSigner);
-    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, isContractDeployed, '');
+    //! incase user not connected wallet walletIdentifier === ''
+    if(!this.walletIdentifier) throw new Error("Error: wallet not connected!");
+    const bananaProvider = await this.getBananaProvider();
+    const aaSigner = bananaProvider.getSigner();
+    this.TouchIdSafeWalletContract = NewTouchIdAccountSafe__factory.connect(this.walletAddress || "", this.bananaSigner);
+    this.TouchIdSafeWalletContract = this.TouchIdSafeWalletContract.connect(aaSigner);
+    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value);
     return transactionHash;
   };
 
+  /**
+   * @method isWalletNameUnique
+   * @param { string } walletName
+   * @returns { boolean } isWalletNameTaken
+   * check isWalletName user is giving is already taken or not
+   */
+
   isWalletNameUnique = async (walletName: string) => {
     try {
-      const isWalletNameExist = await checkIsWalletNameExist(walletName);
-      return isWalletNameExist;
+      const isWalletNameTaken = await checkIsWalletNameExist(walletName);
+      return isWalletNameTaken;
     } catch (err) {
       console.log(err);
       throw err;
     }
   }
 
-  signMessage = async(message:string, isK1Signature?:boolean) =>{
+  signMessage = async(message:string) =>{
     // To generate signature, first calculate the keccak256 hash of encodePacked message
     const messageHash = ethers.utils.keccak256(ethers.utils.solidityPack(["string"],[message]))
-    if(isK1Signature){
-      console.log('string message', message)
-      const response = await Axios({
-        url: K1_SIGNATURE_LAMBDA_URL,
-        method: 'post',
-        params: {
-              "walletIdentifier": this.walletIdentifier,
-              "message": message,
-              "hostname": window.location.hostname,
-        }
-      });
-      //const signature = await generateK1Signature(this.walletIdentifier, message)
-      console.log("signedMessage", this.hashMessage(message))
-      console.log("response", response)
-      return {signedMessage:this.hashMessage(message), signature: response.data.message.signature}
-    }
-    else{
-      const signatureAndMessage = await this.bananaSigner.signMessage(messageHash, this.cookieObject.encodedId)
-      const abi = ethers.utils.defaultAbiCoder
-      const decoded = abi.decode(["uint256", "uint256", "uint256"], signatureAndMessage);
-      const signedMessage = decoded[2];
-      const rHex = decoded[0].toHexString();
-      const sHex = decoded[1].toHexString();
-      const finalSignature = rHex + sHex.slice(2);
-      /**
-       * Note:
-       * the `message` is signed using secp256r1 instead of secp256k1, hence to verify
-       * signedMessage we cannot use ecrecover!
-       */
-      return {signedMessage:signedMessage.toHexString(), signature: finalSignature}
-    }
+    const signatureAndMessage = await this.bananaSigner.signMessage(messageHash, this.cookieObject.encodedId)
+    const abi = ethers.utils.defaultAbiCoder
+    const decoded = abi.decode(["uint256", "uint256", "uint256"], signatureAndMessage);
+    const signedMessage = decoded[2];
+    const rHex = decoded[0].toHexString();
+    const sHex = decoded[1].toHexString();
+    const finalSignature = rHex + sHex.slice(2);
+    /**
+     * Note:
+     * the `message` is signed using secp256r1 instead of secp256k1, hence to verify
+     * signedMessage we cannot use ecrecover!
+     */
+    return {messageToBeSigned:signedMessage.toHexString(), signature: finalSignature}
   }
 
  hashMessage = (message: Bytes | string): string =>{
