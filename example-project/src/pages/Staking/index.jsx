@@ -28,7 +28,11 @@ const Staking = () => {
     const bananaInstance = signerContext.bananaInstance;
     const signedMesage = await bananaInstance.signMessage(sampleMsg, true);
     console.log("Signed message and status: ", signedMesage);
-  }
+    const isVerified = await bananaInstance.verifySignature(signedMesage.signature, signedMesage.messageToBeSigned, await bananaInstance.getEOAAddress()); 
+    console.log("Is verified: ", isVerified);
+   }
+
+
   // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
   
   // polygo staking 

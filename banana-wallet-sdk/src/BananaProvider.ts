@@ -376,8 +376,9 @@ export class Banana {
    * method to return the hardware address for a specific walletName.
    */
 
-  getEOAAddress = async (walletName: string) => {
-    const walletMetaData = await getUserCredentials(walletName);
+  getEOAAddress = async () => {
+    const walletMetaData = await getUserCredentials(this.walletIdentifier);
+    console.log("walletMetaData: ", walletMetaData)
     return [walletMetaData.q0, walletMetaData.q1];
     // const uncompressedPublicKey = `0x04${walletMetaData.q0.slice(2)}${walletMetaData.q1.slice(2)}`;
     // const eoaAddress = ethers.utils.computeAddress(uncompressedPublicKey)
@@ -392,9 +393,9 @@ export class Banana {
    */
 
   //! for now assigned eoaAddress as any type
-  verify = async (signature: string, messageToBeSigned: string, eoaAddress: any) => {
-    const rValue = signature.slice(2, 68);
-    const sValue = signature.slice(68, 132);
+  verifySignature = async (signature: string, messageToBeSigned: string, eoaAddress: any) => {
+    const rValue = ethers.BigNumber.from("0x"+signature.slice(2, 66));
+    const sValue = ethers.BigNumber.from("0x"+signature.slice(66, 132));
     console.log("r part: ", rValue)
     console.log("s part:", sValue);
     const EC = EllipticCurve__factory.connect(
@@ -646,40 +647,24 @@ export class Banana {
     }
   }
 
-  signMessage = async(message:string, isK1Signature?:boolean) =>{
+  signMessage = async(message:string) =>{
     // To generate signature, first calculate the keccak256 hash of encodePacked message
     const messageHash = ethers.utils.keccak256(ethers.utils.solidityPack(["string"],[message]))
-    if(isK1Signature){
-      console.log('string message', message)
-      const response = await Axios({
-        url: K1_SIGNATURE_LAMBDA_URL,
-        method: 'post',
-        params: {
-              "walletIdentifier": this.walletIdentifier,
-              "message": message,
-              "hostname": window.location.hostname,
-        }
-      });
-      //const signature = await generateK1Signature(this.walletIdentifier, message)
-      console.log("signedMessage", this.hashMessage(message))
-      console.log("response", response)
-      return {signedMessage:this.hashMessage(message), signature: response.data.message.signature}
-    }
-    else{
-      const signatureAndMessage = await this.bananaSigner.signMessage(messageHash, this.cookieObject.encodedId)
-      const abi = ethers.utils.defaultAbiCoder
-      const decoded = abi.decode(["uint256", "uint256", "uint256"], signatureAndMessage);
-      const signedMessage = decoded[2];
-      const rHex = decoded[0].toHexString();
-      const sHex = decoded[1].toHexString();
-      const finalSignature = rHex + sHex.slice(2);
-      /**
-       * Note:
-       * the `message` is signed using secp256r1 instead of secp256k1, hence to verify
-       * signedMessage we cannot use ecrecover!
-       */
-      return {signedMessage:signedMessage.toHexString(), signature: finalSignature}
-    }
+  
+    const signatureAndMessage = await this.bananaSigner.signMessage(messageHash, this.cookieObject.encodedId)
+    const abi = ethers.utils.defaultAbiCoder
+    const decoded = abi.decode(["uint256", "uint256", "uint256"], signatureAndMessage);
+    const signedMessage = decoded[2];
+    const rHex = decoded[0].toHexString();
+    const sHex = decoded[1].toHexString();
+    const finalSignature = rHex + sHex.slice(2);
+    /**
+     * Note:
+     * the `message` is signed using secp256r1 instead of secp256k1, hence to verify
+     * signedMessage we cannot use ecrecover!
+     */
+    return {messageToBeSigned:signedMessage.toHexString(), signature: finalSignature}
+    
   }
 
  hashMessage = (message: Bytes | string): string =>{
