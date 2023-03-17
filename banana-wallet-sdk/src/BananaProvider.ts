@@ -38,7 +38,7 @@ import { Network } from "@ethersproject/providers";
 export class Banana {
   Provider: ClientConfig;
   SCWContract!: ethers.Contract;
-  NewTouchIdAccountSafeContract!: ethers.Contract;
+  TouchIdSafeWalletContract!: ethers.Contract;
   accountApi!: MyWalletApi;
   httpRpcClient!: HttpRpcClient;
   publicKey!: PublicKey;
@@ -51,8 +51,6 @@ export class Banana {
   walletIdentifier!: string;
   jsonRpcProviderUrl: string;
   addresses: ChainConfig;
-  safeAddress!: string;
-  encodedId!: string;
 
   constructor(readonly chain: Chains, readonly jsonRpcProvideurl: string) {
     this.Provider = getClientConfigInfo(chain);
@@ -64,10 +62,22 @@ export class Banana {
     this.cookie = new BananaCookie();
   }
 
+  /**
+   * @method createBananaSignerInstance
+   * @params none
+   * @returns none
+   * create signer for user's smart contract wallet
+   */
   private createBananaSignerInstance = () => {
     this.bananaSigner = new BananaSigner(this.jsonRpcProvider, this.publicKey);
   };
 
+  /**
+   * @method getTouchIdSafeWalletContractProxyFactory
+   * @params { Signer | JsonRpcProvider } signerOrProvider
+   * @returns { NewTouchIdSafeAccountProxyFactory } TouchIdSafeWalletContractProxyFactory
+   * create factory contract instance for factory contract factory types.
+   */
   private getTouchIdSafeWalletContractProxyFactory = (signerOrProvider: Signer | JsonRpcProvider ): NewTouchIdSafeAccountProxyFactory => {
     const TouchIdSafeWalletContractProxyFactory: NewTouchIdSafeAccountProxyFactory = NewTouchIdSafeAccountProxyFactory__factory.connect(
       this.addresses.TouchIdSafeWalletContractProxyFactoryAddress,
@@ -76,6 +86,12 @@ export class Banana {
     return TouchIdSafeWalletContractProxyFactory;
   }
 
+  /**
+   * @method setCookieAfterAddressCreation
+   * @params { string } walletIdentifier
+   * @returns none
+   * Set cookie to local and global storage after wallet creation.
+   */
   private setCookieAfterAddressCreation = async (walletIdentifier: string) => {
     this.cookieObject = {
       q0: this.publicKey.q0,
@@ -103,7 +119,13 @@ export class Banana {
     console.log("Cookie set status: ", setCredentialsStatus);
   }
 
-  private initiateSigner = async (walletIdentifier: string) => {
+  /**
+   * @method createSignerAndCookieObject
+   * @params { string } walletIdentifier
+   * @returns none
+   * Create cookie object and create secure enclave based transaction signer for user's wallet.
+   */
+  private createSignerAndCookieObject = async (walletIdentifier: string) => {
     const walletName = this.cookie.getCookie("bananaUser");
     if (!!walletName) {
       this.cookieObject = this.cookie.getCookie(walletName);
@@ -172,10 +194,13 @@ export class Banana {
   };
 
   /**
-   * method: getBananaProvider
-   * returns: ERC4337 Compaitible provider instance
+   * @method getBananaProvider
+   * @params none
+   * @returns { ERC4337EthersProvider } bananaProvider
+   * create ERC4337Provider instance of user's smart contract wallet. Used as BananaProvider.
    */
-  getBananaProvider = async () => {
+
+  getBananaProvider = async (): Promise<ERC4337EthersProvider> => {
     if (this.bananaProvider) return this.bananaProvider;
 
     let signer: Signer = this.bananaSigner;
@@ -224,6 +249,13 @@ export class Banana {
     return this.bananaProvider;
   };
 
+  /**
+   * @method getTouchIdSafeWalletContractInitCode
+   * @params none
+   * @returns { string } TouchIdSafeWalletContractInitCode
+   * create initCode for TouchIdSafeWalletContract
+   */
+
   private getTouchIdSafeWalletContractInitCode = (): string => {
     const TouchIdSafeWalletContractProxyFactory: NewTouchIdSafeAccountProxyFactory  = this.getTouchIdSafeWalletContractProxyFactory(this.jsonRpcProvider)
     const TouchIdSafeWalletContractSingletonAddress: string = this.addresses.TouchIdSafeWalletContractSingletonAddress;
@@ -241,6 +273,13 @@ export class Banana {
       )]);
     return TouchIdSafeWalletContractInitCode;
   }
+
+  /**
+   * @method getTouchIdSafeWalletContractInitializer
+   * @params none
+   * @returns { string } TouchIdSafeWalletContractInitializer
+   * create initializer which is callData for setupWithEntrypoint function
+   */
 
   private getTouchIdSafeWalletContractInitializer = (): string => {
     const TouchIdSafeWalletContractSingleton: NewTouchIdAccountSafe = NewTouchIdAccountSafe__factory.connect(
@@ -270,14 +309,16 @@ export class Banana {
 
   /**
    * @method createWallet
+   * @param { string } walletIdentifier
    * @returns 
    * sucess: returns { status: success, address: walletAddress }
    * error: returns { status: error, address: "" }
+   * setup signers and provider along with it create walletmetadata corresponding to the new wallet request.
    */
 
   createWallet = async (walletIdentifier: string) => {
     try {
-      await this.initiateSigner(walletIdentifier);
+      await this.createSignerAndCookieObject(walletIdentifier);
       this.walletIdentifier = walletIdentifier
       const signer = this.bananaSigner;
       const TouchIdSafeWalletContractProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(signer);
@@ -296,16 +337,18 @@ export class Banana {
     }
   }
 
- /**
+  /**
    * @method connectWallet
+   * @param { string } walletIdentifier
    * @returns 
    * sucess: returns { status: success, address: walletAddress }
    * error: returns { status: error, address: "" }
+   * setup providers and signers at the sdk end in case user's already has a wallet created before.
    */
 
   connectWallet = async (walletIdentifier: string) => {
     try {
-      await this.initiateSigner(walletIdentifier)
+      await this.createSignerAndCookieObject(walletIdentifier)
       this.walletAddress = this.cookieObject.walletAddress;
       this.postCookieChecks(walletIdentifier);
       return { status: "success", address: this.walletAddress }
@@ -314,9 +357,24 @@ export class Banana {
     }
   }
 
+  /**
+   * @method getWalletName
+   * @param none
+   * @returns { string } walletName
+   * method to getWalletName stored in user's cookie storage against bananaUser key
+   */
+
   getWalletName = () => {
-    return this.cookie.getCookie("bananaUser");
+    const walletName = this.cookie.getCookie("bananaUser");
+    return walletName;
   };
+
+  /**
+   * @method postCookieChecks
+   * @param { string } walletIdentifier
+   * @returns none
+   * handles cookie update
+   */
 
   private postCookieChecks = async (walletIdentifier: string) => {
     // check for username
@@ -328,6 +386,13 @@ export class Banana {
     this.cookie.setCookie("bananaUser", JSON.stringify(walletIdentifier));
     this.cookie.setCookie(walletIdentifier, JSON.stringify(this.cookieObject));
   };
+
+  /**
+   * @method setCookieOnceWalletDeployed
+   * @param { boolean } initCodeStatus
+   * @returns none
+   * Updates the initCode status in walletMetaData in local and global storage database.
+   */
 
   private setCookieOnceWalletDeployed = async (initCodeStatus: boolean) => {
     if (navigator.cookieEnabled) {
@@ -348,6 +413,13 @@ export class Banana {
     }
   }
 
+  /**
+   * @method sendUserOpToBundler
+   * @param { UserOperationStruct } userOp
+   * @returns none
+   * Updates the initCode status in walletMetaData in local and global storage database.
+   */
+
   private sendUserOpToBundler = async (userOp: UserOperationStruct) => {
     try {
       const uHash = await this.httpRpcClient.sendUserOpToBundler(
@@ -359,15 +431,27 @@ export class Banana {
     }
   }
 
-  private constructuUserOp = async (functionCallData: string, value:string, destination: string, isContractDeployed: boolean, initCode: BytesLike) => {
-    const NewTouchIdAccountSafe: NewTouchIdAccountSafe = NewTouchIdAccountSafe__factory.connect(
+  /**
+   * @method contructUserOp
+   * @param { string } functionCallData, { string } value, { string } destination, { boolean } isContractDeployed, { BytesLike }initCode
+   * @returns { UserOperationStruct } userOp
+   * Construct userOp based on passed parameters
+   */
+
+  private contructUserOp = async (
+    functionCallData: string, 
+    value:string, 
+    destination: string, 
+    isContractDeployed: boolean, 
+    initCode: BytesLike) => {
+    const TouchIdSafeWalletContract: NewTouchIdAccountSafe = NewTouchIdAccountSafe__factory.connect(
       this.walletAddress,
       this.jsonRpcProvider
     );
 
     if(!isContractDeployed) {
       const delegateCall = ethers.BigNumber.from("1")
-      const encodedCallData = NewTouchIdAccountSafe.interface.encodeFunctionData(
+      const encodedCallData = TouchIdSafeWalletContract.interface.encodeFunctionData(
         "execTransactionFromEntrypoint",
         [destination, ethers.utils.parseEther(value), functionCallData, delegateCall]
       );
@@ -395,9 +479,15 @@ export class Banana {
     return userOp;
   }
 
-   
+  /**
+   * @method constructAndSendUserOp
+   * @param { string } functionCallData, { string } value, { string } destination, { boolean } isContractDeployed, { BytesLike }initCode
+   * @returns { string } uHash
+   * Construct userOp and send to bundler and returns userOp requesId
+   */
+
   private constructAndSendUserOp = async (funcCallData: string, destination:string, value: string, isContractDeployed: boolean, initCode: BytesLike) => {
-    const userOp = await this.constructuUserOp(funcCallData, value, destination, isContractDeployed, initCode);
+    const userOp = await this.contructUserOp(funcCallData, value, destination, isContractDeployed, initCode);
     //@ts-ignore
     userOp.verificationGasLimit = 3e6;
     const reqId = await this.accountApi.getUserOpHash(userOp as any);
@@ -438,7 +528,14 @@ export class Banana {
     return uHash;
   } 
 
-  private initWalletAndTransact = async (
+  /**
+   * @method createWalletAndTransact
+   * @param { string } functionCallData, { string } value, { string } destination
+   * @returns { string } transactionHash
+   * Facilitate the first bundle transaction set's initcode along with callData and forward userOp to bundler
+   */
+
+  private createWalletAndTransact = async (
     funcCallData: string,
     destination: string,
     value: string
@@ -449,6 +546,13 @@ export class Banana {
     return transactionHash;
   };
 
+  /**
+   * @method execute
+   * @param { string } functionCallData, { string } value, { string } destination
+   * @returns { string } transactionHash
+   * handles the transaction to be initiated using user smart contract wallet.
+   */
+
   execute = async (
     funcCallData: string,
     destination: string,
@@ -457,7 +561,7 @@ export class Banana {
     const walletCreds = this.cookie.getCookie(this.walletIdentifier);
     if(walletCreds) {
       if(!walletCreds.initcode) {
-        let uHash = await this.initWalletAndTransact(
+        let uHash = await this.createWalletAndTransact(
           funcCallData,
           destination,
           value
@@ -467,7 +571,7 @@ export class Banana {
     } else {
       const initCodeStatus = await checkInitCodeStatus(this.walletIdentifier);
       if(!initCodeStatus.isInitCode) {
-        let uHash = await this.initWalletAndTransact(
+        let uHash = await this.createWalletAndTransact(
           funcCallData,
           destination,
           value
@@ -478,17 +582,24 @@ export class Banana {
 
     const bananaProvider = await this.getBananaProvider();
     const aaSigner = bananaProvider.getSigner();
-    this.NewTouchIdAccountSafeContract = NewTouchIdAccountSafe__factory.connect(this.walletAddress || "", this.bananaSigner);
+    this.TouchIdSafeWalletContract = NewTouchIdAccountSafe__factory.connect(this.walletAddress || "", this.bananaSigner);
     const isContractDeployed = true;
-    this.NewTouchIdAccountSafeContract = this.NewTouchIdAccountSafeContract.connect(aaSigner);
+    this.TouchIdSafeWalletContract = this.TouchIdSafeWalletContract.connect(aaSigner);
     const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value, isContractDeployed, '');
     return transactionHash;
   };
 
+  /**
+   * @method isWalletNameUnique
+   * @param { string } walletName
+   * @returns { boolean } isWalletNameTaken
+   * check isWalletName user is giving is already taken or not
+   */
+
   isWalletNameUnique = async (walletName: string) => {
     try {
-      const isWalletNameExist = await checkIsWalletNameExist(walletName);
-      return isWalletNameExist;
+      const isWalletNameTaken = await checkIsWalletNameExist(walletName);
+      return isWalletNameTaken;
     } catch (err) {
       console.log(err);
       throw err;
