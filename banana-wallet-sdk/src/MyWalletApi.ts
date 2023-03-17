@@ -70,7 +70,7 @@ export class MyWalletApi extends SimpleAccountAPI {
       1,                                              // thresold will remain fix 
       "0x0000000000000000000000000000000000000000",   // to address 
       "0x",                                           // modules setup calldata
-      "0x0000000000000000000000000000000000000000",   // fallback handler
+      "0xda8C24F80ABaD6F6f2D9B6795537E731e02Ee3E9",   // fallback handler
       "0x0000000000000000000000000000000000000000",   // payment token
       0,                                              // payment 
       "0x288d1d682311018736B820294D22Ed0DBE372188",   // payment receiver

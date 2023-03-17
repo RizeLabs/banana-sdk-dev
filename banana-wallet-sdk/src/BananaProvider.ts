@@ -408,6 +408,7 @@ export class Banana {
       console.log(`userOp.preVerificationGas: ${await userOp.preVerificationGas}`)
       userOp.preVerificationGas = ethers.BigNumber.from(await userOp.preVerificationGas).add(500);
       console.log(`userOp: ${JSON.stringify(userOp)}`)
+      console.log("userOp", userOp);
       const uHash = await this.httpRpcClient.sendUserOpToBundler(
         userOp as any
       );
