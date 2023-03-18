@@ -173,7 +173,8 @@ export const verifyFingerprint = async (userOp: UserOperation, reqId: string, en
           id: decodedId,
           type: 'public-key',
         }],
-        challenge: actualChallenge,
+        challenge: Uint8Array.from(reqId, (c) => c.charCodeAt(0)).buffer,
+        // actualChallenge,
         // Set the required authentication factors
         userVerification: 'required',
        }, });
