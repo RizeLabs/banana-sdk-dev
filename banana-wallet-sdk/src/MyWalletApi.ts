@@ -33,6 +33,7 @@ export class MyWalletApi extends SimpleAccountAPI {
   EllipticCurveAddress: string
   qValues: [string, string]
   singletonTouchIdSafeAddress: string
+  ownerAddress: string
   constructor(params: MyWalletApiParams) {
     super(params)
     this.EllipticCurveAddress = params._EllipticCurveAddress
