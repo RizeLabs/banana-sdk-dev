@@ -28,8 +28,7 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
         case Chains.optimismTestnet:
             return {
                 "entryPointAddress": "0x189c17979aF3cECE12771Dc959254C6DdEc7439b",
-                "bundlerUrl": "http://localhost:80/rpc"
-                // production bundler for optimism: https://optimism.eip4337-bunder.xyz/
+                "bundlerUrl": "https://optimism.eip4337-bunder.xyz/rpc"
             }
      }
 }

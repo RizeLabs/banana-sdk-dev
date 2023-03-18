@@ -179,7 +179,6 @@ export class Banana {
     }
     this.walletIdentifier = walletIdentifier;
     this.publicKey = await registerFingerprint();
-    console.log("Saving this obj", this.cookieObject);
     const EC = EllipticCurve__factory.connect(
       this.addresses.Elliptic,
       this.jsonRpcProvider
@@ -386,8 +385,6 @@ export class Banana {
   verifySignature = async (signature: string, messageSigned: string, eoaAddress: any) => {
     const rValue = ethers.BigNumber.from("0x"+signature.slice(2, 66));
     const sValue = ethers.BigNumber.from("0x"+signature.slice(66, 132));
-    console.log("r part: ", rValue)
-    console.log("s part:", sValue);
     const EC = EllipticCurve__factory.connect(
       this.addresses.Elliptic,
       this.jsonRpcProvider
@@ -477,10 +474,7 @@ export class Banana {
       this.jsonRpcProvider
     );
     const reqId = await this.accountApi.getUserOpHash(userOp as any);
-    // await entryPoint.getUserOpHash(userOp as any);
-    //
-    console.log("userOp ", userOp);
-    console.log("reqId: ", reqId);
+    console.log("UserOpHash: ", reqId);
     let processStatus = true;
     let finalUserOp;
     while(processStatus) {
