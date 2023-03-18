@@ -13,7 +13,7 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract NewTouchIdSafeAccountProxy",
+        internalType: "contract BananaAccountProxy",
         name: "proxy",
         type: "address",
       },

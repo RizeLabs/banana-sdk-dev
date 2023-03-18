@@ -4,8 +4,8 @@ const { ethers } = require('hardhat');
 const fs = require('fs')
 const  { } = require('../../banana-wallet-sdk/src/types')
 const { BigNumber } = require('ethers')
-const { NewTouchIdAccountSafe } = require('../src/types')
-const { NewTouchIdAccountSafe__factory } = require('../src/types/factories')
+const { NewTouchIdAccountSafe, BananaTest } = require('../src/types')
+const { NewTouchIdAccountSafe__factory, BananaTest__factory } = require('../src/types/factories')
 const NewTouchIdAccountProxyFactory = require('./factory.json')
 // const abi = require('./factory.json')
 const newAbi = require('./factory.json')
@@ -29,8 +29,8 @@ async function main() {
 	// const verifier = await Verifier.deploy();
 	// console.log('verifier :', verifier.address);
 
-	// const provider = new ethers.providers.JsonRpcProvider('https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4');
-	// const wallet = new ethers.Wallet("a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74", provider);
+	const provider = new ethers.providers.JsonRpcProvider('https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4');
+	const wallet = new ethers.Wallet("a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74", provider);
 
 	// const singletonContract = "0xe75Ea15be97753bc9d7F2A70dfE0fd0EB4a5AB51";
 
@@ -38,6 +38,31 @@ async function main() {
 	// 	singletonContract,
 	// 	provider
     //   );
+
+	// 	const banana = BananaTest__factory.connect(
+	// 	"0x75F5C4626fb2DD0177C420e55dbB36FAd47dc015",
+	// 	provider
+    //   );
+	const banana = new ethers.Contract(
+		// "0x8bd7A25A0f3dC4E3b9b465E130A9117299D5e4b6",
+	// "0xfF5667604BE1C5424c9E472366B2ABC18049eC6C",
+	"0xacF0ea36CAD99902CD52dBEd2013fA9a2d01FB7d",
+	NewTouchIdAccountProxyFactory.abi,
+	// NewTouchIdAccountProxyFactory.abi,
+		wallet
+	)
+
+
+	//   const hash = ethers.utils.keccak256("0x4d48686d5a6a466c4d445a6a4e7a526c4e7a6733596d51334e54646b5a4445314d44677a4d6a566c4e5455324d4467344e7a466d5a544d344e5456694f47466a4d6d493459574979597a526b4d6a41774e6a646b4d6a6378");
+	//   console.log(hash);
+
+	//   const value = await banana.check("0xa7bfc950997fed8ad2f46dcb0320708fb691517cfd6937f6bad2d2c7941e7009",
+	//   "0x15481288826c74b81a29f99fecc7666e48cd787b3f17a5cfdf72a142471412bc844aba52a6a917daa261fdb20309cad217c8bf9cae712cb60b23dbb0f19c9b431a119876485789c569ef7e2d4dbe131c82f29120a066190c01d91bab13845fa5371442d4eaec3189cb998f1d888ecaa26c741bdddc82a453a615171937472948");
+	//   console.log(value)
+
+	//   4d48686c5a54497a597a49775a54426b5a6d4d774d6d466a4f44466a4d7a55794e6a63345a5755344d44526b4d5459784d6a646b596d4d784d545a6b5a5456684e6d4e6b595463795a57566d4d7a41355a4455354d325132
+
+
 
 	// const encodedSetupEntryPoint = NewTouchIdAccountSafeInstance.interface.encodeFunctionData('setupWithEntrypoint',
 	// [
@@ -97,9 +122,9 @@ async function main() {
 	// const newTouchIdAccountProxy = await NewTouchIdAccountProxy.deploy(newTouchIdAccountDeployer.address);
 	// console.log('NewTouchIdAccountProxy :', newTouchIdAccountProxy.address);
 
-	// const NewTouchIdAccountProxyFactory = await ethers.getContractFactory('NewTouchIdSafeAccountProxyFactory');
-	// const newTouchIdAccountProxyFactory = await NewTouchIdAccountProxyFactory.deploy();
-	// console.log('NewTouchIdAccountProxy Factory :', newTouchIdAccountProxyFactory.address);
+	// const BananaAccountProxyFactory = await ethers.getContractFactory('BananaAccountProxyFactory');
+	// const bananaTouchIdAccountProxyFactory = await BananaAccountProxyFactory.deploy();
+	// console.log('BananaTouchIdAccountProxy Factory :', bananaTouchIdAccountProxyFactory.address);
 
 	
 
@@ -111,6 +136,15 @@ async function main() {
 	// const st = await ethers.getContractFactory('Staking');
 	// const stDeployer = await st.deploy();
 	// console.log('staking :', stDeployer.address);
+
+	// const BananaAccount = await ethers.getContractFactory('BananaAccount');
+	// const BananaAccountDeployer = await BananaAccount.deploy();
+	// console.log('Banana Account:', BananaAccountDeployer.address);
+	// 0x106DD6EdaF8Db8a3ACFa215c8C6ADf0730175CaF
+
+	// 	const BananaAccount = await ethers.getContractFactory('BananaTest');
+	// const BananaAccountDeployer = await BananaAccount.deploy();
+	// console.log('Banana Test:', BananaAccountDeployer.address);
 	
 	// const PUBLIC_KEY_EXPOSED = '0xA8458B544c551Af2ADE164C427a8A4F13A346F2A'
 	// const PRIVATE_KEY_EXPOSED = '326d3b8f081040e0044fde540508dde301cdae5c387d207f7ea15ceb32b9630d';

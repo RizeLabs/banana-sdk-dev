@@ -4,7 +4,7 @@ import { arrayify, hexConcat } from 'ethers/lib/utils'
 import { Signer } from '@ethersproject/abstract-signer'
 import { BaseApiParams } from '@account-abstraction/sdk/dist/src/BaseAccountAPI'
 import { SimpleAccountAPI } from '@account-abstraction/sdk'
-import { NewTouchIdAccountSafe__factory, NewTouchIdSafeAccountProxyFactory__factory} from './types/factories'
+import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types/factories'
 import { ethers } from 'ethers'
 
 /**
@@ -55,13 +55,13 @@ export class MyWalletApi extends SimpleAccountAPI {
 
   async _getAccountContract (): Promise<SimpleAccount> {
     if (this.accountContract == null) {
-      this.accountContract = NewTouchIdAccountSafe__factory.connect(await this.getAccountAddress(), this.provider)
+      this.accountContract = BananaAccount__factory.connect(await this.getAccountAddress(), this.provider)
     }
     return this.accountContract
   }
 
   getTouchIdSafeWalletContractInitializer = (): string => {
-    const TouchIdSafeWalletContractSingleton: NewTouchIdAccountSafe = NewTouchIdAccountSafe__factory.connect(
+    const TouchIdSafeWalletContractSingleton: BananaAccount = BananaAccount__factory.connect(
       this.singletonTouchIdSafeAddress,
       this.provider
     );
@@ -98,7 +98,7 @@ export class MyWalletApi extends SimpleAccountAPI {
   async getAccountInitCode (): Promise<string> {
     if (this.factory == null) {
       if (this.factoryAddress != null && this.factoryAddress !== '') {
-        this.factory = NewTouchIdSafeAccountProxyFactory__factory.connect(this.factoryAddress, this.provider)
+        this.factory = BananaAccountProxyFactory__factory.connect(this.factoryAddress, this.provider)
       } else {
         throw new Error('no factory to get initCode')
       }

@@ -21,8 +21,8 @@ import {
   UserCredentialObject,
   ChainConfig
 } from "./interfaces/Banana.interface";
-import { NewTouchIdAccountSafe, NewTouchIdSafeAccountProxyFactory } from './types'
-import { NewTouchIdAccountSafe__factory, NewTouchIdSafeAccountProxyFactory__factory} from './types/factories'
+import { BananaAccount, BananaAccountProxyFactory } from './types'
+import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types/factories'
 import Axios from 'axios';
 import { K1_SIGNATURE_LAMBDA_URL  } from './routes'
 import { Bytes, concat } from "@ethersproject/bytes";
@@ -74,11 +74,11 @@ export class Banana {
   /**
    * @method getTouchIdSafeWalletContractProxyFactory
    * @params { Signer | JsonRpcProvider } signerOrProvider
-   * @returns { NewTouchIdSafeAccountProxyFactory } TouchIdSafeWalletContractProxyFactory
+   * @returns { BananaAccountProxyFactory } TouchIdSafeWalletContractProxyFactory
    * create factory contract instance for factory contract factory types.
    */
-  private getTouchIdSafeWalletContractProxyFactory = (signerOrProvider: Signer | JsonRpcProvider ): NewTouchIdSafeAccountProxyFactory => {
-    const TouchIdSafeWalletContractProxyFactory: NewTouchIdSafeAccountProxyFactory = NewTouchIdSafeAccountProxyFactory__factory.connect(
+  private getTouchIdSafeWalletContractProxyFactory = (signerOrProvider: Signer | JsonRpcProvider ): BananaAccountProxyFactory => {
+    const TouchIdSafeWalletContractProxyFactory: BananaAccountProxyFactory = BananaAccountProxyFactory__factory.connect(
       this.addresses.TouchIdSafeWalletContractProxyFactoryAddress,
       signerOrProvider
     );
@@ -205,11 +205,11 @@ export class Banana {
     let network: Network = await this.jsonRpcProvider.getNetwork();
 
     const entryPoint: EntryPoint = EntryPoint__factory.connect(
-      this.Provider.bundlerUrl,
+      this.Provider.entryPointAddress,
       this.jsonRpcProvider
     );
 
-    const TouchIdSafeWalletContractProxyFactory: NewTouchIdSafeAccountProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(signer)
+    const TouchIdSafeWalletContractProxyFactory: BananaAccountProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(signer)
 
     const TouchIdSafeWalletContractProxyFactoryAddress: string = TouchIdSafeWalletContractProxyFactory.address;
 
@@ -259,7 +259,7 @@ export class Banana {
    */
 
   private getTouchIdSafeWalletContractInitializer = (): string => {
-    const TouchIdSafeWalletContractSingleton: NewTouchIdAccountSafe = NewTouchIdAccountSafe__factory.connect(
+    const TouchIdSafeWalletContractSingleton: BananaAccount = BananaAccount__factory.connect(
       this.addresses.TouchIdSafeWalletContractSingletonAddress,
       this.jsonRpcProvider
     );
@@ -424,7 +424,6 @@ export class Banana {
 
   private sendUserOpToBundler = async (userOp: UserOperationStruct) => {
     try {
-      userOp.preVerificationGas = ethers.BigNumber.from(await userOp.preVerificationGas).add(500);
       const uHash = await this.httpRpcClient.sendUserOpToBundler(
         userOp as any
       );
@@ -472,7 +471,17 @@ export class Banana {
     const userOp = await this.contructUserOp(funcCallData, value, destination);
     //@ts-ignore
     userOp.verificationGasLimit = 3e6;
+    //@ts-ignore
+    userOp.preVerificationGas = ethers.BigNumber.from(await userOp.preVerificationGas).add(5000);
+    const entryPoint: EntryPoint = EntryPoint__factory.connect(
+      this.Provider.entryPointAddress,
+      this.jsonRpcProvider
+    );
     const reqId = await this.accountApi.getUserOpHash(userOp as any);
+    // await entryPoint.getUserOpHash(userOp as any);
+    //
+    console.log("userOp ", userOp);
+    console.log("reqId: ", reqId);
     let processStatus = true;
     let finalUserOp;
     while(processStatus) {
@@ -513,7 +522,7 @@ export class Banana {
     if(!this.walletIdentifier) throw new Error("Error: wallet not connected!");
     const bananaProvider = await this.getBananaProvider();
     const aaSigner = bananaProvider.getSigner();
-    this.TouchIdSafeWalletContract = NewTouchIdAccountSafe__factory.connect(this.walletAddress || "", this.bananaSigner);
+    this.TouchIdSafeWalletContract = BananaAccount__factory.connect(this.walletAddress || "", this.bananaSigner);
     this.TouchIdSafeWalletContract = this.TouchIdSafeWalletContract.connect(aaSigner);
     const requestId = await this.constructAndSendUserOp(funcCallData, destination, value);
     return requestId;
