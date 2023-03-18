@@ -184,11 +184,11 @@ export const verifyFingerprint = async (userOp: UserOperation, reqId: string, en
       }
       //@ts-ignore
       const response = credential.response;
-      console.log({
-        "authDataRaw": (ethers.utils.hexlify(new Uint8Array(response.authenticatorData))),
-        "cData": (ethers.utils.hexlify(new Uint8Array(response.clientDataJSON))),
-        "signature": (ethers.utils.hexlify(new Uint8Array(response.signature)))
-  })  
+  //     console.log({
+  //       "authDataRaw": (ethers.utils.hexlify(new Uint8Array(response.authenticatorData))),
+  //       "cData": (ethers.utils.hexlify(new Uint8Array(response.clientDataJSON))),
+  //       "signature": (ethers.utils.hexlify(new Uint8Array(response.signature)))
+  // })  
   //// Trampoline
       const trampolineSignature = await getSignature(credential);
       console.log('trampolineSignature', JSON.stringify(trampolineSignature));
@@ -232,9 +232,16 @@ export const verifyFingerprint = async (userOp: UserOperation, reqId: string, en
         }
         ,
       })
-
-      console.log("Signature Lambda:", signature.data.message.finalSignature);
+      const value = clientDataJSON.toString('hex').slice(72, 248);
+      console.log(value);
+      const clientDataJsonRequestId = ethers.utils.keccak256("0x" + value);
+      console.log(clientDataJsonRequestId.slice(2))
+      const abi = ethers.utils.defaultAbiCoder;
+      // console.log("Signature Lambda:", signature.data.message.finalSignature);
       
-    userOp.signature = signature.data.message.finalSignature;
+    userOp.signature = signature.data.message.finalSignature + clientDataJsonRequestId.slice(2);
+    // const data = abi.decode(["uint256", "uint256", "uint256", "bytes32"], userOp.signature);
+    //  + clientDataJsonRequestId;
+    // console.log("After decoding ", data);
     return { newUserOp: userOp, process: signature.data.message.processStatus };
   }

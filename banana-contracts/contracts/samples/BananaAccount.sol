@@ -239,48 +239,24 @@ contract BananaAccount is Safe {
         UserOperation calldata userOp,
         bytes32 userOpHash
     ) internal virtual returns (uint256 validationData) {
-        userOpHash;
 
-        (
-            bytes memory signature,
-            bytes memory clientDataJSON,
-            bytes memory authenticatorDataBytes
-        ) = abi.decode(userOp.signature, (bytes, bytes, bytes));
-
-        (uint256 r, uint256 s) = this._getRSValues(signature);
+         (uint r, uint s, bytes32 message, bytes32 clientDataJsonHash) = abi.decode(
+            userOp.signature,
+            (uint, uint, bytes32, bytes32)
+        );
 
         string memory userOpHashHex = lower(toHex(userOpHash));
 
         bytes memory base64RequestId = bytes(Base64.encode(userOpHashHex));
 
-        bytes memory base64RequestIdFromClientDataJSON = this
-            .getRequestIdFromClientDataJSON(clientDataJSON);
-
-        require(
-            compareBytes(base64RequestId, base64RequestIdFromClientDataJSON)
-        );
-
-        bytes32 clientDataHash = sha256(clientDataJSON);
-
-        bytes memory signatureBase = abi.encodePacked(
-            authenticatorDataBytes,
-            clientDataHash
-        );
-
-        bytes32 signatureBaseTohash = sha256(signatureBase);
-
-        // (uint r, uint s, bytes32 message) = abi.decode(
-        //     userOp.signature,
-        //     (uint, uint, bytes32)
-        // );
-        require(!usedMessages[signatureBaseTohash], "account: message already used");
-        usedMessages[signatureBaseTohash] = true;
+        require(keccak256(base64RequestId) == clientDataJsonHash, "Signed userOp doesn't match");
 
         bool success = EllipticCurve(ellipticCurve).validateSignature(
-            signatureBaseTohash,
+            message,
             [r, s],
             qValues
         );
+        // bytes32 hash = userOpHash.toEthSignedMessageHash();
         if (!success) return SIG_VALIDATION_FAILED;
         return 0;
     }

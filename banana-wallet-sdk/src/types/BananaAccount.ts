@@ -68,40 +68,38 @@ export type UserOperationStructOutput = [
   signature: string;
 };
 
-export interface NewTouchIdAccountSafeInterface extends utils.Interface {
+export interface BananaAccountInterface extends utils.Interface {
   functions: {
     "VERSION()": FunctionFragment;
-    "addDeposit()": FunctionFragment;
+    "_getRSValues(bytes)": FunctionFragment;
+    "_getRequestId(bytes)": FunctionFragment;
     "addOwnerWithThreshold(address,uint256)": FunctionFragment;
     "approveHash(bytes32)": FunctionFragment;
     "approvedHashes(address,bytes32)": FunctionFragment;
     "changeThreshold(uint256)": FunctionFragment;
     "checkNSignatures(bytes32,bytes,bytes,uint256)": FunctionFragment;
     "checkSignatures(bytes32,bytes,bytes)": FunctionFragment;
+    "compareBytes(bytes,bytes)": FunctionFragment;
+    "concatBytes(bytes,bytes)": FunctionFragment;
     "disableModule(address,address)": FunctionFragment;
     "domainSeparator()": FunctionFragment;
     "enableModule(address)": FunctionFragment;
     "encodeTransactionData(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,uint256)": FunctionFragment;
     "entryPoint()": FunctionFragment;
-    "exec(address,uint256,bytes[])": FunctionFragment;
-    "execBatch(address[],bytes[])": FunctionFragment;
-    "execFromEntryPoint(address,uint256,bytes)": FunctionFragment;
     "execTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes)": FunctionFragment;
     "execTransactionFromEntrypoint(address,uint256,bytes,uint8)": FunctionFragment;
     "execTransactionFromModule(address,uint256,bytes,uint8)": FunctionFragment;
     "execTransactionFromModuleReturnData(address,uint256,bytes,uint8)": FunctionFragment;
-    "executeBatch(address[],bytes[])": FunctionFragment;
     "getChainId()": FunctionFragment;
-    "getDeposit()": FunctionFragment;
     "getModulesPaginated(address,uint256)": FunctionFragment;
     "getOwners()": FunctionFragment;
+    "getRequestIdFromClientDataJSON(bytes)": FunctionFragment;
     "getStorageAt(uint256,uint256)": FunctionFragment;
     "getThreshold()": FunctionFragment;
     "getTransactionHash(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,uint256)": FunctionFragment;
     "isModuleEnabled(address)": FunctionFragment;
     "isOwner(address)": FunctionFragment;
     "nonce()": FunctionFragment;
-    "owner()": FunctionFragment;
     "removeOwner(address,address,uint256)": FunctionFragment;
     "replaceEntrypoint(address)": FunctionFragment;
     "setFallbackHandler(address)": FunctionFragment;
@@ -111,44 +109,43 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     "signedMessages(bytes32)": FunctionFragment;
     "simulateAndRevert(address,bytes)": FunctionFragment;
     "swapOwner(address,address,address)": FunctionFragment;
+    "toHex(bytes32)": FunctionFragment;
+    "usedMessages(bytes32)": FunctionFragment;
     "validateUserOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,uint256)": FunctionFragment;
-    "withdrawDepositTo(address,uint256)": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
       | "VERSION"
-      | "addDeposit"
+      | "_getRSValues"
+      | "_getRequestId"
       | "addOwnerWithThreshold"
       | "approveHash"
       | "approvedHashes"
       | "changeThreshold"
       | "checkNSignatures"
       | "checkSignatures"
+      | "compareBytes"
+      | "concatBytes"
       | "disableModule"
       | "domainSeparator"
       | "enableModule"
       | "encodeTransactionData"
       | "entryPoint"
-      | "exec"
-      | "execBatch"
-      | "execFromEntryPoint"
       | "execTransaction"
       | "execTransactionFromEntrypoint"
       | "execTransactionFromModule"
       | "execTransactionFromModuleReturnData"
-      | "executeBatch"
       | "getChainId"
-      | "getDeposit"
       | "getModulesPaginated"
       | "getOwners"
+      | "getRequestIdFromClientDataJSON"
       | "getStorageAt"
       | "getThreshold"
       | "getTransactionHash"
       | "isModuleEnabled"
       | "isOwner"
       | "nonce"
-      | "owner"
       | "removeOwner"
       | "replaceEntrypoint"
       | "setFallbackHandler"
@@ -158,14 +155,19 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
       | "signedMessages"
       | "simulateAndRevert"
       | "swapOwner"
+      | "toHex"
+      | "usedMessages"
       | "validateUserOp"
-      | "withdrawDepositTo"
   ): FunctionFragment;
 
   encodeFunctionData(functionFragment: "VERSION", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "addDeposit",
-    values?: undefined
+    functionFragment: "_getRSValues",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_getRequestId",
+    values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "addOwnerWithThreshold",
@@ -201,6 +203,14 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "compareBytes",
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "concatBytes",
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "disableModule",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
@@ -230,26 +240,6 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "entryPoint",
     values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "exec",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>[]
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "execBatch",
-    values: [PromiseOrValue<string>[], PromiseOrValue<BytesLike>[]]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "execFromEntryPoint",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
-    ]
   ): string;
   encodeFunctionData(
     functionFragment: "execTransaction",
@@ -294,15 +284,7 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "executeBatch",
-    values: [PromiseOrValue<string>[], PromiseOrValue<BytesLike>[]]
-  ): string;
-  encodeFunctionData(
     functionFragment: "getChainId",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getDeposit",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -310,6 +292,10 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(functionFragment: "getOwners", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "getRequestIdFromClientDataJSON",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
   encodeFunctionData(
     functionFragment: "getStorageAt",
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
@@ -342,7 +328,6 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: "nonce", values?: undefined): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "removeOwner",
     values: [
@@ -409,6 +394,14 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "toHex",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "usedMessages",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "validateUserOp",
     values: [
       UserOperationStruct,
@@ -416,13 +409,16 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>
     ]
   ): string;
-  encodeFunctionData(
-    functionFragment: "withdrawDepositTo",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
-  ): string;
 
   decodeFunctionResult(functionFragment: "VERSION", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "addDeposit", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "_getRSValues",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_getRequestId",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "addOwnerWithThreshold",
     data: BytesLike
@@ -448,6 +444,14 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "compareBytes",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "concatBytes",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "disableModule",
     data: BytesLike
   ): Result;
@@ -464,12 +468,6 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "entryPoint", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "exec", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "execBatch", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "execFromEntryPoint",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "execTransaction",
     data: BytesLike
@@ -486,17 +484,16 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     functionFragment: "execTransactionFromModuleReturnData",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "executeBatch",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "getChainId", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "getDeposit", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getModulesPaginated",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getOwners", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getRequestIdFromClientDataJSON",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getStorageAt",
     data: BytesLike
@@ -515,7 +512,6 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "isOwner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "nonce", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "removeOwner",
     data: BytesLike
@@ -543,12 +539,13 @@ export interface NewTouchIdAccountSafeInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "swapOwner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "toHex", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "validateUserOp",
+    functionFragment: "usedMessages",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "withdrawDepositTo",
+    functionFragment: "validateUserOp",
     data: BytesLike
   ): Result;
 
@@ -736,12 +733,12 @@ export type SignMsgEvent = TypedEvent<[string], SignMsgEventObject>;
 
 export type SignMsgEventFilter = TypedEventFilter<SignMsgEvent>;
 
-export interface NewTouchIdAccountSafe extends BaseContract {
+export interface BananaAccount extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: NewTouchIdAccountSafeInterface;
+  interface: BananaAccountInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -765,9 +762,15 @@ export interface NewTouchIdAccountSafe extends BaseContract {
   functions: {
     VERSION(overrides?: CallOverrides): Promise<[string]>;
 
-    addDeposit(
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+    _getRSValues(
+      signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber] & { r: BigNumber; s: BigNumber }>;
+
+    _getRequestId(
+      clientDataJSON: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string] & { requestIdFromClientDataJSON: string }>;
 
     addOwnerWithThreshold(
       owner: PromiseOrValue<string>,
@@ -806,6 +809,18 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[void]>;
 
+    compareBytes(
+      b1: PromiseOrValue<BytesLike>,
+      b2: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    concatBytes(
+      a: PromiseOrValue<BytesLike>,
+      b: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     disableModule(
       prevModule: PromiseOrValue<string>,
       module: PromiseOrValue<string>,
@@ -834,26 +849,6 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     ): Promise<[string]>;
 
     entryPoint(overrides?: CallOverrides): Promise<[string]>;
-
-    exec(
-      dest: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      func: PromiseOrValue<BytesLike>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    execBatch(
-      dest: PromiseOrValue<string>[],
-      func: PromiseOrValue<BytesLike>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    execFromEntryPoint(
-      dest: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      func: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
 
     execTransaction(
       to: PromiseOrValue<string>,
@@ -893,15 +888,7 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    executeBatch(
-      dest: PromiseOrValue<string>[],
-      func: PromiseOrValue<BytesLike>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     getChainId(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    getDeposit(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getModulesPaginated(
       start: PromiseOrValue<string>,
@@ -910,6 +897,11 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     ): Promise<[string[], string] & { array: string[]; next: string }>;
 
     getOwners(overrides?: CallOverrides): Promise<[string[]]>;
+
+    getRequestIdFromClientDataJSON(
+      clientDataJSON: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     getStorageAt(
       offset: PromiseOrValue<BigNumberish>,
@@ -944,8 +936,6 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     ): Promise<[boolean]>;
 
     nonce(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    owner(overrides?: CallOverrides): Promise<[string]>;
 
     removeOwner(
       prevOwner: PromiseOrValue<string>,
@@ -1014,25 +1004,35 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    toHex(
+      data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    usedMessages(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     validateUserOp(
       userOp: UserOperationStruct,
       userOpHash: PromiseOrValue<BytesLike>,
       missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
-
-    withdrawDepositTo(
-      withdrawAddress: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
   };
 
   VERSION(overrides?: CallOverrides): Promise<string>;
 
-  addDeposit(
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  _getRSValues(
+    signature: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<[BigNumber, BigNumber] & { r: BigNumber; s: BigNumber }>;
+
+  _getRequestId(
+    clientDataJSON: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   addOwnerWithThreshold(
     owner: PromiseOrValue<string>,
@@ -1071,6 +1071,18 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     overrides?: CallOverrides
   ): Promise<void>;
 
+  compareBytes(
+    b1: PromiseOrValue<BytesLike>,
+    b2: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  concatBytes(
+    a: PromiseOrValue<BytesLike>,
+    b: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   disableModule(
     prevModule: PromiseOrValue<string>,
     module: PromiseOrValue<string>,
@@ -1099,26 +1111,6 @@ export interface NewTouchIdAccountSafe extends BaseContract {
   ): Promise<string>;
 
   entryPoint(overrides?: CallOverrides): Promise<string>;
-
-  exec(
-    dest: PromiseOrValue<string>,
-    value: PromiseOrValue<BigNumberish>,
-    func: PromiseOrValue<BytesLike>[],
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  execBatch(
-    dest: PromiseOrValue<string>[],
-    func: PromiseOrValue<BytesLike>[],
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  execFromEntryPoint(
-    dest: PromiseOrValue<string>,
-    value: PromiseOrValue<BigNumberish>,
-    func: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
 
   execTransaction(
     to: PromiseOrValue<string>,
@@ -1158,15 +1150,7 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  executeBatch(
-    dest: PromiseOrValue<string>[],
-    func: PromiseOrValue<BytesLike>[],
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   getChainId(overrides?: CallOverrides): Promise<BigNumber>;
-
-  getDeposit(overrides?: CallOverrides): Promise<BigNumber>;
 
   getModulesPaginated(
     start: PromiseOrValue<string>,
@@ -1175,6 +1159,11 @@ export interface NewTouchIdAccountSafe extends BaseContract {
   ): Promise<[string[], string] & { array: string[]; next: string }>;
 
   getOwners(overrides?: CallOverrides): Promise<string[]>;
+
+  getRequestIdFromClientDataJSON(
+    clientDataJSON: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   getStorageAt(
     offset: PromiseOrValue<BigNumberish>,
@@ -1209,8 +1198,6 @@ export interface NewTouchIdAccountSafe extends BaseContract {
   ): Promise<boolean>;
 
   nonce(overrides?: CallOverrides): Promise<BigNumber>;
-
-  owner(overrides?: CallOverrides): Promise<string>;
 
   removeOwner(
     prevOwner: PromiseOrValue<string>,
@@ -1279,6 +1266,16 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  toHex(
+    data: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  usedMessages(
+    arg0: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   validateUserOp(
     userOp: UserOperationStruct,
     userOpHash: PromiseOrValue<BytesLike>,
@@ -1286,16 +1283,18 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  withdrawDepositTo(
-    withdrawAddress: PromiseOrValue<string>,
-    amount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   callStatic: {
     VERSION(overrides?: CallOverrides): Promise<string>;
 
-    addDeposit(overrides?: CallOverrides): Promise<void>;
+    _getRSValues(
+      signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber] & { r: BigNumber; s: BigNumber }>;
+
+    _getRequestId(
+      clientDataJSON: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     addOwnerWithThreshold(
       owner: PromiseOrValue<string>,
@@ -1334,6 +1333,18 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    compareBytes(
+      b1: PromiseOrValue<BytesLike>,
+      b2: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    concatBytes(
+      a: PromiseOrValue<BytesLike>,
+      b: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     disableModule(
       prevModule: PromiseOrValue<string>,
       module: PromiseOrValue<string>,
@@ -1362,26 +1373,6 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     ): Promise<string>;
 
     entryPoint(overrides?: CallOverrides): Promise<string>;
-
-    exec(
-      dest: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      func: PromiseOrValue<BytesLike>[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    execBatch(
-      dest: PromiseOrValue<string>[],
-      func: PromiseOrValue<BytesLike>[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    execFromEntryPoint(
-      dest: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      func: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     execTransaction(
       to: PromiseOrValue<string>,
@@ -1421,15 +1412,7 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean, string] & { success: boolean; returnData: string }>;
 
-    executeBatch(
-      dest: PromiseOrValue<string>[],
-      func: PromiseOrValue<BytesLike>[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     getChainId(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getDeposit(overrides?: CallOverrides): Promise<BigNumber>;
 
     getModulesPaginated(
       start: PromiseOrValue<string>,
@@ -1438,6 +1421,11 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     ): Promise<[string[], string] & { array: string[]; next: string }>;
 
     getOwners(overrides?: CallOverrides): Promise<string[]>;
+
+    getRequestIdFromClientDataJSON(
+      clientDataJSON: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     getStorageAt(
       offset: PromiseOrValue<BigNumberish>,
@@ -1472,8 +1460,6 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     ): Promise<boolean>;
 
     nonce(overrides?: CallOverrides): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<string>;
 
     removeOwner(
       prevOwner: PromiseOrValue<string>,
@@ -1542,18 +1528,22 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    toHex(
+      data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    usedMessages(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     validateUserOp(
       userOp: UserOperationStruct,
       userOpHash: PromiseOrValue<BytesLike>,
       missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    withdrawDepositTo(
-      withdrawAddress: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
   };
 
   filters: {
@@ -1654,8 +1644,14 @@ export interface NewTouchIdAccountSafe extends BaseContract {
   estimateGas: {
     VERSION(overrides?: CallOverrides): Promise<BigNumber>;
 
-    addDeposit(
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    _getRSValues(
+      signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    _getRequestId(
+      clientDataJSON: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     addOwnerWithThreshold(
@@ -1695,6 +1691,18 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    compareBytes(
+      b1: PromiseOrValue<BytesLike>,
+      b2: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    concatBytes(
+      a: PromiseOrValue<BytesLike>,
+      b: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     disableModule(
       prevModule: PromiseOrValue<string>,
       module: PromiseOrValue<string>,
@@ -1723,26 +1731,6 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     ): Promise<BigNumber>;
 
     entryPoint(overrides?: CallOverrides): Promise<BigNumber>;
-
-    exec(
-      dest: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      func: PromiseOrValue<BytesLike>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    execBatch(
-      dest: PromiseOrValue<string>[],
-      func: PromiseOrValue<BytesLike>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    execFromEntryPoint(
-      dest: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      func: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
 
     execTransaction(
       to: PromiseOrValue<string>,
@@ -1782,15 +1770,7 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    executeBatch(
-      dest: PromiseOrValue<string>[],
-      func: PromiseOrValue<BytesLike>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     getChainId(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getDeposit(overrides?: CallOverrides): Promise<BigNumber>;
 
     getModulesPaginated(
       start: PromiseOrValue<string>,
@@ -1799,6 +1779,11 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     ): Promise<BigNumber>;
 
     getOwners(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getRequestIdFromClientDataJSON(
+      clientDataJSON: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     getStorageAt(
       offset: PromiseOrValue<BigNumberish>,
@@ -1834,8 +1819,6 @@ export interface NewTouchIdAccountSafe extends BaseContract {
 
     nonce(overrides?: CallOverrides): Promise<BigNumber>;
 
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
-
     removeOwner(
       prevOwner: PromiseOrValue<string>,
       owner: PromiseOrValue<string>,
@@ -1903,16 +1886,20 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    toHex(
+      data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    usedMessages(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     validateUserOp(
       userOp: UserOperationStruct,
       userOpHash: PromiseOrValue<BytesLike>,
       missingAccountFunds: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    withdrawDepositTo(
-      withdrawAddress: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
   };
@@ -1920,8 +1907,14 @@ export interface NewTouchIdAccountSafe extends BaseContract {
   populateTransaction: {
     VERSION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    addDeposit(
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    _getRSValues(
+      signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _getRequestId(
+      clientDataJSON: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     addOwnerWithThreshold(
@@ -1961,6 +1954,18 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    compareBytes(
+      b1: PromiseOrValue<BytesLike>,
+      b2: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    concatBytes(
+      a: PromiseOrValue<BytesLike>,
+      b: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     disableModule(
       prevModule: PromiseOrValue<string>,
       module: PromiseOrValue<string>,
@@ -1989,26 +1994,6 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     entryPoint(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    exec(
-      dest: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      func: PromiseOrValue<BytesLike>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    execBatch(
-      dest: PromiseOrValue<string>[],
-      func: PromiseOrValue<BytesLike>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    execFromEntryPoint(
-      dest: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      func: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
 
     execTransaction(
       to: PromiseOrValue<string>,
@@ -2048,15 +2033,7 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    executeBatch(
-      dest: PromiseOrValue<string>[],
-      func: PromiseOrValue<BytesLike>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
     getChainId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getDeposit(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getModulesPaginated(
       start: PromiseOrValue<string>,
@@ -2065,6 +2042,11 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     getOwners(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getRequestIdFromClientDataJSON(
+      clientDataJSON: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     getStorageAt(
       offset: PromiseOrValue<BigNumberish>,
@@ -2099,8 +2081,6 @@ export interface NewTouchIdAccountSafe extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     nonce(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     removeOwner(
       prevOwner: PromiseOrValue<string>,
@@ -2169,16 +2149,20 @@ export interface NewTouchIdAccountSafe extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    toHex(
+      data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    usedMessages(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     validateUserOp(
       userOp: UserOperationStruct,
       userOpHash: PromiseOrValue<BytesLike>,
       missingAccountFunds: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    withdrawDepositTo(
-      withdrawAddress: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };

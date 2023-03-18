@@ -23,7 +23,7 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
         case Chains.mumbai:
             return {
                 "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
-                "bundlerUrl": "https://eip4337-banana-bundler.xyz/rpc"
+                "bundlerUrl": "http://localhost:80/rpc"
             };
         case Chains.optimismTestnet:
             return {
@@ -53,14 +53,14 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         return {
             "Elliptic": "0x91703a4b78A084B479294634F37A0eA5924D1Ad0",
             "TouchIdSafeWalletContractProxyFactoryAddress": "0x074E09E9B4313a5cfE63bA1C70309F65442395bb",
-            "TouchIdSafeWalletContractSingletonAddress": "0x43E016b8498A6b27B162B4578aD6096E0dac4900",
+            "TouchIdSafeWalletContractSingletonAddress": "0x66D61387800d62695Df91A2018f54Eec3b832a34",
         };
         case Chains.mumbai: 
         return {
             // "MyWalletDeployer": "0xe83CaCA2F76979A76Ba0Cf3ac0EE1fB7e1E56AA4",
             "Elliptic": "0x7efd1b4C0469f43AbbE1a5946eBD4A1734d1b79E",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0x074E09E9B4313a5cfE63bA1C70309F65442395bb",
-            "TouchIdSafeWalletContractSingletonAddress": "0x43E016b8498A6b27B162B4578aD6096E0dac4900",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0xe5b37ba779d21d8aB5A2DFa2DfDBA7a41f3Adc77",
+            "TouchIdSafeWalletContractSingletonAddress": "0x66D61387800d62695Df91A2018f54Eec3b832a34",
         };
     }
 }

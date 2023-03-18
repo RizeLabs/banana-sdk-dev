@@ -12,18 +12,18 @@ import type {
   PromiseOrValue,
 } from "./common";
 
-export interface NewTouchIdSafeAccountProxyInterface extends utils.Interface {
+export interface BananaAccountProxyInterface extends utils.Interface {
   functions: {};
 
   events: {};
 }
 
-export interface NewTouchIdSafeAccountProxy extends BaseContract {
+export interface BananaAccountProxy extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: NewTouchIdSafeAccountProxyInterface;
+  interface: BananaAccountProxyInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,

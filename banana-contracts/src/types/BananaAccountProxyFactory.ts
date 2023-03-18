@@ -27,8 +27,7 @@ import type {
   PromiseOrValue,
 } from "./common";
 
-export interface NewTouchIdSafeAccountProxyFactoryInterface
-  extends utils.Interface {
+export interface BananaAccountProxyFactoryInterface extends utils.Interface {
   functions: {
     "createChainSpecificProxyWithNonce(address,bytes,uint256)": FunctionFragment;
     "createProxyWithCallback(address,bytes,uint256,address)": FunctionFragment;
@@ -137,12 +136,12 @@ export type ProxyCreationEvent = TypedEvent<
 
 export type ProxyCreationEventFilter = TypedEventFilter<ProxyCreationEvent>;
 
-export interface NewTouchIdSafeAccountProxyFactory extends BaseContract {
+export interface BananaAccountProxyFactory extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: NewTouchIdSafeAccountProxyFactoryInterface;
+  interface: BananaAccountProxyFactoryInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
