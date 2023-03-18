@@ -148,7 +148,7 @@ async function main() {
 	
 	const PUBLIC_KEY_EXPOSED = '0xA8458B544c551Af2ADE164C427a8A4F13A346F2A'
 	const PRIVATE_KEY_EXPOSED = '326d3b8f081040e0044fde540508dde301cdae5c387d207f7ea15ceb32b9630d';
-	const receiver = '0x785efD6915A9f63e070d9de3a70eD15362629dE7';
+	const receiver = '0x8881a015d30BAe596C5e6b2C15B22e233637A046';
 	const fundTxn = {
         from: PUBLIC_KEY_EXPOSED,
         to: receiver,

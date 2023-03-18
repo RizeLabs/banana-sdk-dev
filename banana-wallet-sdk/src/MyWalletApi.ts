@@ -77,7 +77,7 @@ export class MyWalletApi extends SimpleAccountAPI {
       "0x0000000000000000000000000000000000000000",   // payment token
       0,                                              // payment 
       "0x288d1d682311018736B820294D22Ed0DBE372188",   // payment receiver
-      "0x0576a174D229E3cFA37253523E645A78A0C91B57",   // entrypoint
+      this.entryPointAddress,   // entrypoint
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray,          // q values 
       this.EllipticCurveAddress                         // elliptic curve
@@ -103,6 +103,7 @@ export class MyWalletApi extends SimpleAccountAPI {
         throw new Error('no factory to get initCode')
       }
     }
+    console.log("Index: ", this.index);
     return hexConcat([
       this.factory.address,
       this.factory.interface.encodeFunctionData('createChainSpecificProxyWithNonce', [this.singletonTouchIdSafeAddress, this.getTouchIdSafeWalletContractInitializer(), this.index])

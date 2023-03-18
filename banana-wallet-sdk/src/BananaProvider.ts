@@ -23,7 +23,6 @@ import {
 } from "./interfaces/Banana.interface";
 import { BananaAccount, BananaAccountProxyFactory } from './types'
 import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types/factories'
-import Axios from 'axios';
 import { K1_SIGNATURE_LAMBDA_URL  } from './routes'
 import { Bytes, concat } from "@ethersproject/bytes";
 import { keccak256 } from "@ethersproject/keccak256";
@@ -267,15 +266,15 @@ export class Banana {
     //@ts-ignore
     const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
     [
-      ["0x288d1d682311018736B820294D22Ed0DBE372188"], // owners 
+      [this.bananaSigner.address], // owners 
       1,                                              // thresold will remain fix 
       "0x0000000000000000000000000000000000000000",   // to address 
       "0x",                                           // modules setup calldata
-      "0x0000000000000000000000000000000000000000",   // fallback handler
+      "0xda8C24F80ABaD6F6f2D9B6795537E731e02Ee3E9",   // fallback handler
       "0x0000000000000000000000000000000000000000",   // payment token
       0,                                              // payment 
       "0x288d1d682311018736B820294D22Ed0DBE372188",   // payment receiver
-      "0x0576a174D229E3cFA37253523E645A78A0C91B57",   // entrypoint
+      this.Provider.entryPointAddress,   // entrypoint
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray,          // q values 
       this.addresses.Elliptic                         // elliptic curve
