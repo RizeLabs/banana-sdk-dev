@@ -2,6 +2,7 @@ const hre = require('hardhat')
 const network = require('hardhat')
 const { ethers } = require('hardhat');
 const fs = require('fs')
+const  { } = require('../../banana-wallet-sdk/src/types')
 const { BigNumber } = require('ethers')
 const { NewTouchIdAccountSafe, BananaTest } = require('../src/types')
 const { NewTouchIdAccountSafe__factory, BananaTest__factory } = require('../src/types/factories')
@@ -112,6 +113,10 @@ async function main() {
 	// const NewTouchIdAccountDeployer = await ethers.getContractFactory('NewTouchIdAccountSafe');
 	// const newTouchIdAccountDeployer = await NewTouchIdAccountDeployer.deploy();
 	// console.log('Singleton :', newTouchIdAccountDeployer.address);
+
+	const TokenCallBackHandlerDeployer = await ethers.getContractFactory('TokenCallbackHandler');
+	const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
+	console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);
 
 	// const NewTouchIdAccountProxy = await ethers.getContractFactory('NewTouchIdSafeAccountProxy');
 	// const newTouchIdAccountProxy = await NewTouchIdAccountProxy.deploy(newTouchIdAccountDeployer.address);

@@ -31,6 +31,12 @@ const Staking = () => {
     const isVerified = await bananaInstance.verifySignature(signedMesage.signature, signedMesage.messageToBeSigned, await bananaInstance.getEOAAddress()); 
     console.log("Is verified: ", isVerified);
   }
+
+  const resetWallet = async () => {
+    const bananaInstance = signerContext.bananaInstance;
+    const resetStatus = await bananaInstance.resetWallet();
+    console.log(resetStatus);
+  }
   // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
   
   // polygo staking 
@@ -58,13 +64,18 @@ const Staking = () => {
 
     // if (scwAddress) {
       console.log("Here !!");
-      let aaProvider = await bananaInstance.getBananaProvider();
-      console.log("AA Provider",aaProvider)
-      let aaSigner = aaProvider.getSigner();
+      // let aaProvider = await bananaInstance.getBananaProvider();
+      // console.log("AA Provider",aaProvider)
+      // let aaSigner = aaProvider.getSigner();
+     const provider = new ethers.providers.JsonRpcProvider(
+        // this.jsonRpcProviderUrl
+        "https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4"
+      );
       let StakingContract = new ethers.Contract(
         stakeAddress,
         StakingArtifact.abi,
-        aaSigner
+        // aaSigner
+        provider
       );
       const stakingCallData = StakingContract.interface.encodeFunctionData(
         "stake",
@@ -133,6 +144,7 @@ const Staking = () => {
                 />)}
             </div>
             <button onClick={() => signMessage()} > sign message </button>
+            <button onClick={() => resetWallet()} > Reset Wallet </button>
           </div>
         </div>
       </div>

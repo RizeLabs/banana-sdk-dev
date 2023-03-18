@@ -224,7 +224,8 @@ export class Banana {
       paymasterAPI: myPaymasterApi,
       _EllipticCurveAddress: this.addresses.Elliptic,
       _qValues: [this.publicKey.q0, this.publicKey.q1],
-      _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress
+      _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress,
+      _ownerAddress: this.bananaSigner.address
     });
 
     this.accountApi = smartWalletAPI;
@@ -334,6 +335,24 @@ export class Banana {
   }
 
   /**
+   * @method resetWallet
+   * @param none
+   * @returns { string } walletName
+   * method to remove current wallet metadata from browser
+   */
+
+  resetWallet = () => {
+    try {
+      const walletName = this.cookie.getCookie("bananaUser");
+      this.cookie.deleteCookie(walletName);
+      this.cookie.deleteCookie("bananaUser");
+      return { status: "success" }
+    } catch (err) {
+      return { status: "error", error: err }
+    }
+  }
+
+  /**
    * @method getWalletName
    * @param none
    * @returns { string } walletName
@@ -359,13 +378,13 @@ export class Banana {
 
   /**
    * @method verify
-   * @param { string } signaure, { string } mesageSigned, { string } eoaAddress
+   * @param { string } signaure, { string } messageSigned, { string } eoaAddress
    * @returns { boolean } isVerified
    * method to verify message against signature
    */
 
   //! for now assigned eoaAddress as any type
-  verifySignature = async (signature: string, messageToBeSigned: string, eoaAddress: any) => {
+  verifySignature = async (signature: string, messageSigned: string, eoaAddress: any) => {
     const rValue = ethers.BigNumber.from("0x"+signature.slice(2, 66));
     const sValue = ethers.BigNumber.from("0x"+signature.slice(66, 132));
     console.log("r part: ", rValue)
@@ -374,7 +393,7 @@ export class Banana {
       this.addresses.Elliptic,
       this.jsonRpcProvider
     );
-    const isVerified = await EC.validateSignature(messageToBeSigned, [rValue, sValue], eoaAddress);
+    const isVerified = await EC.validateSignature(messageSigned, [rValue, sValue], eoaAddress);
     return isVerified;
   }
 
@@ -405,8 +424,6 @@ export class Banana {
 
   private sendUserOpToBundler = async (userOp: UserOperationStruct) => {
     try {
-      console.log(`userOp.preVerificationGas: ${await userOp.preVerificationGas}`)
-      console.log(`userOp: ${JSON.stringify(userOp)}`)
       const uHash = await this.httpRpcClient.sendUserOpToBundler(
         userOp as any
       );
@@ -440,7 +457,6 @@ export class Banana {
     } catch (err) {
       console.log(err);
     }
-    console.log("User op from create unsigned userop ", userOp);
     return userOp;
   }
 
@@ -493,7 +509,7 @@ export class Banana {
   /**
    * @method execute
    * @param { string } functionCallData, { string } value, { string } destination
-   * @returns { string } transactionHash
+   * @returns { string } requestId
    * handles the transaction to be initiated using user smart contract wallet.
    */
 
@@ -508,8 +524,8 @@ export class Banana {
     const aaSigner = bananaProvider.getSigner();
     this.TouchIdSafeWalletContract = BananaAccount__factory.connect(this.walletAddress || "", this.bananaSigner);
     this.TouchIdSafeWalletContract = this.TouchIdSafeWalletContract.connect(aaSigner);
-    const transactionHash = await this.constructAndSendUserOp(funcCallData, destination, value);
-    return transactionHash;
+    const requestId = await this.constructAndSendUserOp(funcCallData, destination, value);
+    return requestId;
   };
 
   /**
@@ -529,6 +545,13 @@ export class Banana {
     }
   }
 
+/**
+ * @params message: string
+ * @returns object { messageSigned: signedMessage.toHexString(), signature: finalSignature }
+ * signature: Signature retrieved after signing message.
+ * messageSigned: Message which is signed.
+ */
+
   signMessage = async(message:string) =>{
     // To generate signature, first calculate the keccak256 hash of encodePacked message
     const messageHash = ethers.utils.keccak256(ethers.utils.solidityPack(["string"],[message]))
@@ -544,7 +567,7 @@ export class Banana {
      * the `message` is signed using secp256r1 instead of secp256k1, hence to verify
      * signedMessage we cannot use ecrecover!
      */
-    return {messageToBeSigned:signedMessage.toHexString(), signature: finalSignature}
+    return {messageSigned:signedMessage.toHexString(), signature: finalSignature}
   }
 
  hashMessage = (message: Bytes | string): string =>{
