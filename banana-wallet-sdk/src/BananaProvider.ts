@@ -457,6 +457,7 @@ export class Banana {
     //@ts-ignore
     userOp.verificationGasLimit = 3e6;
     const reqId = await this.accountApi.getUserOpHash(userOp as any);
+    console.log("reqId: ", reqId);
     let processStatus = true;
     let finalUserOp;
     while(processStatus) {
