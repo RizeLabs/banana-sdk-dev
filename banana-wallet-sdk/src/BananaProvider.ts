@@ -224,7 +224,8 @@ export class Banana {
       paymasterAPI: myPaymasterApi,
       _EllipticCurveAddress: this.addresses.Elliptic,
       _qValues: [this.publicKey.q0, this.publicKey.q1],
-      _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress
+      _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress,
+      _ownerAddress: this.bananaSigner.address
     });
 
     this.accountApi = smartWalletAPI;
