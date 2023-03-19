@@ -43,6 +43,8 @@
     "base64url": "^3.0.1",
     "crypto-browserify": "^3.12.0",
     "ethers": "^5.7.2",
+    "goober": "^2.1.12",
+    "react": "^18.2.0",
     "typescript": "^4.9.5",
     "uuid": "^9.0.0"
   },
@@ -52,6 +54,7 @@
     "@types/jsdom": "^21.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.18",
+    "@types/react": "^18.0.28",
     "@types/sinon": "^10.0.13",
     "@types/uuid": "^9.0.0",
     "chai": "^4.3.7",

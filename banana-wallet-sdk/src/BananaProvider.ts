@@ -32,6 +32,7 @@ import { BigNumber } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
 import { getGasFee } from "./utils/GetGasFee";
+import { sendTransactionPopup } from "./components/events/handleTransaction";
 
 export class Banana {
   Provider: ClientConfig;
@@ -469,10 +470,7 @@ export class Banana {
     userOp.verificationGasLimit = 3e6;
     //@ts-ignore
     userOp.preVerificationGas = ethers.BigNumber.from(await userOp.preVerificationGas).add(5000);
-    const entryPoint: EntryPoint = EntryPoint__factory.connect(
-      this.Provider.entryPointAddress,
-      this.jsonRpcProvider
-    );
+    sendTransactionPopup();
     const reqId = await this.accountApi.getUserOpHash(userOp as any);
     console.log("UserOpHash: ", reqId);
     let processStatus = true;

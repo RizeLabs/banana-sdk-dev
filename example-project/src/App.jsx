@@ -10,6 +10,7 @@ import { publicProvider } from "wagmi/providers/public";
 import Staking from "./pages/Staking";
 // import Swaping from "./pages/Swaping";
 import SignerProvider from "./context/signerProvider";
+import BananaProvider from '@rize-labs/banana-wallet-sdk/src/components/index'
 import React from "react";
 
 const { chains, provider } = configureChains(
@@ -36,6 +37,7 @@ function App() {
     <div className="App">
       {/* <WagmiConfig client={wagmiClient}> */}
         {/* <RainbowKitProvider chains={chains}> */}
+        <BananaProvider>
           <SignerProvider>
           <Router>
             <Navbar />
@@ -46,6 +48,7 @@ function App() {
             </Routes>
           </Router>
           </SignerProvider>
+        </BananaProvider>
         {/* </RainbowKitProvider> */}
       {/* </WagmiConfig> */}
     </div>
