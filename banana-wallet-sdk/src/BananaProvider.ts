@@ -32,6 +32,7 @@ import { BigNumber } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
 import { getGasFee } from "./utils/GetGasFee";
+import Axios from 'axios';
 
 export class Banana {
   Provider: ClientConfig;
@@ -486,9 +487,62 @@ export class Banana {
       let minBalanceRequired = minGasRequired.mul(currentGasPrice)
       //@ts-ignore
       let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(userOp?.sender);
-      if(userBalance.lt(minBalanceRequired)){
-        throw new Error("ERROR: Insufficient balance in Wallet")
+      console.log(`User Balance: ${userBalance.toString()}`)
+      console.log(`Min Balance Required: ${minBalanceRequired.toString()}`)
+      // if(userBalance.lt(minBalanceRequired)){
+      //   throw new Error("ERROR: Insufficient balance in Wallet")
+      // }
+
+      const paymasterRpcProvider = new ethers.providers.JsonRpcProvider('https://api.pimlico.io/v1/mumbai/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445')
+
+      const paymasterRequest =  await paymasterRpcProvider.send('pm_canSponsorUserOperation', [{
+        "sender": userOp?.sender,
+        "nonce": userOp?.nonce,
+          "initCode": userOp?.initCode,
+          "callData": userOp?.callData,
+          "callGasLimit": userOp?.callGasLimit,
+          "verificationGasLimit": userOp?.verificationGasLimit,
+          "preVerificationGas": userOp?.preVerificationGas,
+          "maxFeePerGas": userOp?.maxFeePerGas,
+          "maxPriorityFeePerGas": userOp?.maxPriorityFeePerGas,
+          "paymasterAndData": "",
+          "signature": "",
+      },
+      {
+        "entryPoint": "0x0576a174D229E3cFA37253523E645A78A0C91B57"
+      },
+      {
+        "referralAddress": "0x3e60B11022238Af208D4FAEe9192dAEE46D225a6"
       }
+    ])
+
+      // const paymasterRequest = await Axios({
+      //   url: 'https://api.pimlico.io/v1/mumbai/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445',
+      //   method: 'eth_canSponsorUserOperation',
+      //   params: 
+      //   [{
+      //     "sender": userOp?.sender,
+      //     "nonce": userOp?.nonce,
+      //       "initCode": userOp?.initCode,
+      //       "callData": userOp?.callData,
+      //       "callGasLimit": userOp?.callGasLimit,
+      //       "verificationGasLimit": userOp?.verificationGasLimit,
+      //       "preVerificationGas": userOp?.preVerificationGas,
+      //       "maxFeePerGas": userOp?.maxFeePerGas,
+      //       "maxPriorityFeePerGas": userOp?.maxPriorityFeePerGas,
+      //       "paymasterAndData": "",
+      //       "signature": "",
+      //   },
+      //   {
+      //     "entryPoint": "0x0576a174D229E3cFA37253523E645A78A0C91B57"
+      //   },
+      //   {
+      //     "referralAddress": "0x3e60B11022238Af208D4FAEe9192dAEE46D225a6"
+      //   }
+      // ]
+      //   ,
+      // })
+      console.log("Paymaster Request: ", paymasterRequest);
       const { newUserOp, process } = await this.bananaSigner.signUserOp(userOp as any, reqId, this.publicKey.encodedId);
       if(process === 'success') { 
         finalUserOp = newUserOp;
