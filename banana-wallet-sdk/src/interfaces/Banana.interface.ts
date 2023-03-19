@@ -30,7 +30,8 @@ export interface CookieObject {
 export interface ChainConfig {
     Elliptic: string;
     TouchIdSafeWalletContractProxyFactoryAddress: string;
-    TouchIdSafeWalletContractSingletonAddress: string
+    TouchIdSafeWalletContractSingletonAddress: string;
+    fallBackHandlerAddress: string;
 }
 
 export interface TransactionDetailsForUserOp {

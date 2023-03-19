@@ -114,9 +114,9 @@ async function main() {
 	// const newTouchIdAccountDeployer = await NewTouchIdAccountDeployer.deploy();
 	// console.log('Singleton :', newTouchIdAccountDeployer.address);
 
-	// const TokenCallBackHandlerDeployer = await ethers.getContractFactory('TokenCallbackHandler');
-	// const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
-	// console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);
+	const TokenCallBackHandlerDeployer = await ethers.getContractFactory('TokenCallbackHandler');
+	const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
+	console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);
 
 	// const NewTouchIdAccountProxy = await ethers.getContractFactory('NewTouchIdSafeAccountProxy');
 	// const newTouchIdAccountProxy = await NewTouchIdAccountProxy.deploy(newTouchIdAccountDeployer.address);
@@ -146,19 +146,19 @@ async function main() {
 	// const BananaAccountDeployer = await BananaAccount.deploy();
 	// console.log('Banana Test:', BananaAccountDeployer.address);
 	
-	const PUBLIC_KEY_EXPOSED = '0xA8458B544c551Af2ADE164C427a8A4F13A346F2A'
-	const PRIVATE_KEY_EXPOSED = '326d3b8f081040e0044fde540508dde301cdae5c387d207f7ea15ceb32b9630d';
-	const receiver = '0x8881a015d30BAe596C5e6b2C15B22e233637A046';
-	const fundTxn = {
-        from: PUBLIC_KEY_EXPOSED,
-        to: receiver,
-        value: ethers.utils.parseEther("0.001"),
-        gasLimit: 210000
-      }
-	const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas'));
-	const txn = await wallet.sendTransaction(fundTxn);
-	await txn.wait()
-	console.log(txn);
+	// const PUBLIC_KEY_EXPOSED = '0xA8458B544c551Af2ADE164C427a8A4F13A346F2A'
+	// const PRIVATE_KEY_EXPOSED = '326d3b8f081040e0044fde540508dde301cdae5c387d207f7ea15ceb32b9630d';
+	// const receiver = '0x8881a015d30BAe596C5e6b2C15B22e233637A046';
+	// const fundTxn = {
+    //     from: PUBLIC_KEY_EXPOSED,
+    //     to: receiver,
+    //     value: ethers.utils.parseEther("0.001"),
+    //     gasLimit: 210000
+    //   }
+	// const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas'));
+	// const txn = await wallet.sendTransaction(fundTxn);
+	// await txn.wait()
+	// console.log(txn);
 
 	// const EntryPoint = await ethers.getContractFactory('EntryPoint');
 	// const entryPoint = await EntryPoint.deploy();

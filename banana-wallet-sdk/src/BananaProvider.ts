@@ -223,7 +223,8 @@ export class Banana {
       _EllipticCurveAddress: this.addresses.Elliptic,
       _qValues: [this.publicKey.q0, this.publicKey.q1],
       _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress,
-      _ownerAddress: this.bananaSigner.address
+      _ownerAddress: this.bananaSigner.address,
+      _fallBackHandler: this.addresses.fallBackHandlerAddress
     });
 
     this.accountApi = smartWalletAPI;
@@ -269,10 +270,10 @@ export class Banana {
       1,                                              // thresold will remain fix 
       "0x0000000000000000000000000000000000000000",   // to address 
       "0x",                                           // modules setup calldata
-      "0xda8C24F80ABaD6F6f2D9B6795537E731e02Ee3E9",   // fallback handler
+      this.addresses.fallBackHandlerAddress,   // fallback handler
       "0x0000000000000000000000000000000000000000",   // payment token
       0,                                              // payment 
-      "0x288d1d682311018736B820294D22Ed0DBE372188",   // payment receiver
+      "0x0000000000000000000000000000000000000000",   // payment receiver
       this.Provider.entryPointAddress,   // entrypoint
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray,          // q values 
