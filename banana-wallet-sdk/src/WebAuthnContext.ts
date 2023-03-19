@@ -8,9 +8,6 @@ import { ECDSASigValue } from '@peculiar/asn1-ecc';
 import { REGISTRATION_LAMBDA_URL, VERIFICATION_LAMBDA_URL } from './routes'
 import { arrayify } from 'ethers/lib/utils'
 import { ethers } from 'ethers'
-// import crypto from 'crypto';
-//@ts-ignore
-// import crypto from 'crypto-browserify';
 
 
 export interface IWebAuthnContext {
@@ -65,7 +62,6 @@ export const registerFingerprint = async () => {
         console.log("algo not supported, trying again", err)
         // @ts-ignore
         publicKeyParams.authenticatorSelection.authenticatorAttachment = 'cross-platform'
-        console.log("new public key params", publicKeyParams)
         publicKeyCredential = await navigator.credentials.create({publicKey: publicKeyParams })
       }
 
@@ -84,7 +80,6 @@ export const registerFingerprint = async () => {
               "rawId": JSON.stringify(Array.from(new Uint8Array(publicKeyCredential?.rawId)))
         }
       });
-      console.log("Registration Lambda:", response);
       return {
         q0: response.data.message.q0hexString, 
         q1: response.data.message.q1hexString, 
@@ -156,10 +151,7 @@ export const getSignature = async (publicKeyCredential: any) => {
 };
 
 export const verifyFingerprint = async (userOp: UserOperation, reqId: string, encodedId: string) =>  {
-      console.log("Encoded Id:", encodedId)
-      // decode the rawID
       const decodedId = base64url.decode(encodedId)
-      console.log("Decoded Id", decodedId)
       let actualChallenge;
       try {
       actualChallenge = getUserOp(reqId)
@@ -184,43 +176,11 @@ export const verifyFingerprint = async (userOp: UserOperation, reqId: string, en
       }
       //@ts-ignore
       const response = credential.response;
-  //     console.log({
-  //       "authDataRaw": (ethers.utils.hexlify(new Uint8Array(response.authenticatorData))),
-  //       "cData": (ethers.utils.hexlify(new Uint8Array(response.clientDataJSON))),
-  //       "signature": (ethers.utils.hexlify(new Uint8Array(response.signature)))
-  // })  
-  //// Trampoline
-      const trampolineSignature = await getSignature(credential);
-      console.log('trampolineSignature', JSON.stringify(trampolineSignature));
-      console.log('trampolineSignaturehexconcat', ethers.utils.hexConcat(trampolineSignature));
-      const authDataBuffer = Buffer.from(
-        response.authenticatorData
-      );
-      console.log('authDataBuffer', authDataBuffer.toString('hex'));
 
       const clientDataJSON = Buffer.from(
         response.clientDataJSON
       );
-      console.log('clientDataJSON', clientDataJSON.toString('hex'));
 
-      const clientDataHash = toHash(clientDataJSON);
-      console.log('clientDataHash', clientDataHash.toString('hex'));
-
-      const clientDataHashOK = toHash(Buffer.from("data"));
-      console.log('clientDataHashOK', clientDataHashOK.toString('hex'));
-
-      const signatureBase = Buffer.concat([authDataBuffer, clientDataHash]);
-      console.log('signatureBase', signatureBase.toString('hex'));
-      console.log(`sha(signaturebase)= ${ethers.utils.sha256('0x'+signatureBase.toString('hex'))}}`)
-  //// Trampoline
-
-      const enSS = ethers.utils.solidityPack(
-        ['bytes', 'bytes', 'bytes'],
-        [ethers.utils.hexConcat(trampolineSignature),
-          '0x' + clientDataJSON.toString('hex'),
-          '0x' + authDataBuffer.toString('hex')]
-        )
-      console.log("Encoded Signature String:", enSS)
       const signature = await Axios({
         url: VERIFICATION_LAMBDA_URL,
         method: 'post',
@@ -233,15 +193,8 @@ export const verifyFingerprint = async (userOp: UserOperation, reqId: string, en
         ,
       })
       const value = clientDataJSON.toString('hex').slice(72, 248);
-      console.log(value);
       const clientDataJsonRequestId = ethers.utils.keccak256("0x" + value);
-      console.log(clientDataJsonRequestId.slice(2))
-      const abi = ethers.utils.defaultAbiCoder;
-      // console.log("Signature Lambda:", signature.data.message.finalSignature);
       
     userOp.signature = signature.data.message.finalSignature + clientDataJsonRequestId.slice(2);
-    // const data = abi.decode(["uint256", "uint256", "uint256", "bytes32"], userOp.signature);
-    //  + clientDataJsonRequestId;
-    // console.log("After decoding ", data);
     return { newUserOp: userOp, process: signature.data.message.processStatus };
   }

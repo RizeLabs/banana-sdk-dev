@@ -29,8 +29,8 @@ async function main() {
 	// const verifier = await Verifier.deploy();
 	// console.log('verifier :', verifier.address);
 
-	const provider = new ethers.providers.JsonRpcProvider('https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4');
-	const wallet = new ethers.Wallet("a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74", provider);
+	// const provider = new ethers.providers.JsonRpcProvider('https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4');
+	// const wallet = new ethers.Wallet("a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74", provider);
 
 	// const singletonContract = "0xe75Ea15be97753bc9d7F2A70dfE0fd0EB4a5AB51";
 
@@ -43,14 +43,14 @@ async function main() {
 	// 	"0x75F5C4626fb2DD0177C420e55dbB36FAd47dc015",
 	// 	provider
     //   );
-	const banana = new ethers.Contract(
-		// "0x8bd7A25A0f3dC4E3b9b465E130A9117299D5e4b6",
-	// "0xfF5667604BE1C5424c9E472366B2ABC18049eC6C",
-	"0xacF0ea36CAD99902CD52dBEd2013fA9a2d01FB7d",
-	NewTouchIdAccountProxyFactory.abi,
+	// const banana = new ethers.Contract(
+	// 	// "0x8bd7A25A0f3dC4E3b9b465E130A9117299D5e4b6",
+	// // "0xfF5667604BE1C5424c9E472366B2ABC18049eC6C",
+	// "0xacF0ea36CAD99902CD52dBEd2013fA9a2d01FB7d",
 	// NewTouchIdAccountProxyFactory.abi,
-		wallet
-	)
+	// // NewTouchIdAccountProxyFactory.abi,
+	// 	wallet
+	// )
 
 
 	//   const hash = ethers.utils.keccak256("0x4d48686d5a6a466c4d445a6a4e7a526c4e7a6733596d51334e54646b5a4445314d44677a4d6a566c4e5455324d4467344e7a466d5a544d344e5456694f47466a4d6d493459574979597a526b4d6a41774e6a646b4d6a6378");
@@ -114,9 +114,9 @@ async function main() {
 	// const newTouchIdAccountDeployer = await NewTouchIdAccountDeployer.deploy();
 	// console.log('Singleton :', newTouchIdAccountDeployer.address);
 
-	const TokenCallBackHandlerDeployer = await ethers.getContractFactory('TokenCallbackHandler');
-	const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
-	console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);
+	// const TokenCallBackHandlerDeployer = await ethers.getContractFactory('TokenCallbackHandler');
+	// const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
+	// console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);
 
 	// const NewTouchIdAccountProxy = await ethers.getContractFactory('NewTouchIdSafeAccountProxy');
 	// const newTouchIdAccountProxy = await NewTouchIdAccountProxy.deploy(newTouchIdAccountDeployer.address);
@@ -146,21 +146,19 @@ async function main() {
 	// const BananaAccountDeployer = await BananaAccount.deploy();
 	// console.log('Banana Test:', BananaAccountDeployer.address);
 	
-	// const PUBLIC_KEY_EXPOSED = '0xA8458B544c551Af2ADE164C427a8A4F13A346F2A'
-	// const PRIVATE_KEY_EXPOSED = '326d3b8f081040e0044fde540508dde301cdae5c387d207f7ea15ceb32b9630d';
-	// const receiver = '0xE6C9E76028cFf978E139a7a5B3E289bca75110cc';
-	// const fundTxn = {
-    //     from: PUBLIC_KEY_EXPOSED,
-    //     to: receiver,
-    //     value: ethers.utils.parseEther("0.5"),
-    //     gasLimit: 210000
-    //   }
-	// /const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas'));
-	// const txn = await wallet.sendTransaction(fundTxn);
-	// await txn.wait()
-	// console.log(txn);
-
-
+	const PUBLIC_KEY_EXPOSED = '0xA8458B544c551Af2ADE164C427a8A4F13A346F2A'
+	const PRIVATE_KEY_EXPOSED = '326d3b8f081040e0044fde540508dde301cdae5c387d207f7ea15ceb32b9630d';
+	const receiver = '0x8881a015d30BAe596C5e6b2C15B22e233637A046';
+	const fundTxn = {
+        from: PUBLIC_KEY_EXPOSED,
+        to: receiver,
+        value: ethers.utils.parseEther("0.001"),
+        gasLimit: 210000
+      }
+	const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas'));
+	const txn = await wallet.sendTransaction(fundTxn);
+	await txn.wait()
+	console.log(txn);
 
 	// const EntryPoint = await ethers.getContractFactory('EntryPoint');
 	// const entryPoint = await EntryPoint.deploy();
