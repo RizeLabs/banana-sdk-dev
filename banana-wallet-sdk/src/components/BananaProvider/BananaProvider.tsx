@@ -32,10 +32,10 @@ const BananaProvider = (props: any) => {
     <div>
       {props.children}
       <Modal isVisible={isTransactionPopup}>
-        <TransactionPopup />
+        <SignMessagePopup changeVisibility={setIsTransactionPopup} />
       </Modal>
       <Modal isVisible={isMessageSignPopup}>
-        <SignMessagePopup />
+        <SignMessagePopup changeVisibility={setIsMessageSignPopup} />
       </Modal>
     </div>
   );

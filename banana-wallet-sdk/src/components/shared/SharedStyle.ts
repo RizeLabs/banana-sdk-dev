@@ -13,7 +13,7 @@ export const SharedStyles = {
         cursor: pointer;
         border-radius: 8px;
         padding: 1.125rem 1rem;
-        font-family: 'Urbanist-Bold';
+        font-family: 'Tahoma';
         @include flexBox(row, center, center);
         &:hover {
             background-color: #000000 !important;
@@ -24,11 +24,11 @@ export const SharedStyles = {
         width: 100%;
         color: #ffffff;
         cursor: pointer;
+        font-family: 'Tahoma';
         background-color: transparent;
         border-radius: 8px;
         border: 1px solid #FFD42B;
         padding: 1.125rem 1rem;
-        font-family: 'SpaceGrotesk-Bold';
         &:hover {
             background-color: #000000;
             color: #FFD42B;

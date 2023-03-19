@@ -3,7 +3,7 @@ import { styles } from './style'
 import ModalNav from '../shared/ModalNav/ModalNav'
 import { SharedStyles } from '../shared/SharedStyle'
 
-const TxSign = () => {
+const TxSign = (props: any) => {
   return (
     <styles.Wrapper>
       <ModalNav title='Confirm' showIcon={true} />
@@ -40,7 +40,7 @@ const TxSign = () => {
                 </SharedStyles.PrimaryButton>
               </styles.ButtonDiv>
               <styles.ButtonDiv>
-                <SharedStyles.SecondaryButton onClick={()=>{}}>
+                <SharedStyles.SecondaryButton onClick={()=>{props.changeVisibility(false)}}>
                   Cancel
                 </SharedStyles.SecondaryButton>
               </styles.ButtonDiv>

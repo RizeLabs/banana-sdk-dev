@@ -7,7 +7,8 @@ export const styles = {
         justify-content: center;
         align-items: flex-start;
         width: 25%;
-        padding: 3.125rem 1rem;
+        padding: 3.125rem 2rem;
+        background-color: #000000;
     `,
     TextWrap: styled('div')`
         text-align: center;
@@ -21,7 +22,7 @@ export const styles = {
     `,
     Header : styled('div')`
         font-size: 3rem;
-        font-family: 'Helvetica Neue';
+        font-family: 'Tahoma';
         color: #FBD025;
         margin-top: 2.25rem;
         margin-bottom: .313rem;
@@ -29,7 +30,7 @@ export const styles = {
 
     SubHeader: styled('div')`
         font-size: 1.125rem;
-        font-family: 'Helvetica Neue';
+        font-family: 'Tahoma';
         color: #B4B4B4;
         margin-bottom: 1.5rem;
     `,
@@ -49,7 +50,7 @@ export const styles = {
     FieldName: styled('div')`
         color: #B4B4B4;
         font-size: 1.25rem;
-        font-family: 'Helvetica Neue';
+        font-family: 'Tahoma';
         margin-bottom: 0.75rem;
         text-align: left;
     `,
@@ -57,7 +58,7 @@ export const styles = {
     FieldValue: styled('div')`
         color: #FFFFFF;
         font-size: 1rem;
-        font-family: 'Helvetica Neue';
+        font-family: 'Tahoma';
         margin-bottom: 1.5rem;
     `,
     RowFlex: styled('div')`
@@ -71,13 +72,13 @@ export const styles = {
     FieldRowName: styled('div')`
         color: #B4B4B4;
         font-size: 1.25rem;
-        font-family: 'Helvetica Neue';
+        font-family: 'Tahoma';
     `,
 
     FieldRowValue: styled('div')`
         color: #FFFFFF;
         font-size: 1rem;
-        font-family: 'Helvetica Neue';
+        font-family: 'Tahoma';
     `,
     ButtonDivWrap: styled('div')`
         margin-top: 1.2rem;

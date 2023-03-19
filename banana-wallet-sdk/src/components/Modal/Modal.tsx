@@ -8,11 +8,9 @@ const Modal = (props: any) => {
         <div>
           <styles.ModalViewer>{props.children}</styles.ModalViewer>
         </div>
-      ) : (
-        <div>
-          <styles.ModalNotViewer>{props.children}</styles.ModalNotViewer>
-        </div>
-      )}
+      ) : 
+        null
+      }
     </div>
   );
 };
