@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { Signer } from "@ethersproject/abstract-signer";
-import { Provider, TransactionRequest, TransactionResponse } from "@ethersproject/abstract-provider";
+import { Provider, TransactionRequest } from "@ethersproject/abstract-provider";
 import { Logger } from "@ethersproject/logger";
 import {JsonRpcProvider} from "@ethersproject/providers"
 import { ethers } from "ethers";

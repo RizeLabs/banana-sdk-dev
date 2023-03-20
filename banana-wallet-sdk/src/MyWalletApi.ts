@@ -55,7 +55,6 @@ export class MyWalletApi extends SimpleAccountAPI {
     return await this.owner.signMessage(arrayify(requestId))
   }
 
-
   async _getAccountContract (): Promise<SimpleAccount> {
     if (this.accountContract == null) {
       this.accountContract = BananaAccount__factory.connect(await this.getAccountAddress(), this.provider)

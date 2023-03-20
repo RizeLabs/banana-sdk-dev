@@ -7,7 +7,6 @@ import { ERC4337EthersProvider } from "@account-abstraction/sdk";
 import { Chains, getClientConfigInfo, getChainSpecificAddress  } from "./Constants";
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
-import { hexConcat } from "ethers/lib/utils.js";
 import { EllipticCurve__factory } from "./types";
 import { BananaCookie } from "./BananaCookie";
 import {
@@ -113,7 +112,7 @@ export class Banana {
       this.cookieObject
     );
     if(!setCredentialsStatus.success)
-    throw new Error("Error: db update faliure");
+    throw new Error("Error: db update failure");
     console.log("Cookie set status: ", setCredentialsStatus);
   }
 
@@ -270,11 +269,11 @@ export class Banana {
       1,                                              // thresold will remain fix 
       "0x0000000000000000000000000000000000000000",   // to address 
       "0x",                                           // modules setup calldata
-      this.addresses.fallBackHandlerAddress,   // fallback handler
+      this.addresses.fallBackHandlerAddress,          // fallback handler
       "0x0000000000000000000000000000000000000000",   // payment token
       0,                                              // payment 
       "0x0000000000000000000000000000000000000000",   // payment receiver
-      this.Provider.entryPointAddress,   // entrypoint
+      this.Provider.entryPointAddress,                // entrypoint
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray,          // q values 
       this.addresses.Elliptic                         // elliptic curve

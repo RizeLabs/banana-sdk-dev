@@ -1,14 +1,10 @@
 import * as base64url from './utils/base64url-arraybuffer'
-import base64urll from 'base64url';
 import UserOperation from './utils/userOperation'
 import { v4 as uuidv4 } from 'uuid';
 import Axios from 'axios';
-import { AsnParser } from '@peculiar/asn1-schema';
-import { ECDSASigValue } from '@peculiar/asn1-ecc';
 import { REGISTRATION_LAMBDA_URL, VERIFICATION_LAMBDA_URL } from './routes'
 import { arrayify } from 'ethers/lib/utils'
 import { ethers } from 'ethers'
-
 
 export interface IWebAuthnContext {
   registerFingerprint: () => Promise<PublicKeyCredential>
@@ -70,7 +66,6 @@ export const registerFingerprint = async () => {
         return Promise.reject(new Error('Failed to create credential'))
       }
 
-
       const response = await Axios({
         url: REGISTRATION_LAMBDA_URL,
         method: 'post',
@@ -87,78 +82,8 @@ export const registerFingerprint = async () => {
       };
   }
 
-export function toHash(data: any) {
-  const u8bytes = ethers.utils.toUtf8Bytes(data.toString())
-  const hash = ethers.utils.sha256(u8bytes)
-  const hashArray = ethers.utils.arrayify(hash);
-  const hashBuffer = Buffer.from(hashArray);
-  return hashBuffer;
-  // return crypto.createHash(algo).update(data).digest();
-}
-export var publicKeyCredentialToJSON: any = (pubKeyCred: any) => {
-  if (pubKeyCred instanceof Array) {
-    let arr = [];
-    for (let i of pubKeyCred) arr.push(publicKeyCredentialToJSON(i));
-
-    return arr;
-  }
-
-  if (pubKeyCred instanceof ArrayBuffer) {
-    return base64url.encode(pubKeyCred);
-  }
-
-  if (pubKeyCred instanceof Object) {
-    let obj: any = {};
-
-    for (let key in pubKeyCred) {
-      obj[key] = publicKeyCredentialToJSON(pubKeyCred[key]);
-    }
-
-    return obj;
-  }
-
-  return pubKeyCred;
-};
-export function shouldRemoveLeadingZero(bytes: Uint8Array): boolean {
-  return bytes[0] === 0x0 && (bytes[1] & (1 << 7)) !== 0;
-}
-
-export const getSignature = async (publicKeyCredential: any) => {
-  const publicKeyCredentialParsed =
-    publicKeyCredentialToJSON(publicKeyCredential);
-
-  const parsedSignature = AsnParser.parse(
-    base64urll.toBuffer(publicKeyCredentialParsed.response.signature),
-    ECDSASigValue
-  );
-
-  let rBytes = new Uint8Array(parsedSignature.r);
-  let sBytes = new Uint8Array(parsedSignature.s);
-
-  if (shouldRemoveLeadingZero(rBytes)) {
-    rBytes = rBytes.slice(1);
-  }
-
-  if (shouldRemoveLeadingZero(sBytes)) {
-    sBytes = sBytes.slice(1);
-  }
-
-  const signature = [
-    '0x' + Buffer.from(rBytes).toString('hex'),
-    '0x' + Buffer.from(sBytes).toString('hex'),
-  ];
-  return signature;
-};
-
 export const verifyFingerprint = async (userOp: UserOperation, reqId: string, encodedId: string) =>  {
       const decodedId = base64url.decode(encodedId)
-      let actualChallenge;
-      try {
-      actualChallenge = getUserOp(reqId)
-      } catch (err) {
-        return Promise.reject(new Error("Unable to get userOP"))
-      }
-
       const credential = await navigator.credentials.get({ publicKey: {
         // Set the WebAuthn credential to use for the assertion
         allowCredentials: [{
@@ -166,7 +91,6 @@ export const verifyFingerprint = async (userOp: UserOperation, reqId: string, en
           type: 'public-key',
         }],
         challenge: Uint8Array.from(reqId, (c) => c.charCodeAt(0)).buffer,
-        // actualChallenge,
         // Set the required authentication factors
         userVerification: 'required',
        }, });
@@ -194,7 +118,9 @@ export const verifyFingerprint = async (userOp: UserOperation, reqId: string, en
       })
       const value = clientDataJSON.toString('hex').slice(72, 248);
       const clientDataJsonRequestId = ethers.utils.keccak256("0x" + value);
-      
-    userOp.signature = signature.data.message.finalSignature + clientDataJsonRequestId.slice(2);
-    return { newUserOp: userOp, process: signature.data.message.processStatus };
+      userOp.signature = signature.data.message.finalSignature + clientDataJsonRequestId.slice(2);
+      return { 
+        newUserOp: userOp, 
+        process: signature.data.message.processStatus 
+      };
   }
