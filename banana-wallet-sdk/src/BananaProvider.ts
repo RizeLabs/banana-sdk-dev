@@ -493,56 +493,68 @@ export class Banana {
       //   throw new Error("ERROR: Insufficient balance in Wallet")
       // }
 
-      const paymasterRpcProvider = new ethers.providers.JsonRpcProvider('https://api.pimlico.io/v1/mumbai/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445')
+    //   const paymasterRpcProvider = new ethers.providers.JsonRpcProvider('https://api.pimlico.io/v1/mumbai/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445')
 
-      const paymasterRequest =  await paymasterRpcProvider.send('pm_canSponsorUserOperation', [{
-        "sender": userOp?.sender,
-        "nonce": userOp?.nonce,
-          "initCode": userOp?.initCode,
-          "callData": userOp?.callData,
-          "callGasLimit": userOp?.callGasLimit,
-          "verificationGasLimit": userOp?.verificationGasLimit,
-          "preVerificationGas": userOp?.preVerificationGas,
-          "maxFeePerGas": userOp?.maxFeePerGas,
-          "maxPriorityFeePerGas": userOp?.maxPriorityFeePerGas,
-          "paymasterAndData": "",
-          "signature": "",
-      },
-      {
-        "entryPoint": "0x0576a174D229E3cFA37253523E645A78A0C91B57"
-      },
-      {
-        "referralAddress": "0x3e60B11022238Af208D4FAEe9192dAEE46D225a6"
-      }
-    ])
+    //   const paymasterRequest =  await paymasterRpcProvider.send('pm_canSponsorUserOperation', [{
+    //     "sender": userOp?.sender,
+    //     "nonce": userOp?.nonce,
+    //       "initCode": userOp?.initCode,
+    //       "callData": userOp?.callData,
+    //       "callGasLimit": userOp?.callGasLimit,
+    //       "verificationGasLimit": userOp?.verificationGasLimit,
+    //       "preVerificationGas": userOp?.preVerificationGas,
+    //       "maxFeePerGas": userOp?.maxFeePerGas,
+    //       "maxPriorityFeePerGas": userOp?.maxPriorityFeePerGas,
+    //       "paymasterAndData": "",
+    //       "signature": "",
+    //   },
+    //   {
+    //     "entryPoint": "0x0576a174D229E3cFA37253523E645A78A0C91B57"
+    //   },
+    //   {
+    //     "referralAddress": "0x3e60B11022238Af208D4FAEe9192dAEE46D225a6"
+    //   }
+    // ])
 
-      // const paymasterRequest = await Axios({
-      //   url: 'https://api.pimlico.io/v1/mumbai/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445',
-      //   method: 'eth_canSponsorUserOperation',
-      //   params: 
-      //   [{
-      //     "sender": userOp?.sender,
-      //     "nonce": userOp?.nonce,
-      //       "initCode": userOp?.initCode,
-      //       "callData": userOp?.callData,
-      //       "callGasLimit": userOp?.callGasLimit,
-      //       "verificationGasLimit": userOp?.verificationGasLimit,
-      //       "preVerificationGas": userOp?.preVerificationGas,
-      //       "maxFeePerGas": userOp?.maxFeePerGas,
-      //       "maxPriorityFeePerGas": userOp?.maxPriorityFeePerGas,
-      //       "paymasterAndData": "",
-      //       "signature": "",
-      //   },
-      //   {
-      //     "entryPoint": "0x0576a174D229E3cFA37253523E645A78A0C91B57"
-      //   },
-      //   {
-      //     "referralAddress": "0x3e60B11022238Af208D4FAEe9192dAEE46D225a6"
-      //   }
-      // ]
-      //   ,
-      // })
-      console.log("Paymaster Request: ", paymasterRequest);
+
+    const apiUrl = 'https://api.pimlico.io/v1/mumbai/rpc';
+    const apiKey = '1849c85d-46c8-4bee-8a6d-d6a0cba4d445';
+    
+    const requestData = {
+        jsonrpc: '2.0',
+        method: 'eth_canSponsorUserOperation',
+        params: [
+            {
+              "sender": userOp?.sender,
+                  "nonce": userOp?.nonce,
+                    "initCode": userOp?.initCode,
+                    "callData": userOp?.callData,
+                    "callGasLimit": userOp?.callGasLimit,
+                    "verificationGasLimit": userOp?.verificationGasLimit,
+                    "preVerificationGas": userOp?.preVerificationGas,
+                    "maxFeePerGas": userOp?.maxFeePerGas,
+                    "maxPriorityFeePerGas": userOp?.maxPriorityFeePerGas,
+                    "paymasterAndData": "",
+                    "signature": "",
+            },
+            {
+              entryPoint: '0x0576a174D229E3cFA37253523E645A78A0C91B57'
+            },
+            {
+              referralAddress: '0x2109876543210987654301098765432198765432'
+            }
+        ],
+        id: '1'
+    };
+    
+    Axios.post(`${apiUrl}?apikey=${apiKey}`, requestData)
+        .then(response => {
+            console.log(response.data);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+      // console.log("Paymaster Request: ", paymasterRequest);
       const { newUserOp, process } = await this.bananaSigner.signUserOp(userOp as any, reqId, this.publicKey.encodedId);
       if(process === 'success') { 
         finalUserOp = newUserOp;
