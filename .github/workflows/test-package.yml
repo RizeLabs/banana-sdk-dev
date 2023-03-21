@@ -28,4 +28,4 @@ jobs:
     - name: Run tests
       working-directory: ./banana-wallet-sdk
       run: |
-        npm run test 
+        node --max-old-space-size=4096 npm run test
