@@ -8,7 +8,7 @@ import { SERVER_URL, ADD_WALLETCRED_ROUTE, GET_WALLETCRED_ROUTE, CHECK_INITCODE_
 Axios.defaults.baseURL = '';
 const getUserCredentials = async (walletIdentifier: string) => {
     try {
-        console.log("identifier: ", walletIdentifier)
+        console.log("Wallet Identifier: ", walletIdentifier)
         const identifier = constructUniqueIdentifier(walletIdentifier, window.location.hostname);
         const walletCredentials = await Axios({
             url: SERVER_URL + GET_WALLETCRED_ROUTE,
@@ -17,7 +17,7 @@ const getUserCredentials = async (walletIdentifier: string) => {
                 uniqueIdentifier: identifier
             }
         })
-        console.log(" Fetched creds: ", walletCredentials);
+        console.log("Wallet MetaData ", walletCredentials);
 
         if(walletCredentials.data.data !== '') {
             return JSON.parse(walletCredentials.data.data);
@@ -31,9 +31,8 @@ const getUserCredentials = async (walletIdentifier: string) => {
 
 const setUserCredentials = async (userIdentifier: string, userCredentialObject: UserCredentialObject) => {
     try {
-        console.log("In Controller-----");
-        console.log("identifier: ", userIdentifier);
-        console.log("user creds: ", userCredentialObject);
+        console.log("Wallet identifier: ", userIdentifier);
+        console.log("Wallet MetaData ", userCredentialObject);
         const identifier = constructUniqueIdentifier(userIdentifier, window.location.hostname);
         const updateUserCredentialStatus = await Axios({
             url: SERVER_URL + ADD_WALLETCRED_ROUTE,

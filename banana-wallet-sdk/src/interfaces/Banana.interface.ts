@@ -1,3 +1,4 @@
+import { BigNumberish, BytesLike } from 'ethers';
 import UserOperation from '../utils/userOperation'
 export interface ClientConfig {
     bundlerUrl: string;
@@ -27,6 +28,17 @@ export interface CookieObject {
 }
 
 export interface ChainConfig {
-    MyWalletDeployer: string;
     Elliptic: string;
+    TouchIdSafeWalletContractProxyFactoryAddress: string;
+    TouchIdSafeWalletContractSingletonAddress: string;
+    fallBackHandlerAddress: string;
+}
+
+export interface TransactionDetailsForUserOp {
+    target: string
+    data: string
+    value?: BigNumberish
+    gasLimit?: BigNumberish
+    maxFeePerGas?: BigNumberish
+    maxPriorityFeePerGas?: BigNumberish
 }

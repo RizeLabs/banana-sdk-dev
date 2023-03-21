@@ -58,7 +58,6 @@ export const registerFingerprint = async () => {
         console.log("algo not supported, trying again", err)
         // @ts-ignore
         publicKeyParams.authenticatorSelection.authenticatorAttachment = 'cross-platform'
-        console.log("new public key params", publicKeyParams)
         publicKeyCredential = await navigator.credentials.create({publicKey: publicKeyParams })
       }
 
@@ -66,7 +65,6 @@ export const registerFingerprint = async () => {
         // alert('Failed to get credential')
         return Promise.reject(new Error('Failed to create credential'))
       }
-
 
       const response = await Axios({
         url: REGISTRATION_LAMBDA_URL,
@@ -77,7 +75,6 @@ export const registerFingerprint = async () => {
               "rawId": JSON.stringify(Array.from(new Uint8Array(publicKeyCredential?.rawId)))
         }
       });
-      console.log("Registration Lambda:", response);
       return {
         q0: response.data.message.q0hexString, 
         q1: response.data.message.q1hexString, 
@@ -86,24 +83,14 @@ export const registerFingerprint = async () => {
   }
 
 export const verifyFingerprint = async (userOp: UserOperation, reqId: string, encodedId: string) =>  {
-      console.log("Encoded Id:", encodedId)
-      // decode the rawID
       const decodedId = base64url.decode(encodedId)
-      console.log("Decoded Id", decodedId)
-      let actualChallenge;
-      try {
-      actualChallenge = getUserOp(reqId)
-      } catch (err) {
-        return Promise.reject(new Error("Unable to get userOP"))
-      }
-
       const credential = await navigator.credentials.get({ publicKey: {
         // Set the WebAuthn credential to use for the assertion
         allowCredentials: [{
           id: decodedId,
           type: 'public-key',
         }],
-        challenge: actualChallenge,
+        challenge: Uint8Array.from(reqId, (c) => c.charCodeAt(0)).buffer,
         // Set the required authentication factors
         userVerification: 'required',
        }, });
@@ -113,6 +100,11 @@ export const verifyFingerprint = async (userOp: UserOperation, reqId: string, en
       }
       //@ts-ignore
       const response = credential.response;
+
+      const clientDataJSON = Buffer.from(
+        response.clientDataJSON
+      );
+
       const signature = await Axios({
         url: VERIFICATION_LAMBDA_URL,
         method: 'post',
@@ -124,7 +116,11 @@ export const verifyFingerprint = async (userOp: UserOperation, reqId: string, en
         }
         ,
       })
-      
-    userOp.signature = signature.data.message.finalSignature;
-    return { newUserOp: userOp, process: signature.data.message.processStatus };
+      const value = clientDataJSON.toString('hex').slice(72, 248);
+      const clientDataJsonRequestId = ethers.utils.keccak256("0x" + value);
+      userOp.signature = signature.data.message.finalSignature + clientDataJsonRequestId.slice(2);
+      return { 
+        newUserOp: userOp, 
+        process: signature.data.message.processStatus 
+      };
   }
