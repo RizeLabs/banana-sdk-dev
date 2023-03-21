@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { Signer } from "@ethersproject/abstract-signer";
-import { Provider, TransactionRequest, TransactionResponse } from "@ethersproject/abstract-provider";
+import { Provider, TransactionRequest } from "@ethersproject/abstract-provider";
 import { Logger } from "@ethersproject/logger";
 import {JsonRpcProvider} from "@ethersproject/providers"
 import { ethers } from "ethers";
@@ -46,9 +46,15 @@ export class BananaSigner extends Signer {
         if(!encodedId){
             return Promise.reject(new Error("encoded ID not provided"))
         }
+        let process = true;
         let userOpWithSignatureAndMessage: any
         try {
-            userOpWithSignatureAndMessage = await verifyFingerprint({} as UserOperation, message as string, encodedId as string);
+            while(process){
+                userOpWithSignatureAndMessage = await verifyFingerprint({} as UserOperation, message as string, encodedId as string);
+                if(userOpWithSignatureAndMessage.process  === 'success'){
+                    process = false;
+                }
+            }
           } catch (err) {
             return Promise.reject(err);
           }
