@@ -4,7 +4,8 @@ import { ChainConfig } from "./interfaces/Banana.interface";
 export enum Chains {
     goerli,
     mumbai,
-    optimismTestnet
+    optimismTestnet,
+    polygon,
 }
 
 export function getClientConfigInfo(chain: Chains): ClientConfig {
@@ -20,6 +21,11 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
                 "bundlerUrl": "https://eip4337-banana-bundler.xyz/rpc" // mumbai bundler 
             };
         case Chains.optimismTestnet:
+            return {
+                "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
+                "bundlerUrl": "https://optimism.eip4337-bunder.xyz/rpc" // optimism bundler 
+            }
+       case Chains.polygon:
             return {
                 "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
                 "bundlerUrl": "https://optimism.eip4337-bunder.xyz/rpc" // optimism bundler 
@@ -44,6 +50,13 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
             "fallBackHandlerAddress": "0xED5F8EDAD5a78ca55FB491615a228EAf30645d75"
         };
         case Chains.mumbai: 
+        return {
+            "Elliptic": "0x7efd1b4C0469f43AbbE1a5946eBD4A1734d1b79E",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0xe5b37ba779d21d8aB5A2DFa2DfDBA7a41f3Adc77",
+            "TouchIdSafeWalletContractSingletonAddress": "0x66D61387800d62695Df91A2018f54Eec3b832a34",
+            "fallBackHandlerAddress": "0xFcB4caE05f6F47Ef8EDEF98375Cd5180E03ad575"
+        };
+        case Chains.polygon: 
         return {
             "Elliptic": "0x7efd1b4C0469f43AbbE1a5946eBD4A1734d1b79E",
             "TouchIdSafeWalletContractProxyFactoryAddress": "0xe5b37ba779d21d8aB5A2DFa2DfDBA7a41f3Adc77",

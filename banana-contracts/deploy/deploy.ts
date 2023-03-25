@@ -122,9 +122,9 @@ async function main() {
 	// const newTouchIdAccountProxy = await NewTouchIdAccountProxy.deploy(newTouchIdAccountDeployer.address);
 	// console.log('NewTouchIdAccountProxy :', newTouchIdAccountProxy.address);
 
-	// const BananaAccountProxyFactory = await ethers.getContractFactory('BananaAccountProxyFactory');
-	// const bananaTouchIdAccountProxyFactory = await BananaAccountProxyFactory.deploy();
-	// console.log('BananaTouchIdAccountProxy Factory :', bananaTouchIdAccountProxyFactory.address);
+	const BananaAccountProxyFactory = await ethers.getContractFactory('BananaAccountProxyFactory');
+	const bananaTouchIdAccountProxyFactory = await BananaAccountProxyFactory.deploy();
+	console.log('BananaTouchIdAccountProxy Factory :', bananaTouchIdAccountProxyFactory.address);
 
 	//goerli tokenhandler: 0xc1d4982E6126BF76959Fe21b53189bc2a717e243
 	// banana proxy factory: 0x2cB39E2248251f104DbF5fdE528b77aE7415fD99
@@ -132,17 +132,21 @@ async function main() {
 
 
 
-	// const ec = await ethers.getContractFactory('EllipticCurve');
-	// const ec_deployed = await ec.deploy();
-	// console.log('Elliptic :', ec_deployed.address);
+	const ec = await ethers.getContractFactory('EllipticCurve');
+	const ec_deployed = await ec.deploy();
+	console.log('Elliptic :', ec_deployed.address);
 
-	// const st = await ethers.getContractFactory('Staking');
-	// const stDeployer = await st.deploy();
-	// console.log('staking :', stDeployer.address);
+	// mainnet addresses
+	// owner add 0xd04CF373e169db013e5E2Ff5Ce51Cc099881AfD1
+	// Token callback handler : 0x25dbCD78bCE1930e4ee1fFE8b30f39eC44803974
+
+	const st = await ethers.getContractFactory('Staking');
+	const stDeployer = await st.deploy();
+	console.log('staking :', stDeployer.address);
 
 	const BananaAccount = await ethers.getContractFactory('BananaAccount');
 	const BananaAccountDeployer = await BananaAccount.deploy();
-	console.log('Banana Account:', BananaAccountDeployer.address);
+	console.log('Banana Account Singleton:', BananaAccountDeployer.address);
 	// 0x106DD6EdaF8Db8a3ACFa215c8C6ADf0730175CaF
 
 	// 	const BananaAccount = await ethers.getContractFactory('BananaTest');

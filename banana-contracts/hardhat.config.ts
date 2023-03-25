@@ -49,6 +49,10 @@ export default {
     url: 'https://sphinx.shardeum.org/',
     accounts: ["a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74"],
     chainId: 8082,
+  },
+  polygon: {
+    url: 'https://polygon-mainnet.g.alchemy.com/v2/g2j1Tz-ydDeOQl_SSsPzNuoedaIzAzFk',
+    accounts: ["4d4d1e5c12708c233d5678fc1b9a82b51f4d24710d2e4bdbf724632060f1440a"],
   }
   },
   etherscan: {
