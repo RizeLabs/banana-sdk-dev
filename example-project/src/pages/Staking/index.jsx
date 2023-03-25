@@ -16,7 +16,7 @@ const Staking = () => {
   const [showPopover, setShowPopover] = useState(false);
 
   // optimism staking
-  const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
+  // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
 
   // goerli stake address
   // const stakeAddress = '0x1CA35dB18E7f594864b703107FeaE4a24974FCb5'
@@ -40,6 +40,10 @@ const Staking = () => {
   
   // polygo staking 
   // const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
+
+
+  // polygon mainnet staking address
+  const stakeAddress = '0x8B220bc9529c0bc18265c1B822FcC579eE586bA2';
 
   const handleStake = () => {
     setShowPopover(true);
@@ -68,7 +72,7 @@ const Staking = () => {
       // let aaSigner = aaProvider.getSigner();
      const provider = new ethers.providers.JsonRpcProvider(
         // this.jsonRpcProviderUrl
-        "https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4"
+        "https://polygon-mainnet.g.alchemy.com/v2/g2j1Tz-ydDeOQl_SSsPzNuoedaIzAzFk"
       );
       let StakingContract = new ethers.Contract(
         stakeAddress,

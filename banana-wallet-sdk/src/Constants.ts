@@ -28,7 +28,7 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
        case Chains.polygon:
             return {
                 "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
-                "bundlerUrl": "https://optimism.eip4337-bunder.xyz/rpc" // optimism bundler 
+                "bundlerUrl": "http://localhost:80/rpc" // optimism bundler 
             }
      }
 }
@@ -58,10 +58,10 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         };
         case Chains.polygon: 
         return {
-            "Elliptic": "0x7efd1b4C0469f43AbbE1a5946eBD4A1734d1b79E",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0xe5b37ba779d21d8aB5A2DFa2DfDBA7a41f3Adc77",
-            "TouchIdSafeWalletContractSingletonAddress": "0x66D61387800d62695Df91A2018f54Eec3b832a34",
-            "fallBackHandlerAddress": "0xFcB4caE05f6F47Ef8EDEF98375Cd5180E03ad575"
+            "Elliptic": "0x635F4D1917f27b2A56CF7ebdf2417800613C0Fa7", //--
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0xC9e1845bA0659E9B15e47A66eA032f950D37c9e6", //--
+            "TouchIdSafeWalletContractSingletonAddress": "0x437A65f21340b4AFaF19aD2685392c3Fe0243DE5", //--
+            "fallBackHandlerAddress": "0x25dbCD78bCE1930e4ee1fFE8b30f39eC44803974"
         };
     }
 }
