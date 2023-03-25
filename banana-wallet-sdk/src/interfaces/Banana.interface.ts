@@ -32,6 +32,7 @@ export interface ChainConfig {
     TouchIdSafeWalletContractProxyFactoryAddress: string;
     TouchIdSafeWalletContractSingletonAddress: string;
     fallBackHandlerAddress: string;
+    Referral: string;
 }
 
 export interface TransactionDetailsForUserOp {

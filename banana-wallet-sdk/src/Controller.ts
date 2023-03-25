@@ -1,7 +1,7 @@
 import Axios from 'axios'
 import { UserCredentialObject } from './interfaces/Banana.interface'
 import constructUniqueIdentifier from './utils/constructUserUniqueIdentifier'
-import { SERVER_URL, ADD_WALLETCRED_ROUTE, GET_WALLETCRED_ROUTE, CHECK_INITCODE_ROUTE,IS_WALLETNAME_UNIQUE_ROUTE} from './routes'
+import { SERVER_URL, ADD_WALLETCRED_ROUTE, GET_WALLETCRED_ROUTE, CHECK_INITCODE_ROUTE,IS_WALLETNAME_UNIQUE_ROUTE, PAYMASTER_API_KEY, PAYMASTER_BASE_URL } from './routes'
 
 Axios.defaults.baseURL = '';
 const getUserCredentials = async (walletIdentifier: string) => {
@@ -99,4 +99,22 @@ const checkIsWalletNameExist = async (walletName: string) => {
     }
 }
 
-export { getUserCredentials, setUserCredentials, checkInitCodeStatus, checkIsWalletNameExist };
+const getPaymasterAndData = async (requestData: any) => {
+    try {
+        const paymasterUrl = `${PAYMASTER_BASE_URL}?apikey=${PAYMASTER_API_KEY}`;
+        console.log(requestData);
+        console.log(paymasterUrl)
+        const paymasterResponse = await Axios({
+            url: paymasterUrl,
+            method: 'post',
+            data: requestData
+        })
+        console.log(paymasterResponse)
+        return paymasterResponse.data.result.paymasterAndData;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
+}
+
+export { getUserCredentials, setUserCredentials, checkInitCodeStatus, checkIsWalletNameExist, getPaymasterAndData };

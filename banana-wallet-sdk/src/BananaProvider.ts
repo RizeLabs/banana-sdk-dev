@@ -13,7 +13,8 @@ import { BananaCookie } from "./BananaCookie";
 import {
   setUserCredentials,
   getUserCredentials,
-  checkIsWalletNameExist
+  checkIsWalletNameExist,
+  getPaymasterAndData
 } from "./Controller";
 import {
   PublicKey,
@@ -32,6 +33,7 @@ import { BigNumber } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
 import { getGasFee } from "./utils/GetGasFee";
+import { getRequestDataForPaymaster } from "./utils/getRequestData";
 import Axios from 'axios';
 
 export class Banana {
@@ -471,12 +473,6 @@ export class Banana {
     userOp.verificationGasLimit = 3e6;
     //@ts-ignore
     userOp.preVerificationGas = ethers.BigNumber.from(await userOp.preVerificationGas).add(5000);
-    const entryPoint: EntryPoint = EntryPoint__factory.connect(
-      this.Provider.entryPointAddress,
-      this.jsonRpcProvider
-    );
-    const reqId = await this.accountApi.getUserOpHash(userOp as any);
-    console.log("UserOpHash: ", reqId);
     let processStatus = true;
     let finalUserOp;
     while(processStatus) {
@@ -489,78 +485,25 @@ export class Banana {
       let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(userOp?.sender);
       console.log(`User Balance: ${userBalance.toString()}`)
       console.log(`Min Balance Required: ${minBalanceRequired.toString()}`)
-      // if(userBalance.lt(minBalanceRequired)){
-      //   throw new Error("ERROR: Insufficient balance in Wallet")
-      // }
-
-    //   const paymasterRpcProvider = new ethers.providers.JsonRpcProvider('https://api.pimlico.io/v1/mumbai/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445')
-
-    //   const paymasterRequest =  await paymasterRpcProvider.send('pm_canSponsorUserOperation', [{
-    //     "sender": userOp?.sender,
-    //     "nonce": userOp?.nonce,
-    //       "initCode": userOp?.initCode,
-    //       "callData": userOp?.callData,
-    //       "callGasLimit": userOp?.callGasLimit,
-    //       "verificationGasLimit": userOp?.verificationGasLimit,
-    //       "preVerificationGas": userOp?.preVerificationGas,
-    //       "maxFeePerGas": userOp?.maxFeePerGas,
-    //       "maxPriorityFeePerGas": userOp?.maxPriorityFeePerGas,
-    //       "paymasterAndData": "",
-    //       "signature": "",
-    //   },
-    //   {
-    //     "entryPoint": "0x0576a174D229E3cFA37253523E645A78A0C91B57"
-    //   },
-    //   {
-    //     "referralAddress": "0x3e60B11022238Af208D4FAEe9192dAEE46D225a6"
-    //   }
-    // ])
-
-
-    const apiUrl = 'https://api.pimlico.io/v1/mumbai/rpc';
-    const apiKey = '1849c85d-46c8-4bee-8a6d-d6a0cba4d445';
+      if(userBalance.lt(minBalanceRequired) && userOp?.initCode === '0x'){
+        throw new Error("ERROR: Insufficient balance in Wallet")
+      }
     
-    const requestData = {
-        jsonrpc: '2.0',
-        method: 'eth_canSponsorUserOperation',
-        params: [
-            {
-              "sender": userOp?.sender,
-                  "nonce": userOp?.nonce,
-                    "initCode": userOp?.initCode,
-                    "callData": userOp?.callData,
-                    "callGasLimit": userOp?.callGasLimit,
-                    "verificationGasLimit": userOp?.verificationGasLimit,
-                    "preVerificationGas": userOp?.preVerificationGas,
-                    "maxFeePerGas": userOp?.maxFeePerGas,
-                    "maxPriorityFeePerGas": userOp?.maxPriorityFeePerGas,
-                    "paymasterAndData": "",
-                    "signature": "",
-            },
-            {
-              entryPoint: '0x0576a174D229E3cFA37253523E645A78A0C91B57'
-            },
-            {
-              referralAddress: '0x2109876543210987654301098765432198765432'
-            }
-        ],
-        id: '1'
-    };
-    
-    Axios.post(`${apiUrl}?apikey=${apiKey}`, requestData)
-        .then(response => {
-            console.log(response.data);
-        })
-        .catch(error => {
-            console.log(error);
-        });
-      // console.log("Paymaster Request: ", paymasterRequest);
+    let reqId = '';
+    if(userOp?.initCode !== '0x') {
+      const requestData = await getRequestDataForPaymaster(userOp, this.Provider.entryPointAddress, this.addresses.Referral);
+      const paymasterAndData = await getPaymasterAndData(requestData);
+      (userOp || { paymasterAndData: null }).paymasterAndData = paymasterAndData || '';
+      reqId = await this.accountApi.getUserOpHash(userOp as any);
+    }
       const { newUserOp, process } = await this.bananaSigner.signUserOp(userOp as any, reqId, this.publicKey.encodedId);
       if(process === 'success') { 
         finalUserOp = newUserOp;
         processStatus = false; 
       }
     }
+
+    console.log(" final userop after paymaster ", finalUserOp);
     
     const uHash: string = await this.sendUserOpToBundler(finalUserOp as any) || '';
     return uHash;
