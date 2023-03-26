@@ -28,7 +28,7 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
        case Chains.polygon:
             return {
                 "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
-                "bundlerUrl": "http://localhost:80/rpc" // optimism bundler 
+                "bundlerUrl": "http://localhost:80/rpc" // polygon bundler 
             }
      }
 }
