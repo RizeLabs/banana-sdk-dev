@@ -353,11 +353,24 @@ contract BananaAccount is Safe {
         unlockTime = block.timestamp + 48 hours;
     }
 
-    /// @dev Stops the recovery process
-    /// @dev Can be called by the recovery address or the account
-    /// @dev In a scenario where the recovery address is compromised, the account can stop the recovery process
-    function stopRecovery() external onlyInRecovery {
-        require(msg.sender == trustedRelayer || msg.sender == address(this), "Caller not recovery address nor account");
+    /// @dev Stops the recovery process by trusted Banana relayer
+    /// @dev Can be called directly from trusted relayer on behalf of user for stopping recovery
+    /// @dev In a scenario where recovery is initiated from a bad actor
+    function stopRecoveryByRelayer(bytes32 _message, uint8 _v, bytes32 _r, bytes32 _s) external onlyInRecovery {
+        require(msg.sender == trustedRelayer, "Caller should be relayer"); 
+        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _message));
+        address signer = ecrecover(hash, _v, _r, _s);
+        require(signer == recoveryAddress, "Invalid signature"); 
+        inRecovery = false;
+        nextQValues = [0, 0];
+        unlockTime = 0;
+    }
+
+    /// @dev Stops the recovery process by owner wallet
+    /// @dev Can be called directly by the owner in case owner has access to wallet
+    /// @dev In a scenario where recovery is initiated from a bad actor and owner has access to wallet
+    function stopRecoveryByOwner() external onlyInRecovery {
+        require(msg.sender == address(this), "Caller should be smart contract wallet");
         inRecovery = false;
         nextQValues = [0, 0];
         unlockTime = 0;
@@ -365,7 +378,9 @@ contract BananaAccount is Safe {
 
     /// @dev Updates the q values to the new q values and finalises recovery
     function finaliseRecovery() external onlyInRecovery {
-        require(msg.sender == trustedRelayer, "Only the trusted relayer can finalise recovery");
+        // don't need this as gelatoe executor would be the only one calling this
+        // should we whitelist gelato executor ?
+        // require(msg.sender == trustedRelayer, "Only the trusted relayer can finalise recovery");
         require(block.timestamp >= unlockTime, "Account still in recovery");
         qValues = nextQValues;
         inRecovery = false;
