@@ -27,6 +27,9 @@ contract BananaAccount is Safe {
     //EIP4337 trusted entrypoint
     address public entryPoint;
 
+    //Banana wallet recovery trustedRelayer address
+    address public trustedRelayer = 0x605D0Cb492423De25C690aA316a9da4Af935Bcc4;
+
     //q values for the elliptic curve representing the public key of the user
     uint256[2] qValues;
 
@@ -328,7 +331,9 @@ contract BananaAccount is Safe {
         entryPoint = newEntrypoint;
     }
 
-        /// @dev Setups the address which can initiate recovery
+    /// @dev Setups the address which can initiate recovery
+    /// @dev Can only be called by the account
+    /// @param _newRecoveryAddress recovery address generated while recovery setup
     function setupRecovery(address _newRecoveryAddress) external notInRecovery {
         require(msg.sender == address(this), "Only the account can setup recovery");
         require(_newRecoveryAddress != address(0), "recovery address == address(0)");
@@ -337,9 +342,12 @@ contract BananaAccount is Safe {
 
     /// @dev This function will take in new q values and start a timelock for 48 hours
     /// @param _newQValues new q values to be used for recovery
-    function initiateRecovery(uint256[2] memory _newQValues) external notInRecovery{
-        require(msg.sender == recoveryAddress, "Only the recovery address can initiate recovery");
-        require(_newQValues[0] != 0 && _newQValues[1] != 0, "q values cannot be 0");        
+    function initiateRecovery(uint256[2] memory _newQValues, bytes32 _message, uint8 _v, bytes32 _r, bytes32 _s) external notInRecovery {
+        require(msg.sender == trustedRelayer, "Can only be called via Banana wallet trusted relayer");
+        require(_newQValues[0] != 0 && _newQValues[1] != 0, "q values cannot be 0");     
+        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _message));
+        address signer = ecrecover(hash, _v, _r, _s);
+        require(signer == recoveryAddress, "Invalid signature");   
         nextQValues = _newQValues;
         inRecovery = true;
         unlockTime = block.timestamp + 48 hours;
@@ -349,7 +357,7 @@ contract BananaAccount is Safe {
     /// @dev Can be called by the recovery address or the account
     /// @dev In a scenario where the recovery address is compromised, the account can stop the recovery process
     function stopRecovery() external onlyInRecovery {
-        require(msg.sender == recoveryAddress || msg.sender == address(this), "Caller not recovery address nor account");
+        require(msg.sender == trustedRelayer || msg.sender == address(this), "Caller not recovery address nor account");
         inRecovery = false;
         nextQValues = [0, 0];
         unlockTime = 0;
@@ -357,7 +365,7 @@ contract BananaAccount is Safe {
 
     /// @dev Updates the q values to the new q values and finalises recovery
     function finaliseRecovery() external onlyInRecovery {
-        require(msg.sender == recoveryAddress, "Only the recovery address can finalise recovery");
+        require(msg.sender == trustedRelayer, "Only the trusted relayer can finalise recovery");
         require(block.timestamp >= unlockTime, "Account still in recovery");
         qValues = nextQValues;
         inRecovery = false;
