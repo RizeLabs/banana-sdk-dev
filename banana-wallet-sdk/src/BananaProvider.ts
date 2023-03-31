@@ -31,6 +31,8 @@ import { BigNumber } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
 import { getGasFee } from "./utils/GetGasFee";
+//@ts-ignore
+import transakSDK from "@transak/transak-sdk";
 
 export class Banana {
   Provider: ClientConfig;
@@ -561,6 +563,40 @@ export class Banana {
      * signedMessage we cannot use ecrecover!
      */
     return {messageSigned:signedMessage.toHexString(), signature: finalSignature}
+  }
+
+  onRamp = async () => {
+    const settings = {
+      apiKey: 'db550590-dd0a-4576-adcc-6b71b5a5e3d5',  // Your API Key
+      environment: 'STAGING', // STAGING/PRODUCTION
+      defaultCryptoCurrency: 'ETH',
+      themeColor: '000000', // App theme color
+      hostURL: window.location.origin,
+      widgetHeight: "700px",
+      widgetWidth: "500px",
+    }
+
+    const transak = new transakSDK(settings);
+
+    transak.init();
+
+    // To get all the events
+    transak.on(transak.ALL_EVENTS, (data: any) => {
+        console.log(data)
+    });
+
+    // This will trigger when the user closed the widget
+    transak.on(transak.EVENTS.TRANSAK_WIDGET_CLOSE, (eventData: any) => {
+        console.log(eventData);
+        transak.close();
+    });
+
+    // This will trigger when the user marks payment is made.
+    transak.on(transak.EVENTS.TRANSAK_ORDER_SUCCESSFUL, (orderData: any) => {
+        console.log(orderData);
+        window.alert("Payment Success")
+        transak.close();
+    });
   }
 
  hashMessage = (message: Bytes | string): string =>{
