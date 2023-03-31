@@ -30,8 +30,23 @@ contract BananaAccount is Safe {
     //q values for the elliptic curve representing the public key of the user
     uint256[2] qValues;
 
-    //mapping of used messages to prevent replay attacks
-    mapping(bytes32 => bool) public usedMessages;
+    address public recoveryAddress;
+
+    uint256 public unlockTime;
+
+    bool public inRecovery;
+
+    uint256[2] nextQValues;
+
+     modifier notInRecovery {
+        require(!inRecovery, "wallet is in recovery mode");
+        _;
+    }
+
+    modifier onlyInRecovery {
+        require(inRecovery, "wallet is not in recovery mode");
+        _;
+    }
     
     /// @dev Setup function sets initial storage of contract.
     /// @param _owners List of Safe owners.
@@ -272,7 +287,7 @@ contract BananaAccount is Safe {
         uint256 value,
         bytes memory data,
         Enum.Operation operation
-    ) public {
+    ) public notInRecovery {
         // Only Entrypoint is allowed.
         require(msg.sender == entryPoint, "account: not from EntryPoint");
         // Execute transaction without further confirmations.
@@ -311,5 +326,42 @@ contract BananaAccount is Safe {
     /// @dev the main entrypoint
     function replaceEntrypoint(address newEntrypoint) public authorized {
         entryPoint = newEntrypoint;
+    }
+
+        /// @dev Setups the address which can initiate recovery
+    function setupRecovery(address _newRecoveryAddress) external notInRecovery {
+        require(msg.sender == address(this), "Only the account can setup recovery");
+        require(_newRecoveryAddress != address(0), "recovery address == address(0)");
+        recoveryAddress = _newRecoveryAddress;
+    }
+
+    /// @dev This function will take in new q values and start a timelock for 48 hours
+    /// @param _newQValues new q values to be used for recovery
+    function initiateRecovery(uint256[2] memory _newQValues) external notInRecovery{
+        require(msg.sender == recoveryAddress, "Only the recovery address can initiate recovery");
+        require(_newQValues[0] != 0 && _newQValues[1] != 0, "q values cannot be 0");        
+        nextQValues = _newQValues;
+        inRecovery = true;
+        unlockTime = block.timestamp + 48 hours;
+    }
+
+    /// @dev Stops the recovery process
+    /// @dev Can be called by the recovery address or the account
+    /// @dev In a scenario where the recovery address is compromised, the account can stop the recovery process
+    function stopRecovery() external onlyInRecovery {
+        require(msg.sender == recoveryAddress || msg.sender == address(this), "Caller not recovery address nor account");
+        inRecovery = false;
+        nextQValues = [0, 0];
+        unlockTime = 0;
+    }
+
+    /// @dev Updates the q values to the new q values and finalises recovery
+    function finaliseRecovery() external onlyInRecovery {
+        require(msg.sender == recoveryAddress, "Only the recovery address can finalise recovery");
+        require(block.timestamp >= unlockTime, "Account still in recovery");
+        qValues = nextQValues;
+        inRecovery = false;
+        nextQValues = [0, 0];
+        unlockTime = 0;
     }
 }
