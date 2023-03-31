@@ -89,6 +89,12 @@ const Staking = () => {
     setIsLoading(false);
   };
 
+  const onRampMoney = async () => {
+    const bananaInstance = signerContext.bananaInstance;
+    const resp = await bananaInstance.onRamp();
+    console.log(resp);
+  }
+
   return (
     <div className="staking">
       <Toaster />
@@ -144,6 +150,7 @@ const Staking = () => {
             </div>
             <button onClick={() => signMessage()} > sign message </button>
             <button onClick={() => resetWallet()} > Reset Wallet </button>
+            <button onClick={() => onRampMoney()} > On Ramp </button>
           </div>
         </div>
       </div>
