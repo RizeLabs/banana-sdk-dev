@@ -376,12 +376,12 @@ contract BananaAccount is Safe {
         unlockTime = 0;
     }
 
-    /// @dev Updates the q values to the new q values and finalises recovery
+    /// @dev Updates the q values to the new q values and finalise recovery
     function finaliseRecovery() external onlyInRecovery {
         // don't need this as gelatoe executor would be the only one calling this
         // should we whitelist gelato executor ?
         // require(msg.sender == trustedRelayer, "Only the trusted relayer can finalise recovery");
-        require(block.timestamp >= unlockTime, "Account still in recovery");
+        require(block.timestamp >= unlockTime - 600, "Account still in recovery");
         qValues = nextQValues;
         inRecovery = false;
         nextQValues = [0, 0];

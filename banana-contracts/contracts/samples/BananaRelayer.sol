@@ -12,19 +12,20 @@ contract BananaRelayer {
     uint256 public lastScheduledCallTime;
     mapping(uint256 => address[]) public scheduledCalls;
 
-    function setupRecovery(address _account, address _newRecoveryAddress) external {
+    function initiateRecovery(address _account, uint256[2] memory _newQValues, bytes32 _message, uint8 _v, bytes32 _r, bytes32 _s) external {
+        // when it is first scheduled call we will update last scheduled call time
+        if(lastScheduledCallTime == 0) {
+            lastScheduledCallTime = block.timestamp;
+            scheduledCalls[lastScheduledCallTime].push(_account);
+        }
         // in case if time difference between last scheduled call and current time is less than 10 minutes we will batch the calls
-        if(block.timestamp - lastScheduledCallTime <= 600) {
+        else if(block.timestamp - lastScheduledCallTime <= 600) {
             scheduledCalls[lastScheduledCallTime].push(_account);
         // else will create another batch and updated last schedule time
         } else {
             lastScheduledCallTime = block.timestamp;
             scheduledCalls[lastScheduledCallTime].push(_account);
         }
-        IBananaAccount(_account).setupRecovery(_newRecoveryAddress);
-    }
-
-    function initiateRecovery(address _account, uint256[2] memory _newQValues, bytes32 _message, uint8 _v, bytes32 _r, bytes32 _s) external {
         IBananaAccount(_account).initiateRecovery(_newQValues, _message, _v, _r, _s);
     }
 
