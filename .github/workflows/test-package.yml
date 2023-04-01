@@ -29,4 +29,4 @@ jobs:
       working-directory: ./banana-wallet-sdk
       run: |
         export NODE_OPTIONS="--max_old_space_size=4096"
-        npm start
+        npm run start
