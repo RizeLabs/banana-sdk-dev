@@ -46,7 +46,7 @@ contract BananaRelayer {
 
         for (uint256 i = 0; i < addressesLength; i++) {
             address currentAddress = scheduledCalls[block.timestamp][i];
-            return (true, abi.encodeCall(IBananaAccount(currentAddress).finaliseRecovery, ()))
+            return (true, abi.encodeCall(IBananaAccount(currentAddress).finaliseRecovery, ()));
         }
     }
 }

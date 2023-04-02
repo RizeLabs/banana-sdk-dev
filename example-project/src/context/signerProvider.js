@@ -9,7 +9,7 @@ const SignerProvider = (props) => {
     const [bananaInstance, setBananaInstance] = useState(null);
 
     const initSigner = () => {
-        const banana = new Banana(Chains.optimismTestnet , 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas');
+        const banana = new Banana(Chains.arbitrum , 'https://arb-goerli.g.alchemy.com/v2/IrI19BkqK9AQ-7afSkKvNmNCuK0TG3Ok');
     //    const banana = new Banana(Chains.mumbai , 'https://polygon-mumbai.g.alchemy.com/v2/pKQ3vzeRnBEpcTHkPS0da9Z1_EQawyd5');
         console.log(" this is signer ", banana);
         setBananaInstance(banana);

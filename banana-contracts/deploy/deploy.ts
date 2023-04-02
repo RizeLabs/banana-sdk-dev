@@ -118,17 +118,17 @@ async function main() {
 	// const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
 	// console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);
 
-	// const NewTouchIdAccountProxy = await ethers.getContractFactory('NewTouchIdSafeAccountProxy');
-	// const newTouchIdAccountProxy = await NewTouchIdAccountProxy.deploy(newTouchIdAccountDeployer.address);
-	// console.log('NewTouchIdAccountProxy :', newTouchIdAccountProxy.address);
+	// // const NewTouchIdAccountProxy = await ethers.getContractFactory('NewTouchIdSafeAccountProxy');
+	// // const newTouchIdAccountProxy = await NewTouchIdAccountProxy.deploy(newTouchIdAccountDeployer.address);
+	// // console.log('NewTouchIdAccountProxy :', newTouchIdAccountProxy.address);
 
 	// const BananaAccountProxyFactory = await ethers.getContractFactory('BananaAccountProxyFactory');
 	// const bananaTouchIdAccountProxyFactory = await BananaAccountProxyFactory.deploy();
 	// console.log('BananaTouchIdAccountProxy Factory :', bananaTouchIdAccountProxyFactory.address);
 
-	//goerli tokenhandler: 0xc1d4982E6126BF76959Fe21b53189bc2a717e243
-	// banana proxy factory: 0x2cB39E2248251f104DbF5fdE528b77aE7415fD99
-	// singleton: 0xfB988d2047526761cb34485AD519761278cE596D
+	// //goerli tokenhandler: 0xc1d4982E6126BF76959Fe21b53189bc2a717e243
+	// // banana proxy factory: 0x2cB39E2248251f104DbF5fdE528b77aE7415fD99
+	// // singleton: 0xfB988d2047526761cb34485AD519761278cE596D
 
 
 
@@ -136,13 +136,19 @@ async function main() {
 	// const ec_deployed = await ec.deploy();
 	// console.log('Elliptic :', ec_deployed.address);
 
-	// const st = await ethers.getContractFactory('Staking');
-	// const stDeployer = await st.deploy();
-	// console.log('staking :', stDeployer.address);
+	const st = await ethers.getContractFactory('Staking');
+	const stDeployer = await st.deploy();
+	console.log('staking :', stDeployer.address);
 
-	const BananaAccount = await ethers.getContractFactory('BananaAccount');
-	const BananaAccountDeployer = await BananaAccount.deploy();
-	console.log('Banana Account:', BananaAccountDeployer.address);
+	// const BananaAccount = await ethers.getContractFactory('BananaAccount');
+	// const BananaAccountDeployer = await BananaAccount.deploy();
+	// console.log('Singleton Banana Account:', BananaAccountDeployer.address);
+
+	// const BananaRelayer = await ethers.getContractFactory('BananaRelayer');
+	// const BananaRelayerDeployer = await BananaRelayer.deploy();
+	// console.log('Banana Relayer Address:', BananaRelayerDeployer.address);
+
+
 	// 0x106DD6EdaF8Db8a3ACFa215c8C6ADf0730175CaF
 
 	// 	const BananaAccount = await ethers.getContractFactory('BananaTest');

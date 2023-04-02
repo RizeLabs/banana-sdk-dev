@@ -16,7 +16,10 @@ const Staking = () => {
   const [showPopover, setShowPopover] = useState(false);
 
   // optimism staking
-  const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
+  // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
+
+  //arbitrum staking
+  const stakeAddress = '0x2ca377400a94E1b11291F2755cd201B7895b9cA9';
 
   // goerli stake address
   // const stakeAddress = '0x1CA35dB18E7f594864b703107FeaE4a24974FCb5'
@@ -68,7 +71,7 @@ const Staking = () => {
       // let aaSigner = aaProvider.getSigner();
      const provider = new ethers.providers.JsonRpcProvider(
         // this.jsonRpcProviderUrl
-        "https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4"
+        "https://arb-goerli.g.alchemy.com/v2/IrI19BkqK9AQ-7afSkKvNmNCuK0TG3Ok"
       );
       let StakingContract = new ethers.Contract(
         stakeAddress,
