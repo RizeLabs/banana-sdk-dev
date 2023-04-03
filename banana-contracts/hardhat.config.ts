@@ -58,6 +58,15 @@ export default {
   zkevm: {
     url: 'https://rpc.public.zkevm-test.net',
     accounts: ["ecf0fbe435b1d11c6c1caf0a76cd12ac751eaac5e877b301a6c399e98a583813"]
+  },
+  hyperspaceFvm: {
+    chainId: 3141,
+    url: 'https://api.hyperspace.node.glif.io/rpc/v1',
+    accounts: ["7e6933b2f277ef6b6402fb7acec0d6924fd62a9e7703d478e68c44deb7a5d069"]
+  },
+  moonbaseAlpha: {
+    url: 'https://rpc.testnet.moonbeam.network',
+    accounts: ["7e6933b2f277ef6b6402fb7acec0d6924fd62a9e7703d478e68c44deb7a5d069"]
   }
   },
   etherscan: {
@@ -66,3 +75,4 @@ export default {
     // apiKey: "C2J3GI995B9DKK1XVF3P67UDHU72P4Q15D",
  }
 };
+

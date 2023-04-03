@@ -6,7 +6,9 @@ export enum Chains {
     mumbai,
     optimismTestnet,
     arbitrum,
-    zkevm
+    zkevm,
+    hyperspaceFVM,
+    moonbaseAlpha
 }
 
 export function getClientConfigInfo(chain: Chains): ClientConfig {
@@ -34,6 +36,16 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
         case Chains.zkevm:
             return {
                 "entryPointAddress": "0x1F88d74aD5C91bc9E7A04622b3B81918C9d4D958",
+                "bundlerUrl": "http://localhost:80/rpc" // zkevm testnet
+            }
+        case Chains.hyperspaceFVM:
+            return {
+                "entryPointAddress": "0x0Bd06f21d952C63be8A2fb5d02d09F817F529Cb9",
+                "bundlerUrl": "http://localhost:80/rpc" // zkevm testnet
+            }
+        case Chains.moonbaseAlpha:
+            return {
+                "entryPointAddress": "0x0Bd06f21d952C63be8A2fb5d02d09F817F529Cb9",
                 "bundlerUrl": "http://localhost:80/rpc" // zkevm testnet
             }
      }
@@ -76,5 +88,19 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
             "TouchIdSafeWalletContractSingletonAddress": "0xC731C32AD4aE5b83593424f0ba2a9bA9173474b8",
             "fallBackHandlerAddress": "0x9EEbC5345A1796D06F493968d52f79949E904905"
         }
+        case Chains.hyperspaceFVM:
+        return {
+            "Elliptic": "0x6FfD9FC2650E17853544Cd15E58A7c919F1D5c65",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x05eeB2B802DaA5665A2316c7775E346db8FA368B",
+            "TouchIdSafeWalletContractSingletonAddress": "0x44fB967Fe37F365E10E9F1bFA5d26a9D0a0Fd8c2",
+            "fallBackHandlerAddress": "0xda753BCdf5D20986E8266F5c41EF80271dcEaF14"
+        }
+        case Chains.moonbaseAlpha:
+            return {
+                "Elliptic": "0x6FfD9FC2650E17853544Cd15E58A7c919F1D5c65",
+                "TouchIdSafeWalletContractProxyFactoryAddress": "0x05eeB2B802DaA5665A2316c7775E346db8FA368B",
+                "TouchIdSafeWalletContractSingletonAddress": "0x44fB967Fe37F365E10E9F1bFA5d26a9D0a0Fd8c2",
+                "fallBackHandlerAddress": "0xda753BCdf5D20986E8266F5c41EF80271dcEaF14"
+            }
     }
 }

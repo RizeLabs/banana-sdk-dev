@@ -292,3 +292,22 @@ main();
 // 		console.error(error);
 // 		process.exit(1);
 // 	});
+
+
+// contracts on FVM
+// Token callback handler : 0xda753BCdf5D20986E8266F5c41EF80271dcEaF14
+// BananaTouchIdAccountProxy Factory : 0x05eeB2B802DaA5665A2316c7775E346db8FA368B
+// Elliptic : 0x6FfD9FC2650E17853544Cd15E58A7c919F1D5c65
+// staking : 0x701c734462e056D55e8Cd5ffe2E8931E7Ef6dB2A
+// Singleton Banana Account: 0x44fB967Fe37F365E10E9F1bFA5d26a9D0a0Fd8c2
+// Banana Relayer Address: 0x33e6c253C5bD7ea1e039965Df4b8F8c4AAD3894e
+// entryPoint : 0x0Bd06f21d952C63be8A2fb5d02d09F817F529Cb9
+
+// contracts on moonbase Alpha
+// Token callback handler : 0xda753BCdf5D20986E8266F5c41EF80271dcEaF14
+// BananaTouchIdAccountProxy Factory : 0x05eeB2B802DaA5665A2316c7775E346db8FA368B
+// Elliptic : 0x6FfD9FC2650E17853544Cd15E58A7c919F1D5c65
+// staking : 0x701c734462e056D55e8Cd5ffe2E8931E7Ef6dB2A
+// Singleton Banana Account: 0x44fB967Fe37F365E10E9F1bFA5d26a9D0a0Fd8c2
+// Banana Relayer Address: 0x33e6c253C5bD7ea1e039965Df4b8F8c4AAD3894e
+// entryPoint : 0x0Bd06f21d952C63be8A2fb5d02d09F817F529Cb9
