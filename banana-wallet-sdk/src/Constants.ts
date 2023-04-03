@@ -5,7 +5,8 @@ export enum Chains {
     goerli,
     mumbai,
     optimismTestnet,
-    arbitrum
+    arbitrum,
+    zkevm
 }
 
 export function getClientConfigInfo(chain: Chains): ClientConfig {
@@ -29,6 +30,11 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
             return {
                 "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
                 "bundlerUrl": "http://localhost:80/rpc" // arbitrum bundler 
+            };
+        case Chains.zkevm:
+            return {
+                "entryPointAddress": "0x1F88d74aD5C91bc9E7A04622b3B81918C9d4D958",
+                "bundlerUrl": "http://localhost:80/rpc" // zkevm testnet
             }
      }
 }
@@ -62,6 +68,13 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
             "TouchIdSafeWalletContractProxyFactoryAddress": "0xC731C32AD4aE5b83593424f0ba2a9bA9173474b8",
             "TouchIdSafeWalletContractSingletonAddress": "0xb861F1E9b978c81763a2fB66D6b79Ea4a13fbF0c",
             "fallBackHandlerAddress": "0xFd9878446Cd1D7A4EF4c923B6b9acE98dAcE3a06"
+        }
+        case Chains.zkevm:
+        return {
+            "Elliptic": "0x7E04a54255779229C2155E2c121EEE4CD02A6A14",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x94a083BAA1b160C64f32ad5496226FAf7Ef2140e",
+            "TouchIdSafeWalletContractSingletonAddress": "0xC731C32AD4aE5b83593424f0ba2a9bA9173474b8",
+            "fallBackHandlerAddress": "0x9EEbC5345A1796D06F493968d52f79949E904905"
         }
     }
 }

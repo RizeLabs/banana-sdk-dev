@@ -54,6 +54,10 @@ export default {
     url: 'https://arb-goerli.g.alchemy.com/v2/IrI19BkqK9AQ-7afSkKvNmNCuK0TG3Ok',
     accounts: ["ecf0fbe435b1d11c6c1caf0a76cd12ac751eaac5e877b301a6c399e98a583813"],
     maxCodeSize: 1000000
+  },
+  zkevm: {
+    url: 'https://rpc.public.zkevm-test.net',
+    accounts: ["ecf0fbe435b1d11c6c1caf0a76cd12ac751eaac5e877b301a6c399e98a583813"]
   }
   },
   etherscan: {
