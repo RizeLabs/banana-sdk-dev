@@ -6,6 +6,7 @@ import { BaseApiParams } from '@account-abstraction/sdk/dist/src/BaseAccountAPI'
 import { SimpleAccountAPI } from '@account-abstraction/sdk'
 import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types/factories'
 import { ethers } from 'ethers'
+import { BananaSigner } from './BananaSigner'
 
 /**
  * constructor params, added no top of base params:
@@ -14,7 +15,7 @@ import { ethers } from 'ethers'
  * @param index nonce value used when creating multiple wallets for the same owner
  */
 export interface MyWalletApiParams extends BaseApiParams {
-  owner: Signer
+  owner: BananaSigner
   factoryAddress?: string
   index?: number
   _EllipticCurveAddress: string

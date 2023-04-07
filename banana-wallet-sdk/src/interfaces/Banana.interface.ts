@@ -42,3 +42,8 @@ export interface TransactionDetailsForUserOp {
     maxFeePerGas?: BigNumberish
     maxPriorityFeePerGas?: BigNumberish
 }
+
+export interface WalletConnectionResponse {
+    success: boolean
+    address: string
+}
