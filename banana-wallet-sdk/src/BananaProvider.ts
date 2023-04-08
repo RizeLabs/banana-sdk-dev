@@ -174,6 +174,12 @@ export class Banana {
     }
   };
 
+  getAddress(): string {
+    const uncompressedPublicKey = `0x04${this.publicKey.q0.slice(2)}${this.publicKey.q1.slice(2)}`;
+    return ethers.utils.computeAddress(uncompressedPublicKey)
+  }
+
+
   /**
    * @method getBananaProvider
    * @params none
@@ -183,7 +189,7 @@ export class Banana {
   getBananaProvider = async (): Promise<Banana4337Provider> => {
     if (this.bananaProvider) return this.bananaProvider;
 
-    let signer: BananaSigner = this.bananaSigner;
+    // let signer: BananaSigner = this.bananaSigner;
     let network: Network = await this.jsonRpcProvider.getNetwork();
 
     const entryPoint: EntryPoint = EntryPoint__factory.connect(
@@ -201,13 +207,13 @@ export class Banana {
       provider: this.jsonRpcProvider,
       entryPointAddress: this.Provider.entryPointAddress,
       accountAddress: this.walletAddress,
-      owner: signer,
+      owner: this.jsonRpcProvider.getSigner(),
       factoryAddress: TouchIdSafeWalletContractProxyFactoryAddress,
       paymasterAPI: myPaymasterApi,
       _EllipticCurveAddress: this.addresses.Elliptic,
       _qValues: [this.publicKey.q0, this.publicKey.q1],
       _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress,
-      _ownerAddress: this.bananaSigner.address,
+      _ownerAddress: this.getAddress(),
       _fallBackHandler: this.addresses.fallBackHandlerAddress
     });
 
@@ -252,7 +258,7 @@ export class Banana {
     //@ts-ignore
     const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
     [
-      [this.bananaSigner.address], // owners 
+      [this.getAddress()], // owners 
       1,                                              // thresold will remain fix 
       "0x0000000000000000000000000000000000000000",   // to address 
       "0x",                                           // modules setup calldata
@@ -281,7 +287,6 @@ export class Banana {
   createWallet = async (walletIdentifier: string): Promise<Wallet> => {
       await this.createSignerAndCookieObject(walletIdentifier);
       this.walletIdentifier = walletIdentifier
-      const signer = this.bananaSigner;
       const TouchIdSafeWalletContractProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(this.jsonRpcProvider);
       const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
       const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.addresses.TouchIdSafeWalletContractSingletonAddress, "0", TouchIdSafeWalletContractInitializer);
@@ -290,7 +295,7 @@ export class Banana {
       this.setCookieAfterAddressCreation(walletIdentifier);
       this.postCookieChecks(walletIdentifier);
       //! for now our wallet is chainSpecific
-      return new Wallet(this.walletAddress, this.bananaProvider, this.bananaSigner, this.network);
+      return new Wallet(this.walletAddress, this.bananaProvider, this.network);
   }
 
   /**
@@ -307,7 +312,7 @@ export class Banana {
     this.bananaProvider = await this.getBananaProvider();
     this.walletAddress = this.cookieObject.walletAddress;
     this.postCookieChecks(walletIdentifier);
-    return new Wallet(this.walletAddress, this.bananaProvider, this.bananaSigner, this.network);
+    return new Wallet(this.walletAddress, this.bananaProvider, this.network);
   }
 
   /**

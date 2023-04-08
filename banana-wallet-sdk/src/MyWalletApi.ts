@@ -15,7 +15,7 @@ import { BananaSigner } from './BananaSigner'
  * @param index nonce value used when creating multiple wallets for the same owner
  */
 export interface MyWalletApiParams extends BaseApiParams {
-  owner: BananaSigner
+  owner: Signer
   factoryAddress?: string
   index?: number
   _EllipticCurveAddress: string
@@ -141,5 +141,18 @@ export class MyWalletApi extends SimpleAccountAPI {
 
   async signUserOpHash (userOpHash: string): Promise<string> {
     return await this.owner.signMessage(arrayify(userOpHash))
+  }
+
+  async getAccountAddress (): Promise<string> {
+    console.log("Called here from sender address ");
+    // const TouchIdSafeWalletContractProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(this.jsonRpcProvider);
+    const TouchIdSafeWalletContractProxyFactory: BananaAccountProxyFactory = BananaAccountProxyFactory__factory.connect(
+      this.factoryAddress,
+      this.provider
+    );
+    const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
+    const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.singletonTouchIdSafeAddress, "0", TouchIdSafeWalletContractInitializer);
+    console.log("Address returned ", TouchIdSafeWalletContractAddress);
+    return TouchIdSafeWalletContractAddress
   }
 }

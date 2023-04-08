@@ -21,10 +21,10 @@ import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI
 import { Banana4337Provider } from "./Banana4337Provider";
 
 export class BananaSigner extends ERC4337EthersSigner {
-  readonly provider: JsonRpcProvider;
-  readonly publicKey: PublicKey;
+  jsonRpcProvider: JsonRpcProvider;
+  publicKey: PublicKey;
   address!: string;
-  encodedId!: string;
+  encodedId: string;
 
   constructor(
     readonly config: ClientConfig,
@@ -42,7 +42,8 @@ export class BananaSigner extends ERC4337EthersSigner {
       httpRpcClient,
       smartAccountAPI
     );
-    this.provider = provider;
+    console.log("Provider ", provider);
+    this.jsonRpcProvider = provider;
     this.publicKey = publicKey;
     this.encodedId = publicKey.encodedId;
     this.getAddress();
@@ -61,20 +62,26 @@ export class BananaSigner extends ERC4337EthersSigner {
       gasLimit: tx.gasLimit,
     });
     let processStatus = true;
-    const message = await this.smartAccountAPI.getUserOpHash(userOperation);
     while (processStatus) {
       let minGasRequired = ethers.BigNumber.from(userOperation?.callGasLimit)
         .add(ethers.BigNumber.from(userOperation?.verificationGasLimit))
         .add(ethers.BigNumber.from(userOperation?.callGasLimit));
-      let currentGasPrice = await this.provider.getGasPrice();
+      let currentGasPrice = await this.jsonRpcProvider.getGasPrice();
       let minBalanceRequired = minGasRequired.mul(currentGasPrice);
       //@ts-ignore
       let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(
         userOperation?.sender
       );
+      console.log("UserOperation ", userOperation);
+      console.log("Sender ", userOperation.sender)
+      console.log("user balance ",userBalance)
+      console.log("min balance needed ", minBalanceRequired);
       if (userBalance.lt(minBalanceRequired)) {
         throw new Error("ERROR: Insufficient balance in Wallet");
       }
+      userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
+      userOperation.verificationGasLimit = 3e6;
+      const message = await this.smartAccountAPI.getUserOpHash(userOperation);
       const { newUserOp, process } = await this.signUserOp(
         userOperation as any,
         message,
@@ -99,14 +106,15 @@ export class BananaSigner extends ERC4337EthersSigner {
     return transactionResponse;
   }
 
-  // Need to implement our own getAddress method
-  getAddress(): Promise<string> {
-    const uncompressedPublicKey = `0x04${this.publicKey.q0.slice(
-      2
-    )}${this.publicKey.q1.slice(2)}`;
-    this.address = ethers.utils.computeAddress(uncompressedPublicKey);
-    return Promise.resolve(this.address);
-  }
+  // // Need to implement our own getAddress method
+  // this should return the wallet contract address
+  // getAddress(): Promise<string> {
+  //   const uncompressedPublicKey = `0x04${this.publicKey.q0.slice(
+  //     2
+  //   )}${this.publicKey.q1.slice(2)}`;
+  //   this.address = ethers.utils.computeAddress(uncompressedPublicKey);
+  //   return Promise.resolve(this.address);
+  // }
 
   // need to override it with our own signing logic
   async signBananaMessage(message: Bytes | string) {

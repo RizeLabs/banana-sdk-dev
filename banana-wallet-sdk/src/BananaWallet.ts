@@ -18,18 +18,15 @@ export interface WalletProvider {
 export class Wallet implements WalletProvider {
     readonly walletAddress: string
     readonly walletProvider: Banana4337Provider
-    readonly walletSigner: BananaSigner
     readonly network: Chains
 
     constructor(
         walletAddress: string,
         walletProvider: Banana4337Provider,
-        walletSigner: BananaSigner,
         network: Chains
     ) {
         this.walletAddress = walletAddress
         this.walletProvider = walletProvider;
-        this.walletSigner = walletSigner;
         this.network = network
     }
 
