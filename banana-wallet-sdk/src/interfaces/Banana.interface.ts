@@ -18,6 +18,7 @@ export interface UserCredentialObject {
     initcode: boolean;
     encodedId: string;
     username: string
+    saltNonce: number
 }
 
 export interface CookieObject {
@@ -43,7 +44,6 @@ export interface TransactionDetailsForUserOp {
     maxPriorityFeePerGas?: BigNumberish
 }
 
-export interface WalletConnectionResponse {
-    success: boolean
-    address: string
+export interface ChainSpecificConfig {
+    jsonRpcUrl: string
 }

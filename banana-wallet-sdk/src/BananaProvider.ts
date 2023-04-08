@@ -26,6 +26,7 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
 import { Wallet } from "./BananaWallet"
 import { Banana4337Provider } from "./Banana4337Provider";
+import { NetworkAddressChecker } from "./utils/addressChecker";
 
 export class Banana {
   Provider: ClientConfig;
@@ -76,7 +77,7 @@ export class Banana {
    * @returns none
    * Set cookie to local and global storage after wallet creation.
    */
-  private setCookieAfterAddressCreation = async (walletIdentifier: string) => {
+  private setCookieAfterAddressCreation = async (walletIdentifier: string, saltNonce: number) => {
     this.cookieObject = {
       q0: this.publicKey.q0,
       q1: this.publicKey.q1,
@@ -84,6 +85,7 @@ export class Banana {
       initcode: false,
       encodedId: this.publicKey.encodedId,
       username: walletIdentifier,
+      saltNonce: saltNonce //! Need to make changes to the mapper code for this additional property
     };
     // saving cookie correspond to user Identifier in cookie
     this.cookie.setCookie(
@@ -186,7 +188,7 @@ export class Banana {
    * @returns { ERC4337EthersProvider } bananaProvider
    * create ERC4337Provider instance of user's smart contract wallet. Used as BananaProvider.
    */
-  getBananaProvider = async (): Promise<Banana4337Provider> => {
+  getBananaProvider = async (saltNonce: number): Promise<Banana4337Provider> => {
     if (this.bananaProvider) return this.bananaProvider;
 
     // let signer: BananaSigner = this.bananaSigner;
@@ -214,7 +216,8 @@ export class Banana {
       _qValues: [this.publicKey.q0, this.publicKey.q1],
       _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress,
       _ownerAddress: this.getAddress(),
-      _fallBackHandler: this.addresses.fallBackHandlerAddress
+      _fallBackHandler: this.addresses.fallBackHandlerAddress,
+      _saltNonce: saltNonce
     });
 
     this.accountApi = smartWalletAPI;
@@ -289,10 +292,21 @@ export class Banana {
       this.walletIdentifier = walletIdentifier
       const TouchIdSafeWalletContractProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(this.jsonRpcProvider);
       const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
-      const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.addresses.TouchIdSafeWalletContractSingletonAddress, "0", TouchIdSafeWalletContractInitializer);
-      this.walletAddress = TouchIdSafeWalletContractAddress;
-      this.bananaProvider = await this.getBananaProvider();
-      this.setCookieAfterAddressCreation(walletIdentifier);
+      let saltNonce = 0;
+      let isAddressUnique = false;
+      let TouchIdSafeWalletContractAddress
+
+      while(!isAddressUnique) {
+        TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.addresses.TouchIdSafeWalletContractSingletonAddress, saltNonce.toString(), TouchIdSafeWalletContractInitializer);
+        isAddressUnique = await NetworkAddressChecker(TouchIdSafeWalletContractAddress)
+        saltNonce++;
+      }
+
+      if(TouchIdSafeWalletContractAddress) {
+        this.walletAddress = TouchIdSafeWalletContractAddress;
+      }
+      this.bananaProvider = await this.getBananaProvider(saltNonce);
+      this.setCookieAfterAddressCreation(walletIdentifier, saltNonce);
       this.postCookieChecks(walletIdentifier);
       //! for now our wallet is chainSpecific
       return new Wallet(this.walletAddress, this.bananaProvider, this.network);
@@ -309,7 +323,7 @@ export class Banana {
 
   connectWallet = async (walletIdentifier: string) => {
     await this.createSignerAndCookieObject(walletIdentifier)
-    this.bananaProvider = await this.getBananaProvider();
+    this.bananaProvider = await this.getBananaProvider(this.cookieObject.saltNonce);
     this.walletAddress = this.cookieObject.walletAddress;
     this.postCookieChecks(walletIdentifier);
     return new Wallet(this.walletAddress, this.bananaProvider, this.network);

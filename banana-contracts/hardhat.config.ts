@@ -37,18 +37,22 @@ export default {
     url: `https://eth-goerli.g.alchemy.com/v2/V5p1PckEwUqIq5s5rA2zvwRKH0V9Hslr`,
     accounts: ["6923720ab043d19f5975644c6312f0de7ffbe7bc446c871abde2c078eaeae53f"]
   },
-  optimism: {
+  optimismTestnet: {
     url: `https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas`,
-    accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : ["326d3b8f081040e0044fde540508dde301cdae5c387d207f7ea15ceb32b9630d"]
+    accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : ["b46aa29588eb4320a0901dfdbb4473de08c6c916a4bd99cbfd7d7209f3f3d310"]
   },
   mumbai: {
     url: 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4',
-    accounts: ["a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74"]
+    accounts: ["b46aa29588eb4320a0901dfdbb4473de08c6c916a4bd99cbfd7d7209f3f3d310"]
   },
   shardeum: {
     url: 'https://sphinx.shardeum.org/',
     accounts: ["a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74"],
     chainId: 8082,
+  },
+  arbitrumTestnet: {
+    url: 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw',
+    accounts: ["b46aa29588eb4320a0901dfdbb4473de08c6c916a4bd99cbfd7d7209f3f3d310"]
   }
   },
   etherscan: {

@@ -1,10 +1,16 @@
 import { ClientConfig } from "@account-abstraction/sdk";
-import { ChainConfig } from "./interfaces/Banana.interface";
+import { ChainConfig, ChainSpecificConfig } from "./interfaces/Banana.interface";
+
+export const OPTIMISM_TESTNET_RPC = 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas';
+export const MUMBAI_RPC = 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4';
+export const ARBITRUM_TESTNET_RPC = 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw';
+export const GOERLI_RPC = 'https://eth-goerli.g.alchemy.com/v2/V5p1PckEwUqIq5s5rA2zvwRKH0V9Hslr';
 
 export enum Chains {
     goerli,
     mumbai,
-    optimismTestnet
+    optimismTestnet,
+    arbitrumTestnet
 }
 
 export function getClientConfigInfo(chain: Chains): ClientConfig {
@@ -24,6 +30,11 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
                 "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
                 "bundlerUrl": "https://optimism.eip4337-bunder.xyz/rpc" // optimism bundler 
             }
+        case Chains.arbitrumTestnet:
+            return {
+                "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
+                "bundlerUrl": "http://localhost:80/rpc" // arbitrum bundler 
+            };
      }
 }
 
@@ -31,24 +42,53 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
     switch (chain) {
         case Chains.goerli: 
         return {
-            "Elliptic": "0xa5d0D7e820F6f8A0DC68722e41801a1dcfAE2403",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0x2cB39E2248251f104DbF5fdE528b77aE7415fD99",
-            "TouchIdSafeWalletContractSingletonAddress": "0xfB988d2047526761cb34485AD519761278cE596D",
-            "fallBackHandlerAddress": "0xc1d4982E6126BF76959Fe21b53189bc2a717e243"
+            "Elliptic": "0xDf6fFfB5Ec52A73F7C96e2818dBD46B7d4009b94",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0xaa6bBbA9Cde638e58b4F01b4f98D73011FaB2b23",
+            "TouchIdSafeWalletContractSingletonAddress": "0xdD230e4F566178739B999c1dF4F7362240887E46",
+            "fallBackHandlerAddress": "0x668299a3cAB0821b6A9A6AA401a0Fe7f16cB0642"
         };
         case Chains.optimismTestnet:
         return {
-            "Elliptic": "0x91703a4b78A084B479294634F37A0eA5924D1Ad0",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0xf2DA9326F95c5aD195BC6ED366289E0F95d7Bc42",
-            "TouchIdSafeWalletContractSingletonAddress": "0xb0A0Efe6a5b2B03F75F0bF7e2e0EdEee214e9D90",
-            "fallBackHandlerAddress": "0xED5F8EDAD5a78ca55FB491615a228EAf30645d75"
+            "Elliptic": "0xDf6fFfB5Ec52A73F7C96e2818dBD46B7d4009b94",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0xaa6bBbA9Cde638e58b4F01b4f98D73011FaB2b23",
+            "TouchIdSafeWalletContractSingletonAddress": "0xdD230e4F566178739B999c1dF4F7362240887E46",
+            "fallBackHandlerAddress": "0x668299a3cAB0821b6A9A6AA401a0Fe7f16cB0642"
         };
         case Chains.mumbai: 
         return {
-            "Elliptic": "0x7efd1b4C0469f43AbbE1a5946eBD4A1734d1b79E",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0xe5b37ba779d21d8aB5A2DFa2DfDBA7a41f3Adc77",
-            "TouchIdSafeWalletContractSingletonAddress": "0x66D61387800d62695Df91A2018f54Eec3b832a34",
-            "fallBackHandlerAddress": "0xFcB4caE05f6F47Ef8EDEF98375Cd5180E03ad575"
+            "Elliptic": "0xDf6fFfB5Ec52A73F7C96e2818dBD46B7d4009b94",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0xaa6bBbA9Cde638e58b4F01b4f98D73011FaB2b23",
+            "TouchIdSafeWalletContractSingletonAddress": "0xdD230e4F566178739B999c1dF4F7362240887E46",
+            "fallBackHandlerAddress": "0x668299a3cAB0821b6A9A6AA401a0Fe7f16cB0642"
         };
+        case Chains.arbitrumTestnet: 
+        return {
+            "Elliptic": "0xDf6fFfB5Ec52A73F7C96e2818dBD46B7d4009b94",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0xaa6bBbA9Cde638e58b4F01b4f98D73011FaB2b23",
+            "TouchIdSafeWalletContractSingletonAddress": "0xdD230e4F566178739B999c1dF4F7362240887E46",
+            "fallBackHandlerAddress": "0x668299a3cAB0821b6A9A6AA401a0Fe7f16cB0642"
+        };
+    }
+}
+
+// enabling multi network infra for arbitrum, mumbai, optimism
+export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
+    switch (chain) {
+        case Chains.goerli: 
+        return {
+            jsonRpcUrl: GOERLI_RPC
+        };
+        case Chains.optimismTestnet:
+        return {
+            jsonRpcUrl: OPTIMISM_TESTNET_RPC
+        };
+        case Chains.mumbai: 
+        return {
+            jsonRpcUrl: MUMBAI_RPC
+        };
+        case Chains.arbitrumTestnet:
+        return {
+            jsonRpcUrl: ARBITRUM_TESTNET_RPC
+        }
     }
 }
