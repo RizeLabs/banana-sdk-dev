@@ -423,6 +423,7 @@ export class Banana {
       const uHash = await this.httpRpcClient.sendUserOpToBundler(
         userOp as any
       );
+      
       return uHash;
     } catch (err) {
       console.log(err);
@@ -473,22 +474,32 @@ export class Banana {
       this.Provider.entryPointAddress,
       this.jsonRpcProvider
     );
+    //@ts-ignore
+    userOp.nonce = 0x1;
     const reqId = await this.accountApi.getUserOpHash(userOp as any);
     console.log("UserOpHash: ", reqId);
     let processStatus = true;
+    console.log("UserOp in constructAndSendUserOp: ", userOp)
     let finalUserOp;
     while(processStatus) {
       let minGasRequired =  ethers.BigNumber.from(userOp?.callGasLimit)
                             .add(ethers.BigNumber.from(userOp?.verificationGasLimit))
                             .add(ethers.BigNumber.from(userOp?.callGasLimit));
       let currentGasPrice = await this.jsonRpcProvider.getGasPrice()
+      console.log("minGasRequired: ", minGasRequired)
+      console.log("currentGasPrice: ", currentGasPrice)
       let minBalanceRequired = minGasRequired.mul(currentGasPrice)
       //@ts-ignore
       let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(userOp?.sender);
-      if(userBalance.lt(minBalanceRequired)){
-        throw new Error("ERROR: Insufficient balance in Wallet")
-      }
+      console.log("userBalance: ", userBalance)
+      // if(userBalance.lt(minBalanceRequired)){
+      //   console.log("Insufficient balance in Wallet")
+      //   throw new Error("ERROR: Insufficient balance in Wallet")
+      // }
+      console.log("userOp before signUserOp: ", userOp)
       const { newUserOp, process } = await this.bananaSigner.signUserOp(userOp as any, reqId, this.publicKey.encodedId);
+      console.log("newUserOp: ", newUserOp)
+      console.log("process: ", process)
       if(process === 'success') { 
         finalUserOp = newUserOp;
         processStatus = false; 

@@ -125,29 +125,32 @@ async function main() {
 	// const BananaAccountProxyFactory = await ethers.getContractFactory('BananaAccountProxyFactory');
 	// const bananaTouchIdAccountProxyFactory = await BananaAccountProxyFactory.deploy();
 	// console.log('BananaTouchIdAccountProxy Factory :', bananaTouchIdAccountProxyFactory.address);
-
+	//0x9b601f8e34eff4Dffb7CA693626a584071B9588F
+	
 	//goerli tokenhandler: 0xc1d4982E6126BF76959Fe21b53189bc2a717e243
-	// banana proxy factory: 0x2cB39E2248251f104DbF5fdE528b77aE7415fD99
-	// singleton: 0xfB988d2047526761cb34485AD519761278cE596D
+	
 
 
 
-	// const ec = await ethers.getContractFactory('EllipticCurve');
-	// const ec_deployed = await ec.deploy();
-	// console.log('Elliptic :', ec_deployed.address);
+	const ec = await ethers.getContractFactory('EllipticCurve');
+	const ec_deployed = await ec.deploy();
+	console.log('Elliptic :', ec_deployed.address);
 
-	// mainnet addresses
+	// MAINNET addresses
 	// owner add 0xd04CF373e169db013e5E2Ff5Ce51Cc099881AfD1
-	// Token callback handler : 0x25dbCD78bCE1930e4ee1fFE8b30f39eC44803974
+	// Token callback handler : 0x1dE8E294f6051d159095777051788B34609c9729
+	// banana proxy factory: 0x9b601f8e34eff4Dffb7CA693626a584071B9588F
+	// singleton: 0xb124f5DB610f2aBC9b3A1b4297f9037b6D84A29A
+	// ec: 0xd223a0D7cD198a5d448DeEdE81c63a3Ad4f244FC
 
-	const st = await ethers.getContractFactory('Staking');
-	const stDeployer = await st.deploy();
-	console.log('staking :', stDeployer.address);
+	// const st = await ethers.getContractFactory('Staking');
+	// const stDeployer = await st.deploy();
+	// console.log('staking :', stDeployer.address);
 
 	// const BananaAccount = await ethers.getContractFactory('BananaAccount');
 	// const BananaAccountDeployer = await BananaAccount.deploy();
 	// console.log('Banana Account Singleton:', BananaAccountDeployer.address);
-	// 0x106DD6EdaF8Db8a3ACFa215c8C6ADf0730175CaF
+	// 0xb124f5DB610f2aBC9b3A1b4297f9037b6D84A29A
 
 	// 	const BananaAccount = await ethers.getContractFactory('BananaTest');
 	// const BananaAccountDeployer = await BananaAccount.deploy();

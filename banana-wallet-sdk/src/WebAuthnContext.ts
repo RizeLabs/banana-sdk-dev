@@ -84,6 +84,7 @@ export const registerFingerprint = async () => {
 
 export const verifyFingerprint = async (userOp: UserOperation, reqId: string, encodedId: string) =>  {
       const decodedId = base64url.decode(encodedId)
+      console.log("decodedId", decodedId)
       const credential = await navigator.credentials.get({ publicKey: {
         // Set the WebAuthn credential to use for the assertion
         allowCredentials: [{

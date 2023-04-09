@@ -62,6 +62,7 @@ export class BananaSigner extends Signer {
     }
 
     async signUserOp(userOp: UserOperation, reqId: string, encodedId: string) {
+        console.log("signUserOp", userOp, reqId, encodedId)
         const signedUserOp = await verifyFingerprint(userOp as any, reqId, encodedId)
         return signedUserOp
     }

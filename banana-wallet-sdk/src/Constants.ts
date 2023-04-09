@@ -58,10 +58,10 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         };
         case Chains.polygon: 
         return {
-            "Elliptic": "0x635F4D1917f27b2A56CF7ebdf2417800613C0Fa7", //--
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0xC9e1845bA0659E9B15e47A66eA032f950D37c9e6", //--
-            "TouchIdSafeWalletContractSingletonAddress": "0x437A65f21340b4AFaF19aD2685392c3Fe0243DE5", //--
-            "fallBackHandlerAddress": "0x25dbCD78bCE1930e4ee1fFE8b30f39eC44803974"
+            "Elliptic": "0xd223a0D7cD198a5d448DeEdE81c63a3Ad4f244FC", //--
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x9b601f8e34eff4Dffb7CA693626a584071B9588F", //--
+            "TouchIdSafeWalletContractSingletonAddress": "0xb124f5DB610f2aBC9b3A1b4297f9037b6D84A29A", //--
+            "fallBackHandlerAddress": "0x1dE8E294f6051d159095777051788B34609c9729"
         };
     }
 }
