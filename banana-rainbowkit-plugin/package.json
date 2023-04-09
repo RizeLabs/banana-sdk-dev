@@ -1,0 +1,25 @@
+{
+  "name": "@rize-labs/banana-rainbowkit-plugin",
+  "version": "1.0.0",
+  "description": "Rainbow kit plugin for Banana Wallet SDK",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "banana-wallet-sdk",
+    "smart-contract-wallet",
+    "contract",
+    "wallet"
+  ],
+  "author": "nlok5923",
+  "license": "ISC",
+  "dependencies": {
+    "@account-abstraction/sdk": "^0.5.0",
+    "@rainbow-me/rainbowkit": "^0.8.1",
+    "ethers": "^5.7.2",
+    "typescript": "^5.0.3",
+    "wagmi": "^0.9.0"
+  }
+}
