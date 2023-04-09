@@ -149,19 +149,19 @@ async function main() {
 	// const BananaAccountDeployer = await BananaAccount.deploy();
 	// console.log('Banana Test:', BananaAccountDeployer.address);
 
-	// const PUBLIC_KEY_EXPOSED = '0x48701dF467Ba0efC8D8f34B2686Dc3b0A0b1cab5'
-	// const PRIVATE_KEY_EXPOSED = 'ed096a60e1af7c04519965c9e1fe105b2cd287afd49e4f1d77744f91ab5eb36e';
-	// const receiver = '0x6584A3bccbcA566efac25A7c10Ec32EcbC5d10B1';
-	// const fundTxn = {
-    //     from: PUBLIC_KEY_EXPOSED,
-    //     to: receiver,
-    //     value: ethers.utils.parseEther("0.25"),
-    //     gasLimit: 210000
-    //   }
-	// const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas'));
-	// const txn = await wallet.sendTransaction(fundTxn);
-	// await txn.wait()
-	// console.log(txn);
+	const PUBLIC_KEY_EXPOSED = '0x48701dF467Ba0efC8D8f34B2686Dc3b0A0b1cab5'
+	const PRIVATE_KEY_EXPOSED = 'ed096a60e1af7c04519965c9e1fe105b2cd287afd49e4f1d77744f91ab5eb36e';
+	const receiver = '0xB86301bbe16E75506bd2CB35390f3966E48e2921';
+	const fundTxn = {
+        from: PUBLIC_KEY_EXPOSED,
+        to: receiver,
+        value: ethers.utils.parseEther("0.01"),
+        gasLimit: 210000
+      }
+	const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas'));
+	const txn = await wallet.sendTransaction(fundTxn);
+	await txn.wait()
+	console.log(txn);
 
 	// const EntryPoint = await ethers.getContractFactory('EntryPoint');
 	// const entryPoint = await EntryPoint.deploy();
@@ -172,27 +172,32 @@ async function main() {
 
 
 	/********************************************************************* ******************************** ******************************** ********************************  */
-    const BananaAccountProxyFactory = await ethers.getContractFactory('BananaAccountProxyFactory');
-	const bananaTouchIdAccountProxyFactory = await BananaAccountProxyFactory.deploy();
-	console.log('BananaTouchIdAccountProxy Factory :', bananaTouchIdAccountProxyFactory.address);
+    // const BananaAccountProxyFactory = await ethers.getContractFactory('BananaAccountProxyFactory');
+	// const bananaTouchIdAccountProxyFactory = await BananaAccountProxyFactory.deploy();
+	// console.log('BananaTouchIdAccountProxy Factory :', bananaTouchIdAccountProxyFactory.address);
 
-	const BananaAccount = await ethers.getContractFactory('BananaAccount');
-	const BananaAccountDeployer = await BananaAccount.deploy();
-	console.log('Banana Account:', BananaAccountDeployer.address);
+	// const BananaAccount = await ethers.getContractFactory('BananaAccount');
+	// const BananaAccountDeployer = await BananaAccount.deploy();
+	// console.log('Banana Account:', BananaAccountDeployer.address);
 
-	const TokenCallBackHandlerDeployer = await ethers.getContractFactory('TokenCallbackHandler');
-	const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
-	console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);
+	// const TokenCallBackHandlerDeployer = await ethers.getContractFactory('TokenCallbackHandler');
+	// const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
+	// console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);
 
-    const ec = await ethers.getContractFactory('EllipticCurve');
-	const ec_deployed = await ec.deploy();
-	console.log('Elliptic :', ec_deployed.address);
+    // const ec = await ethers.getContractFactory('EllipticCurve');
+	// const ec_deployed = await ec.deploy();
+	// console.log('Elliptic :', ec_deployed.address);
+
+	// const st = await ethers.getContractFactory('Staking');
+	// const stDeployer = await st.deploy();
+	// console.log('staking :', stDeployer.address);
 
 // 	owner add 0x6584A3bccbcA566efac25A7c10Ec32EcbC5d10B1
 // BananaTouchIdAccountProxy Factory : 0xaa6bBbA9Cde638e58b4F01b4f98D73011FaB2b23
 // Banana Account: 0xdD230e4F566178739B999c1dF4F7362240887E46
 // Token callback handler : 0x668299a3cAB0821b6A9A6AA401a0Fe7f16cB0642
 // Elliptic : 0xDf6fFfB5Ec52A73F7C96e2818dBD46B7d4009b94
+
 // owner add 0x6584A3bccbcA566efac25A7c10Ec32EcbC5d10B1
 // BananaTouchIdAccountProxy Factory : 0xaa6bBbA9Cde638e58b4F01b4f98D73011FaB2b23
 // Banana Account: 0xdD230e4F566178739B999c1dF4F7362240887E46

@@ -7,8 +7,8 @@ import { Chains } from '@rize-labs/banana-wallet-sdk/src/Constants'
 // creating chain specific instance of banana module
 
 export const GetAccount = async() => {
-  const jsonRpcProviderUrl = "https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4";
-  const bananaInstance = new Banana(Chains.mumbai, jsonRpcProviderUrl);
+  const jsonRpcProviderUrl = "https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas";
+  const bananaInstance = new Banana(Chains.optimismTestnet, jsonRpcProviderUrl);
   const walletName = await bananaInstance.getWalletName();
   if(walletName) {
   // getting address for the walletName.

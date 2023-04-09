@@ -147,15 +147,12 @@ export class MyWalletApi extends SimpleAccountAPI {
   }
 
   async getAccountAddress (): Promise<string> {
-    console.log("Called here from sender address ");
-    // const TouchIdSafeWalletContractProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(this.jsonRpcProvider);
     const TouchIdSafeWalletContractProxyFactory: BananaAccountProxyFactory = BananaAccountProxyFactory__factory.connect(
       this.factoryAddress,
       this.provider
     );
     const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
     const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.singletonTouchIdSafeAddress, this.saltNonce.toString(), TouchIdSafeWalletContractInitializer);
-    console.log("Address returned ", TouchIdSafeWalletContractAddress);
     return TouchIdSafeWalletContractAddress
   }
 }

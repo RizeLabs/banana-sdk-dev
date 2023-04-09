@@ -7,6 +7,7 @@ export const NetworkAddressChecker = async (address: string) => {
     const mumbaiProvider = new ethers.providers.JsonRpcProvider(MUMBAI_RPC);
     const mumbaiCodeStatus = await mumbaiProvider.getCode(address);
     if (mumbaiCodeStatus === '0x') {
+        console.log("Mumbai status ", mumbaiCodeStatus);
         isMumbai = true;
     }
 
@@ -14,6 +15,7 @@ export const NetworkAddressChecker = async (address: string) => {
     const arbitrumTestnetProvider = new ethers.providers.JsonRpcProvider(ARBITRUM_TESTNET_RPC);
     const arbitrumTestnetCodeStatus = await arbitrumTestnetProvider.getCode(address);
     if (arbitrumTestnetCodeStatus === '0x') {
+        console.log("Arbitrum status ", arbitrumTestnetCodeStatus);
         isArbitrumTestnet = true;
     }
 
@@ -21,8 +23,10 @@ export const NetworkAddressChecker = async (address: string) => {
     const optimismTestnetProvider = new ethers.providers.JsonRpcProvider(OPTIMISM_TESTNET_RPC);
     const optimismTestnetCodeStatus = await optimismTestnetProvider.getCode(address);
     if (optimismTestnetCodeStatus === '0x') {
+        console.log("Optimism status ", optimismTestnetCodeStatus);
         isOptimismTestnet = true;
     }
 
-    return isMumbai && isArbitrumTestnet && isOptimismTestnet;
+    // imbalance in arbitrum address
+    return isMumbai && isOptimismTestnet;
 }

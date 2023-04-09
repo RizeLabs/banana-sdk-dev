@@ -299,6 +299,7 @@ export class Banana {
       while(!isAddressUnique) {
         TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.addresses.TouchIdSafeWalletContractSingletonAddress, saltNonce.toString(), TouchIdSafeWalletContractInitializer);
         isAddressUnique = await NetworkAddressChecker(TouchIdSafeWalletContractAddress)
+        if(!isAddressUnique)
         saltNonce++;
       }
 

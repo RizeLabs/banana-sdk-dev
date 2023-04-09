@@ -52,12 +52,12 @@ export default {
   },
   arbitrumTestnet: {
     url: 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw',
-    accounts: ["b46aa29588eb4320a0901dfdbb4473de08c6c916a4bd99cbfd7d7209f3f3d310"]
+    accounts: ["ed096a60e1af7c04519965c9e1fe105b2cd287afd49e4f1d77744f91ab5eb36e"] // change it before multi network deployment
   }
   },
   etherscan: {
     // apiKey: "YJ546HGGQFGMEE4B22QNGB58QKZ97G8YSP"
-    apiKey: "2S8CM6KUUPXGG7JV63UZVVVZTWP6RYJXYE"
-    // apiKey: "C2J3GI995B9DKK1XVF3P67UDHU72P4Q15D",
+    // apiKey: "2S8CM6KUUPXGG7JV63UZVVVZTWP6RYJXYE"
+    apiKey: "C2J3GI995B9DKK1XVF3P67UDHU72P4Q15D",
  }
 };
