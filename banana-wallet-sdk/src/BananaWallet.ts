@@ -10,7 +10,7 @@ export interface WalletProvider {
     getAddress(): Promise<string>
     getChainId(): Promise<number>
     getProvider(): Banana4337Provider | undefined
-    getSigner(): ERC4337EthersSigner //!need to test out with this
+    getSigner(): BananaSigner
     isConnected(): boolean // to check if wallet connected or not
     //! Not supported yet
     // on<K extends keyof ProviderEventTypes>(event: K, fn: ProviderEventTypes[K]): void

@@ -1,8 +1,8 @@
 import { ClientConfig } from "@account-abstraction/sdk";
 import { ChainConfig, ChainSpecificConfig } from "./interfaces/Banana.interface";
 
-export const BANANA_APP = 'http://localhost:3004';
-export const BANANA_SERVER = 'http://localhost:3003'
+export const BANANA_APP = 'https://bananawallet.xyz';
+export const BANANA_SERVER = 'https://banana-server.xyz'
 export const OPTIMISM_TESTNET_RPC = 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas';
 export const MUMBAI_RPC = 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4';
 export const ARBITRUM_TESTNET_RPC = 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw';
@@ -93,4 +93,28 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
             jsonRpcUrl: ARBITRUM_TESTNET_RPC
         }
     }
+}
+
+export declare enum ChainId {
+    MAINNET = 1,
+    ROPSTEN = 3,
+    RINKEBY = 4,
+    GOERLI = 5,
+    KOVAN = 42,
+    POLYGON = 137,
+    POLYGON_MUMBAI = 80001,
+    BSC = 56,
+    BSC_TESTNET = 97,
+    OPTIMISM = 10,
+    OPTIMISM_TESTNET = 69,
+    ARBITRUM = 42161,
+    ARBITRUM_TESTNET = 421611,
+    ARBITRUM_NOVA = 42170,
+    AVALANCHE = 43114,
+    AVALANCHE_TESTNET = 43113,
+    FANTOM = 250,
+    FANTOM_TESTNET = 4002,
+    GNOSIS = 100,
+    AURORA = 1313161554,
+    AURORA_TESTNET = 1313161556
 }

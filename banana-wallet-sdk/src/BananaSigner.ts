@@ -72,13 +72,11 @@ export class BananaSigner extends ERC4337EthersSigner {
       let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(
         userOperation?.sender
       );
-      console.log("UserOperation ", userOperation);
-      console.log("Sender ", userOperation.sender)
-      console.log("user balance ",userBalance)
-      console.log("min balance needed ", minBalanceRequired);
+
       if (userBalance.lt(minBalanceRequired)) {
         throw new Error("ERROR: Insufficient balance in Wallet");
       }
+
       userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
       userOperation.verificationGasLimit = 3e6;
       const message = await this.smartAccountAPI.getUserOpHash(userOperation);
@@ -106,17 +104,6 @@ export class BananaSigner extends ERC4337EthersSigner {
     return transactionResponse;
   }
 
-  // // Need to implement our own getAddress method
-  // this should return the wallet contract address
-  // getAddress(): Promise<string> {
-  //   const uncompressedPublicKey = `0x04${this.publicKey.q0.slice(
-  //     2
-  //   )}${this.publicKey.q1.slice(2)}`;
-  //   this.address = ethers.utils.computeAddress(uncompressedPublicKey);
-  //   return Promise.resolve(this.address);
-  // }
-
-  // need to override it with our own signing logic
   async signBananaMessage(message: Bytes | string) {
     const messageHash = ethers.utils.keccak256(
       ethers.utils.solidityPack(["string"], [message])

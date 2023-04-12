@@ -182,7 +182,6 @@ export class Banana {
     return ethers.utils.computeAddress(uncompressedPublicKey)
   }
 
-
   /**
    * @method getBananaProvider
    * @params none
@@ -192,7 +191,6 @@ export class Banana {
   getBananaProvider = async (saltNonce: number): Promise<Banana4337Provider> => {
     if (this.bananaProvider) return this.bananaProvider;
 
-    // let signer: BananaSigner = this.bananaSigner;
     let network: Network = await this.jsonRpcProvider.getNetwork();
 
     const entryPoint: EntryPoint = EntryPoint__factory.connect(
@@ -312,7 +310,6 @@ export class Banana {
       this.setCookieAfterAddressCreation(walletIdentifier, saltNonce);
       this.postCookieChecks(walletIdentifier);
       //! for now our wallet is chainSpecific
-      console.log("After post cookie checks returning wallret ");
       return new Wallet(this.walletAddress, this.bananaProvider, this.network);
   }
 
@@ -345,9 +342,9 @@ export class Banana {
       const walletName = this.cookie.getCookie("bananaUser");
       this.cookie.deleteCookie(walletName);
       this.cookie.deleteCookie("bananaUser");
-      return { status: "success" }
+      return { success: true }
     } catch (err) {
-      return { status: "error", error: err }
+      return { success: false, error: err }
     }
   }
 
