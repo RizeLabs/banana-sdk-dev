@@ -53,11 +53,17 @@ export default {
   arbitrumTestnet: {
     url: 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw',
     accounts: ["ed096a60e1af7c04519965c9e1fe105b2cd287afd49e4f1d77744f91ab5eb36e"] // change it before multi network deployment
+  },
+  gnosis: {
+    url: 'https://rpc.ankr.com/gnosis',
+    accounts: ["a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74"],
+    chainId: 100,
   }
   },
   etherscan: {
     // apiKey: "YJ546HGGQFGMEE4B22QNGB58QKZ97G8YSP"
     // apiKey: "2S8CM6KUUPXGG7JV63UZVVVZTWP6RYJXYE"
-    apiKey: "C2J3GI995B9DKK1XVF3P67UDHU72P4Q15D",
+    // apiKey: "C2J3GI995B9DKK1XVF3P67UDHU72P4Q15D",
+    apiKey: "ESHESDSD935HS3IAW42I9X8HDJ13TX4IUM" //gnosis
  }
 };
