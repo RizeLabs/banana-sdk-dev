@@ -105,7 +105,7 @@ export interface BananaAccountInterface extends utils.Interface {
     "setFallbackHandler(address)": FunctionFragment;
     "setGuard(address)": FunctionFragment;
     "setup(address[],uint256,address,bytes,address,address,uint256,address)": FunctionFragment;
-    "setupWithEntrypoint(address[],uint256,address,bytes,address,address,uint256,address,address,uint256[2],address)": FunctionFragment;
+    "setupWithEntrypoint(address[],uint256,address,bytes,address,address,uint256,address,address,uint256[2])": FunctionFragment;
     "signedMessages(bytes32)": FunctionFragment;
     "simulateAndRevert(address,bytes)": FunctionFragment;
     "swapOwner(address,address,address)": FunctionFragment;
@@ -373,8 +373,7 @@ export interface BananaAccountInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
-      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      PromiseOrValue<string>
+      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
     ]
   ): string;
   encodeFunctionData(
@@ -982,7 +981,6 @@ export interface BananaAccount extends BaseContract {
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      _ellipticCurve: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -1244,7 +1242,6 @@ export interface BananaAccount extends BaseContract {
     paymentReceiver: PromiseOrValue<string>,
     _entryPoint: PromiseOrValue<string>,
     _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-    _ellipticCurve: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1506,7 +1503,6 @@ export interface BananaAccount extends BaseContract {
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      _ellipticCurve: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1864,7 +1860,6 @@ export interface BananaAccount extends BaseContract {
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      _ellipticCurve: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -2127,7 +2122,6 @@ export interface BananaAccount extends BaseContract {
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      _ellipticCurve: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

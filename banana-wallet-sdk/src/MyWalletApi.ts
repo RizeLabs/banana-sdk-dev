@@ -17,7 +17,6 @@ export interface MyWalletApiParams extends BaseApiParams {
   owner: Signer
   factoryAddress?: string
   index?: number
-  _EllipticCurveAddress: string
   _qValues: [string, string]
   _singletonTouchIdSafeAddress: string
   _ownerAddress: string
@@ -39,7 +38,6 @@ export class MyWalletApi extends SimpleAccountAPI {
   fallBackHandleraddress: string
   constructor(params: MyWalletApiParams) {
     super(params)
-    this.EllipticCurveAddress = params._EllipticCurveAddress
     this.qValues = params._qValues
     this.singletonTouchIdSafeAddress = params._singletonTouchIdSafeAddress
     this.ownerAddress = params._ownerAddress
@@ -82,7 +80,6 @@ export class MyWalletApi extends SimpleAccountAPI {
       this.entryPointAddress,   // entrypoint
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray,          // q values 
-      this.EllipticCurveAddress                         // elliptic curve
     ]);
 
     return TouchIdSafeWalletContractInitializer

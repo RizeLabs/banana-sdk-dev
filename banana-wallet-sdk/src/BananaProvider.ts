@@ -219,7 +219,6 @@ export class Banana {
       owner: signer,
       factoryAddress: TouchIdSafeWalletContractProxyFactoryAddress,
       paymasterAPI: myPaymasterApi,
-      _EllipticCurveAddress: this.addresses.Elliptic,
       _qValues: [this.publicKey.q0, this.publicKey.q1],
       _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress,
       _ownerAddress: this.bananaSigner.address,
@@ -261,7 +260,9 @@ export class Banana {
       this.addresses.TouchIdSafeWalletContractSingletonAddress,
       this.jsonRpcProvider
     );
+    console.log("TouchIdSafeWalletContractSingleton", TouchIdSafeWalletContractSingleton)
     const TouchIdSafeWalletContractQValuesArray: Array<string> = [this.publicKey.q0, this.publicKey.q1];
+    console.log("TouchIdSafeWalletContractQValuesArray", TouchIdSafeWalletContractQValuesArray)
     //@ts-ignore
     const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
     [
@@ -276,9 +277,9 @@ export class Banana {
       this.Provider.entryPointAddress,                // entrypoint
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray,          // q values 
-      this.addresses.Elliptic                         // elliptic curve
     ]);
 
+    console.log("TouchIdSafeWalletContractInitializer", TouchIdSafeWalletContractInitializer)
     return TouchIdSafeWalletContractInitializer
   };
 
@@ -293,12 +294,21 @@ export class Banana {
 
   createWallet = async (walletIdentifier: string) => {
     try {
+      console.log("walletIdentifier", walletIdentifier)
       await this.createSignerAndCookieObject(walletIdentifier);
       this.walletIdentifier = walletIdentifier
+      console.log("signer", this.bananaSigner)
+
       const signer = this.bananaSigner;
       const TouchIdSafeWalletContractProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(signer);
+      console.log("tProxyFactory", TouchIdSafeWalletContractProxyFactory.address)
+      
       const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
+      console.log("TouchIdSafeWalletContractInitializer", TouchIdSafeWalletContractInitializer)
+      
       const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.addresses.TouchIdSafeWalletContractSingletonAddress, "0", TouchIdSafeWalletContractInitializer);
+      console.log("TouchIdSafeWalletContractAddress", TouchIdSafeWalletContractAddress)
+      
       this.walletAddress = TouchIdSafeWalletContractAddress;
       this.bananaProvider = await this.getBananaProvider();
       this.setCookieAfterAddressCreation(walletIdentifier);

@@ -47,7 +47,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         return {
             "Elliptic": "0x7efd1b4C0469f43AbbE1a5946eBD4A1734d1b79E",
             "TouchIdSafeWalletContractProxyFactoryAddress": "0xe5b37ba779d21d8aB5A2DFa2DfDBA7a41f3Adc77",
-            "TouchIdSafeWalletContractSingletonAddress": "0x66D61387800d62695Df91A2018f54Eec3b832a34",
+            "TouchIdSafeWalletContractSingletonAddress": "0xE0Fee37fc4e0026B6f31cfDc5773c08c5dae44F0",
             "fallBackHandlerAddress": "0xFcB4caE05f6F47Ef8EDEF98375Cd5180E03ad575"
         };
     }

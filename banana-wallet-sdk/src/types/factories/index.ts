@@ -41,6 +41,7 @@ export { Safe__factory } from "./Safe__factory";
 export { SafeL2__factory } from "./SafeL2__factory";
 export { SafeProxy__factory } from "./SafeProxy__factory";
 export { SafeProxyFactory__factory } from "./SafeProxyFactory__factory";
+export { Secp256r1__factory } from "./Secp256r1__factory";
 export { SenderCreator__factory } from "./SenderCreator__factory";
 export { SignMessageLib__factory } from "./SignMessageLib__factory";
 export { SimulateTxAccessor__factory } from "./SimulateTxAccessor__factory";
