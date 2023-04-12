@@ -47,3 +47,7 @@ export interface TransactionDetailsForUserOp {
 export interface ChainSpecificConfig {
     jsonRpcUrl: string
 }
+
+export interface ConnectOptions {
+    networkId: string | number
+}

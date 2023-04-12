@@ -7,6 +7,7 @@ import { SimpleAccountAPI } from '@account-abstraction/sdk'
 import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types/factories'
 import { ethers } from 'ethers'
 import { BananaSigner } from './BananaSigner'
+import { BananaAccount } from './types'
 
 /**
  * constructor params, added no top of base params:
@@ -59,7 +60,7 @@ export class MyWalletApi extends SimpleAccountAPI {
     return await this.owner.signMessage(arrayify(requestId))
   }
 
-  async _getAccountContract (): Promise<SimpleAccount> {
+  async _getAccountContract (): Promise<BananaAccount> {
     if (this.accountContract == null) {
       this.accountContract = BananaAccount__factory.connect(await this.getAccountAddress(), this.provider)
     }

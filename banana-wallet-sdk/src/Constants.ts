@@ -1,16 +1,18 @@
 import { ClientConfig } from "@account-abstraction/sdk";
 import { ChainConfig, ChainSpecificConfig } from "./interfaces/Banana.interface";
 
+export const BANANA_APP = 'http://localhost:3004';
+export const BANANA_SERVER = 'http://localhost:3003'
 export const OPTIMISM_TESTNET_RPC = 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas';
 export const MUMBAI_RPC = 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4';
 export const ARBITRUM_TESTNET_RPC = 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw';
 export const GOERLI_RPC = 'https://eth-goerli.g.alchemy.com/v2/V5p1PckEwUqIq5s5rA2zvwRKH0V9Hslr';
 
 export enum Chains {
-    goerli,
-    mumbai,
-    optimismTestnet,
-    arbitrumTestnet
+    goerli = 5,
+    mumbai = 80001,
+    optimismTestnet = 420,
+    arbitrumTestnet = 421613
 }
 
 export function getClientConfigInfo(chain: Chains): ClientConfig {

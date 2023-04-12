@@ -2,6 +2,7 @@ import { EntryPoint } from "@account-abstraction/contracts";
 import {
   ClientConfig,
   ERC4337EthersProvider,
+  ERC4337EthersSigner,
   HttpRpcClient,
 } from "@account-abstraction/sdk";
 import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
@@ -42,5 +43,9 @@ export class Banana4337Provider extends ERC4337EthersProvider {
       jsonRpcProvider,
       publicKey
     );
+  }
+
+  getSigner(): BananaSigner {
+    return this.signer;
   }
 }

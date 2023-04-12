@@ -4,7 +4,7 @@ import { MyPaymasterApi } from "./MyPayMasterApi";
 import { MyWalletApi } from "./MyWalletApi";
 import { HttpRpcClient } from "@account-abstraction/sdk/dist/src/HttpRpcClient";
 import { ERC4337EthersProvider } from "@account-abstraction/sdk";
-import { Chains, getClientConfigInfo, getChainSpecificAddress  } from "./Constants";
+import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./Constants";
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
 import { EllipticCurve__factory } from "./types";
@@ -27,6 +27,7 @@ import { Network } from "@ethersproject/providers";
 import { Wallet } from "./BananaWallet"
 import { Banana4337Provider } from "./Banana4337Provider";
 import { NetworkAddressChecker } from "./utils/addressChecker";
+import { walletNameInput } from "./utils/walletNameInput";
 
 export class Banana {
   Provider: ClientConfig;
@@ -46,10 +47,10 @@ export class Banana {
   addresses: ChainConfig;
   network: Chains
 
-  constructor(readonly chain: Chains, readonly jsonRpcProvideurl: string) {
+  constructor(readonly chain: Chains) {
     this.Provider = getClientConfigInfo(chain);
     this.addresses = getChainSpecificAddress(chain)
-    this.jsonRpcProviderUrl = jsonRpcProvideurl;
+    this.jsonRpcProviderUrl = getChainSpecificConfig(chain).jsonRpcUrl;
     this.jsonRpcProvider = new ethers.providers.JsonRpcProvider(
       this.jsonRpcProviderUrl
     );
@@ -287,7 +288,8 @@ export class Banana {
    * setup signers and provider along with it create walletmetadata corresponding to the new wallet request.
    */
 
-  createWallet = async (walletIdentifier: string): Promise<Wallet> => {
+  createWallet = async (): Promise<Wallet> => {
+      const walletIdentifier = await walletNameInput();
       await this.createSignerAndCookieObject(walletIdentifier);
       this.walletIdentifier = walletIdentifier
       const TouchIdSafeWalletContractProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(this.jsonRpcProvider);
@@ -310,6 +312,7 @@ export class Banana {
       this.setCookieAfterAddressCreation(walletIdentifier, saltNonce);
       this.postCookieChecks(walletIdentifier);
       //! for now our wallet is chainSpecific
+      console.log("After post cookie checks returning wallret ");
       return new Wallet(this.walletAddress, this.bananaProvider, this.network);
   }
 
