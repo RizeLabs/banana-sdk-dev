@@ -4,11 +4,12 @@ import {
   ConnectorData,
   UserRejectedRequestError,
 } from "wagmi";
-import { Banana } from "@rize-labs/banana-wallet-sdk/src/BananaProvider";
-import { Chains as BananSupportChains } from "@rize-labs/banana-wallet-sdk/src/Constants";
-import { Wallet } from "@rize-labs/banana-wallet-sdk/src/BananaWallet";
-import { Banana4337Provider } from "@rize-labs/banana-wallet-sdk//src/Banana4337Provider";
-import { BananaSigner } from "@rize-labs/banana-wallet-sdk/src/BananaSigner";
+import { Banana } from "@rize-labs/banana-wallet-sdk-test/dist";
+import { Chains as BananSupportChains } from "@rize-labs/banana-wallet-sdk-test/dist";
+import { Wallet } from "@rize-labs/banana-wallet-sdk-test/dist";
+import { Banana4337Provider } from "@rize-labs/banana-wallet-sdk-test/dist";
+// import { BananaSigner } from "@rize-labs/banana-wallet-sdk/src/BananaSigner";
+import { BananaSigner } from "@rize-labs/banana-wallet-sdk-test/dist";
 import { Chain } from "wagmi";
 
 interface ConnectOptions {
@@ -154,7 +155,7 @@ export class BananaConnector extends Connector<
   protected onChainChanged(chain: string | number): void {
     const id = normalizeChainId(chain);
     const isNewChainSupported = this.isChainUnsupported(id);
-    
+
     // @ts-ignore-next-line
     this?.emit("change", { chain: { id, isNewChainSupported } });
   }

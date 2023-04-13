@@ -9,16 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { BananaConnector } from "./banana-connectors";
 export const BananaWallet = ({ chains, connect }) => ({
-    id: 'banana',
-    name: 'Banana',
-    iconUrl: 'https://raw.githubusercontent.com/nlok5923/banana-demo/feat/nft-minting/public/images/banana-dozen.jpeg?token=GHSAT0AAAAAAB2IDNZYJOROSYHPJJFV6H6SZBRBIFQ',
-    iconBackground: '#fff',
-    //@ts-ignore
+    id: "banana",
+    name: "Banana",
+    iconUrl: "https://res.cloudinary.com/musicalide/image/upload/v1680007124/banana-dozen_p2f5ix.jpg",
+    iconBackground: "#fff",
+    downloadUrls: {
+        qrCode: 'false',
+    },
     createConnector: () => {
         const connector = new BananaConnector({
             chains,
             options: {
-                connect
+                connect,
             },
         });
         return {
@@ -30,9 +32,9 @@ export const BananaWallet = ({ chains, connect }) => ({
                         return window.location.href;
                     }
                     catch (e) {
-                        console.error('Failed to connect');
+                        console.error("Failed to connect");
                     }
-                    return '';
+                    return "";
                 }),
             },
             desktop: {
@@ -41,11 +43,11 @@ export const BananaWallet = ({ chains, connect }) => ({
                         yield connector.connect();
                     }
                     catch (e) {
-                        console.error('Failed to connect');
+                        console.error("Failed to connect");
                     }
-                    return '';
+                    return "";
                 }),
             },
         };
-    }
+    },
 });

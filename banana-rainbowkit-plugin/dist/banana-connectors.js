@@ -7,15 +7,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { Connector, ConnectorNotFoundError, UserRejectedRequestError } from 'wagmi';
-import { Banana } from '@rize-labs/banana-wallet-sdk/src/BananaProvider';
-import { Chains as BananSupportChains } from '@rize-labs/banana-wallet-sdk/src/Constants';
+import { Connector, UserRejectedRequestError, } from "wagmi";
+import { Banana } from "@rize-labs/banana-wallet-sdk-test/dist";
+import { Chains as BananSupportChains } from "@rize-labs/banana-wallet-sdk-test/dist";
 export class BananaConnector extends Connector {
     constructor({ chains, options }) {
         var _a, _b;
         super({ chains, options });
-        this.id = 'banana';
-        this.name = 'Banana';
+        this.id = "banana";
+        this.name = "Banana";
         this.ready = true;
         this.provider = null;
         this.connected = false;
@@ -32,80 +32,100 @@ export class BananaConnector extends Connector {
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
             const walletName = this.BananaInstance.getWalletName();
-            let walletAddress = '';
+            let provider;
+            let walletAddress = "";
+            //@ts-ignore
+            this === null || this === void 0 ? void 0 : this.emit("message", { type: "connecting" });
             if (walletName) {
                 this.wallet = yield this.BananaInstance.connectWallet(walletName);
                 if (!this.wallet) {
                     throw new UserRejectedRequestError("Wallet connection failed");
                 }
                 walletAddress = yield this.wallet.getAddress();
-                this.provider = this.wallet.getProvider();
-                this.connected = true;
-                this.address = `0x${walletAddress.substring(2)}`;
+                provider = this.wallet.getProvider();
             }
             else {
-                // need to somehow create a way for getting walletName for now passing random name 
-                this.wallet = yield this.BananaInstance.createWallet("walletName");
+                // @ts-ignore-next-line
+                this.wallet = yield this.BananaInstance.createWallet();
                 if (!this.wallet) {
                     throw new UserRejectedRequestError("Wallet creation failed");
                 }
                 walletAddress = yield this.wallet.getAddress();
-                this.provider = this.wallet.getProvider();
-                this.connected = true;
-                this.address = `0x${walletAddress.substring(2)}`;
+                provider = this.wallet.getProvider();
             }
+            provider.on("accountsChanged", this.onAccountsChanged.bind(this));
+            provider.on("disconnect", this.onDisconnect.bind(this));
+            provider.on("chainChanged", this.onChainChanged.bind(this));
+            this.address = yield this.wallet.getAddress();
+            this.connected = true;
+            console.log(`0x${walletAddress.substring(2)}`);
+            console.log(this.chainId);
+            console.log(provider);
+            console.log({
+                account: `0x${walletAddress.substring(2)}`,
+                chain: {
+                    id: this.chainId,
+                    unsupported: false,
+                },
+                provider,
+            });
             return {
                 account: `0x${walletAddress.substring(2)}`,
                 chain: {
                     id: this.chainId,
-                    unsupported: false
+                    unsupported: false,
                 },
-                provider: this.provider
+                provider,
             };
         });
     }
+    // for banana disconnecting == resetWallet
     disconnect() {
         return __awaiter(this, void 0, void 0, function* () {
-            // disconnected wallet means removing browser
+            console.log('disconnect called');
             this.BananaInstance.resetWallet();
         });
     }
     getAccount() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.address;
+            return this.wallet.getAddress();
         });
     }
     getChainId() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.wallet.isConnected()) {
-                return this.connect().then(() => this.wallet.getChainId());
-            }
+            // wallet not yet initialized
+            if (!this.wallet)
+                return this.chainId;
             return this.wallet.getChainId();
         });
     }
     getProvider() {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("provider called ");
+            if (this.provider)
+                return this.provider;
             if (!this.provider) {
-                const provider = this.wallet.getProvider();
-                if (!provider) {
-                    throw new ConnectorNotFoundError('Failed to get Banana Wallet provider.');
+                if (this.wallet) {
+                    const provider = this.wallet.getProvider();
+                    this.provider = provider;
+                    return this.provider;
                 }
-                this.provider = provider;
+                yield this.connect();
+                //@ts-ignore
+                return this.wallet.getProvider();
             }
-            return this.provider;
         });
     }
     getSigner() {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.provider) {
-                // As our current wallet is single account wallet so this should work
-                return this.wallet.getProvider().getSigner();
+            console.log("signer called");
+            console.log(this.wallet.getSigner());
+            if (!this.wallet) {
+                throw new UserRejectedRequestError("Wallet not initialized");
             }
-            return (_a = this.provider) === null || _a === void 0 ? void 0 : _a.getSigner();
+            return this.wallet.getSigner();
         });
     }
-    //! Not sure what this method is for
     isAuthorized() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -116,27 +136,39 @@ export class BananaConnector extends Connector {
             }
         });
     }
-    //! Not supported yet
+    //! Current Banana wallet has 1:1 mapping with accounts
     onAccountsChanged(accounts) {
-        throw new Error('Method not implemented.');
+        throw new Error("Method not implemented.");
     }
     onChainChanged(chain) {
-        // just need to check if chain is supported or not
         const id = normalizeChainId(chain);
         const isNewChainSupported = this.isChainUnsupported(id);
-        if (!isNewChainSupported)
-            throw new Error('Chain not supported.');
-        const newBananaInstance = new Banana(getChain(chain));
-        this.BananaInstance = newBananaInstance;
-        this.connect();
+        // @ts-ignore-next-line
+        this === null || this === void 0 ? void 0 : this.emit("change", { chain: { id, isNewChainSupported } });
     }
     onDisconnect(error) {
+        console.log("disconnect called ");
         this.BananaInstance.resetWallet();
+        // @ts-ignore-next-line
+        this === null || this === void 0 ? void 0 : this.emit("disconnect");
     }
     switchChain(chainId) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            //! Need to figure out what's to be done here
-            return { id: chainId };
+            const isNewChainSupported = this.isChainUnsupported(chainId);
+            if (!isNewChainSupported)
+                throw new Error(`Unsupported chainId: ${chainId}`);
+            const bananaChain = getChain(chainId);
+            this.chainId = getChainId(chainId);
+            const BananaInstance = new Banana(bananaChain);
+            this.BananaInstance = BananaInstance;
+            // connect same wallet with new chain config
+            yield this.connect();
+            const chain = this.chains.find((x) => x.id === chainId);
+            if (!chain)
+                throw new Error(`Unsupported chainId: ${chainId}`);
+            (_a = this.provider) === null || _a === void 0 ? void 0 : _a.emit("chainChanged", chainId);
+            return chain;
         });
     }
     isChainUnsupported(chainId) {
@@ -150,26 +182,26 @@ export class BananaConnector extends Connector {
     }
 }
 function getChainId(networkId) {
-    if (typeof networkId === 'string')
-        return Number.parseInt(networkId, networkId.trim().substring(0, 2) === '0x' ? 16 : 10);
+    if (typeof networkId === "string")
+        return Number.parseInt(networkId, networkId.trim().substring(0, 2) === "0x" ? 16 : 10);
     return networkId;
 }
 function getChain(networkId) {
     let chainId;
-    if (typeof networkId == 'number')
+    if (typeof networkId == "number")
         chainId = networkId.toString();
-    if (chainId == '5')
+    if (chainId == "5")
         return BananSupportChains.goerli;
-    if (chainId == '80001')
+    if (chainId == "80001")
         return BananSupportChains.mumbai;
-    if (chainId === '420')
+    if (chainId === "420")
         return BananSupportChains.optimismTestnet;
     return BananSupportChains.arbitrumTestnet;
 }
 function normalizeChainId(chainId) {
-    if (typeof chainId === 'string')
-        return Number.parseInt(chainId, chainId.trim().substring(0, 2) === '0x' ? 16 : 10);
-    if (typeof chainId === 'bigint')
+    if (typeof chainId === "string")
+        return Number.parseInt(chainId, chainId.trim().substring(0, 2) === "0x" ? 16 : 10);
+    if (typeof chainId === "bigint")
         return Number(chainId);
     return chainId;
 }
