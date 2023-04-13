@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import "./Staking.scss";
 // import { Banana } from "../../sdk/BananaProvider";
 import toast, { Toaster } from "react-hot-toast";
@@ -8,15 +8,38 @@ import StakingArtifact from '../../abi/Staking.json'
 import { ethers } from "ethers";
 import { SignerContext } from '../../context/signerProvider'
 import TransactionPopover from "../../components/Popup/index"
+import { GetAccount } from '../../hooks/web3Hook'
 
 const Staking = () => {
   const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const signerContext = useContext(SignerContext);
   const [showPopover, setShowPopover] = useState(false);
+  const [walletInstance, setWalletInstance] = useState(null);
+  const [signer, setSigner] = useState(null);
+
+  const connectAccount = async () => {
+    const wallet = await GetAccount();
+    setWalletInstance(wallet)
+    const signer = wallet.getSigner();
+    setSigner(signer);
+    console.log(" This is signer ", signer);
+  }
+
+  useEffect(() => {
+    connectAccount();
+  }, []);
+
+
 
   // optimism staking
-  const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
+  // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
+
+  // polygo staking 
+  // const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
+
+  // arbitrum testnet staking 
+  // const stakeAddress = '0x19eEc1aE90bdC20C1c52DeD3273eEb78A08696A5'
 
   // goerli stake address
   // const stakeAddress = '0x1CA35dB18E7f594864b703107FeaE4a24974FCb5'
@@ -39,7 +62,7 @@ const Staking = () => {
   // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
   
   // polygo staking 
-  // const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
+  const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
 
   const handleStake = () => {
     setShowPopover(true);
@@ -56,7 +79,6 @@ const Staking = () => {
 
     setIsLoading(true);
     //@ts-ignore
-    const bananaInstance = signerContext.bananaInstance
     // const bananaInstance = new Banana(Chains.goerli);
 
     // const scwAddress = localStorage.getItem('SCWAddress');
@@ -66,22 +88,34 @@ const Staking = () => {
       // let aaProvider = await bananaInstance.getBananaProvider();
       // console.log("AA Provider",aaProvider)
       // let aaSigner = aaProvider.getSigner();
-     const provider = new ethers.providers.JsonRpcProvider(
-        // this.jsonRpcProviderUrl
-        "https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4"
-      );
-      let StakingContract = new ethers.Contract(
-        stakeAddress,
-        StakingArtifact.abi,
-        // aaSigner
-        provider
-      );
-      const stakingCallData = StakingContract.interface.encodeFunctionData(
-        "stake",
-        []
-      );
-      const txn = await bananaInstance.execute(stakingCallData, stakeAddress, amount)
-      console.log(" this is txn ", txn);
+      const tx = {
+        gasLimit: '0x55555',
+        to: stakeAddress,
+        value: ethers.utils.parseEther(amount),
+        data: new ethers.utils.Interface(StakingArtifact.abi).encodeFunctionData('stake', [])
+      }
+    //  const provider = new ethers.providers.JsonRpcProvider(
+    //     // this.jsonRpcProviderUrl
+    //     "https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4"
+    //   );
+    //   let StakingContract = new ethers.Contract(
+    //     stakeAddress,
+    //     StakingArtifact.abi,
+    //     // aaSigner
+    //     provider
+    //   );
+    //   const stakingCallData = StakingContract.interface.encodeFunctionData(
+    //     "stake",
+    //     []
+    //   );
+
+      // const txn = await bananaInstance.execute(stakingCallData, stakeAddress, amount)
+      // console.log(" this is txn ", txn);
+      const txn = await signer.sendTransaction(tx);
+      console.log("transaction ", txn);
+      const receipt = await txn.wait();
+      console.log("txn receipt ", receipt)
+
       toast.success("Successfully staked your funds !!");
     // } else {
     //   toast.error("SCW Wallet not connected !!");

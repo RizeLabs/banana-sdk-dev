@@ -6,6 +6,8 @@ import { BaseApiParams } from '@account-abstraction/sdk/dist/src/BaseAccountAPI'
 import { SimpleAccountAPI } from '@account-abstraction/sdk'
 import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types/factories'
 import { ethers } from 'ethers'
+import { BananaSigner } from './BananaSigner'
+import { BananaAccount } from './types'
 
 /**
  * constructor params, added no top of base params:
@@ -17,11 +19,11 @@ export interface MyWalletApiParams extends BaseApiParams {
   owner: Signer
   factoryAddress?: string
   index?: number
-  _EllipticCurveAddress: string
   _qValues: [string, string]
   _singletonTouchIdSafeAddress: string
   _ownerAddress: string
   _fallBackHandler: string
+  _saltNonce: number
 }
 
 /**
@@ -37,13 +39,14 @@ export class MyWalletApi extends SimpleAccountAPI {
   singletonTouchIdSafeAddress: string
   ownerAddress: string
   fallBackHandleraddress: string
+  saltNonce: number
   constructor(params: MyWalletApiParams) {
     super(params)
-    this.EllipticCurveAddress = params._EllipticCurveAddress
     this.qValues = params._qValues
     this.singletonTouchIdSafeAddress = params._singletonTouchIdSafeAddress
     this.ownerAddress = params._ownerAddress
     this.fallBackHandleraddress = params._fallBackHandler
+    this.saltNonce = params._saltNonce
   }
 
   /**
@@ -55,7 +58,7 @@ export class MyWalletApi extends SimpleAccountAPI {
     return await this.owner.signMessage(arrayify(requestId))
   }
 
-  async _getAccountContract (): Promise<SimpleAccount> {
+  async _getAccountContract (): Promise<BananaAccount> {
     if (this.accountContract == null) {
       this.accountContract = BananaAccount__factory.connect(await this.getAccountAddress(), this.provider)
     }
@@ -82,7 +85,6 @@ export class MyWalletApi extends SimpleAccountAPI {
       this.entryPointAddress,   // entrypoint
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray,          // q values 
-      this.EllipticCurveAddress                         // elliptic curve
     ]);
 
     return TouchIdSafeWalletContractInitializer
@@ -107,7 +109,7 @@ export class MyWalletApi extends SimpleAccountAPI {
     }
     return hexConcat([
       this.factory.address,
-      this.factory.interface.encodeFunctionData('createChainSpecificProxyWithNonce', [this.singletonTouchIdSafeAddress, this.getTouchIdSafeWalletContractInitializer(), this.index])
+      this.factory.interface.encodeFunctionData('createProxyWithNonce', [this.singletonTouchIdSafeAddress, this.getTouchIdSafeWalletContractInitializer(), this.saltNonce.toString()])
     ])
   }
 
@@ -140,5 +142,15 @@ export class MyWalletApi extends SimpleAccountAPI {
 
   async signUserOpHash (userOpHash: string): Promise<string> {
     return await this.owner.signMessage(arrayify(userOpHash))
+  }
+
+  async getAccountAddress (): Promise<string> {
+    const TouchIdSafeWalletContractProxyFactory: BananaAccountProxyFactory = BananaAccountProxyFactory__factory.connect(
+      this.factoryAddress,
+      this.provider
+    );
+    const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
+    const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.singletonTouchIdSafeAddress, this.saltNonce.toString(), TouchIdSafeWalletContractInitializer);
+    return TouchIdSafeWalletContractAddress
   }
 }

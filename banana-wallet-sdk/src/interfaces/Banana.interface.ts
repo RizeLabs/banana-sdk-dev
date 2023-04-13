@@ -18,6 +18,7 @@ export interface UserCredentialObject {
     initcode: boolean;
     encodedId: string;
     username: string
+    saltNonce: number
 }
 
 export interface CookieObject {
@@ -41,4 +42,12 @@ export interface TransactionDetailsForUserOp {
     gasLimit?: BigNumberish
     maxFeePerGas?: BigNumberish
     maxPriorityFeePerGas?: BigNumberish
+}
+
+export interface ChainSpecificConfig {
+    jsonRpcUrl: string
+}
+
+export interface ConnectOptions {
+    networkId: string | number
 }

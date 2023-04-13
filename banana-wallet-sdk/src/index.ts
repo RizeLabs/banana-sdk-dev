@@ -1,5 +1,6 @@
-import { Banana } from './BananaProvider'
-import { Chains } from './Constants'
-
-// eslint-disable-next-line import/no-anonymous-default-export
-export default { Banana, Chains }
+export * from './Constants'
+export * from './BananaProvider'
+export * from './BananaWallet'
+export * from './BananaSigner'
+export * from './Banana4337Provider'
+export * from './interfaces/Banana.interface'
