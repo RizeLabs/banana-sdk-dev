@@ -2,6 +2,7 @@ import Axios from 'axios'
 import { UserCredentialObject } from './interfaces/Banana.interface'
 import constructUniqueIdentifier from './utils/constructUserUniqueIdentifier'
 import { SERVER_URL, ADD_WALLETCRED_ROUTE, GET_WALLETCRED_ROUTE, CHECK_INITCODE_ROUTE,IS_WALLETNAME_UNIQUE_ROUTE} from './routes'
+import { BANANA_SERVER } from './Constants';
 
 Axios.defaults.baseURL = '';
 const getUserCredentials = async (walletIdentifier: string) => {
@@ -99,4 +100,23 @@ const checkIsWalletNameExist = async (walletName: string) => {
     }
 }
 
-export { getUserCredentials, setUserCredentials, checkInitCodeStatus, checkIsWalletNameExist };
+const getUsernameFromSessionId = async (sessionId: string): Promise<string> => {
+    try {
+        // console.log("Session id ", sessionId);
+        const usernameResponse = await Axios({
+            url: BANANA_SERVER + '/connect',
+            method: 'get',
+            params: {
+                sessionId: sessionId
+            }
+        });
+        // console.log("Username response ", usernameResponse);
+        //@ts-ignore
+        return usernameResponse.data.data
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
+}
+
+export { getUserCredentials, setUserCredentials, checkInitCodeStatus, checkIsWalletNameExist, getUsernameFromSessionId };

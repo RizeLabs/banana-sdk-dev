@@ -1,11 +1,11 @@
 {
   "name": "@rize-labs/banana-wallet-sdk",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Smart contract wallet package by Banana Wallet",
   "main": "index.js",
   "scripts": {
     "test": "mocha dist/tests/*test.js",
-    "build": "rm -rf dist && tsc && node minify.js && node obfuscate.js"
+    "build": "rm -rf dist && tsc"
   },
   "repository": {
     "type": "git",
