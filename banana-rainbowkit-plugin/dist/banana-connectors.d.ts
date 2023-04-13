@@ -1,25 +1,25 @@
-import { Address, Connector, ConnectorData } from 'wagmi';
-import { Banana } from '@rize-labs/banana-wallet-sdk/src/BananaProvider';
-import { Wallet } from '@rize-labs/banana-wallet-sdk/src/BananaWallet';
-import { Banana4337Provider } from '@rize-labs/banana-wallet-sdk//src/Banana4337Provider';
-import { BananaSigner } from '@rize-labs/banana-wallet-sdk/src/BananaSigner';
-import { Chain } from 'wagmi';
+import { Connector, ConnectorData } from "wagmi";
+import { Banana } from "@rize-labs/banana-wallet-sdk-test/dist";
+import { Wallet } from "@rize-labs/banana-wallet-sdk-test/dist";
+import { Banana4337Provider } from "@rize-labs/banana-wallet-sdk-test/dist";
+import { BananaSigner } from "@rize-labs/banana-wallet-sdk-test/dist";
+import { Chain } from "wagmi";
 interface ConnectOptions {
     networkId: string | number;
 }
 interface Options {
     connect?: ConnectOptions;
 }
-export declare class BananaConnector extends Connector<Banana4337Provider, Options | undefined> {
+export declare class BananaConnector extends Connector<Banana4337Provider, Options | undefined, BananaSigner> {
     id: string;
     name: string;
     ready: boolean;
     provider: Banana4337Provider | null;
     connected: boolean;
     BananaInstance: Banana;
-    address: Address;
     chainId: number;
     wallet: Wallet;
+    address: string;
     constructor({ chains, options }: {
         chains?: Chain[];
         options?: Options;
@@ -28,10 +28,10 @@ export declare class BananaConnector extends Connector<Banana4337Provider, Optio
     disconnect(): Promise<void>;
     getAccount(): Promise<`0x${string}`>;
     getChainId(): Promise<number>;
-    getProvider(): Promise<Banana4337Provider>;
+    getProvider(): Promise<any>;
     getSigner(): Promise<BananaSigner>;
     isAuthorized(): Promise<boolean>;
-    protected onAccountsChanged(accounts: `0x${string}`[]): void;
+    protected onAccountsChanged(accounts: string[]): void;
     protected onChainChanged(chain: string | number): void;
     protected onDisconnect(error: Error): void;
     switchChain(chainId: number): Promise<Chain>;
