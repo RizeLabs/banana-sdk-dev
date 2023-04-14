@@ -149,19 +149,19 @@ async function main() {
 	// const BananaAccountDeployer = await BananaAccount.deploy();
 	// console.log('Banana Test:', BananaAccountDeployer.address);
 
-	const PUBLIC_KEY_EXPOSED = '0x48701dF467Ba0efC8D8f34B2686Dc3b0A0b1cab5'
-	const PRIVATE_KEY_EXPOSED = 'ed096a60e1af7c04519965c9e1fe105b2cd287afd49e4f1d77744f91ab5eb36e';
-	const receiver = '0xD2cC1623f318288818Bc145dd0e3a12902F450C5';
-	const fundTxn = {
-        from: PUBLIC_KEY_EXPOSED,
-        to: receiver,
-        value: ethers.utils.parseEther("0.01"),
-        gasLimit: 210000
-      }
-	const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas'));
-	const txn = await wallet.sendTransaction(fundTxn);
-	await txn.wait()
-	console.log(txn);
+	// const PUBLIC_KEY_EXPOSED = '0x48701dF467Ba0efC8D8f34B2686Dc3b0A0b1cab5'
+	// const PRIVATE_KEY_EXPOSED = 'ed096a60e1af7c04519965c9e1fe105b2cd287afd49e4f1d77744f91ab5eb36e';
+	// const receiver = '0xD2cC1623f318288818Bc145dd0e3a12902F450C5';
+	// const fundTxn = {
+    //     from: PUBLIC_KEY_EXPOSED,
+    //     to: receiver,
+    //     value: ethers.utils.parseEther("0.01"),
+    //     gasLimit: 210000
+    //   }
+	// const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas'));
+	// const txn = await wallet.sendTransaction(fundTxn);
+	// await txn.wait()
+	// console.log(txn);
 
 	// const EntryPoint = await ethers.getContractFactory('EntryPoint');
 	// const entryPoint = await EntryPoint.deploy();
