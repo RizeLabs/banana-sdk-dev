@@ -34,16 +34,16 @@ export default {
       
   // },
   goerli: {
-    url: `https://eth-goerli.g.alchemy.com/v2/V5p1PckEwUqIq5s5rA2zvwRKH0V9Hslr`,
-    accounts: ["6923720ab043d19f5975644c6312f0de7ffbe7bc446c871abde2c078eaeae53f"]
+    url: `https://eth-goerli.g.alchemy.com/v2/IaVkSX3wU98rK7vpVyFgIryaaHfYpoST`,
+    accounts: ["8fa514a2cb0ac1ae7700d97cddb04addb57344b5bedbf7c5d0417841061607ba"]
   },
   optimismTestnet: {
     url: `https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas`,
-    accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : ["b46aa29588eb4320a0901dfdbb4473de08c6c916a4bd99cbfd7d7209f3f3d310"]
+    accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : ["8fa514a2cb0ac1ae7700d97cddb04addb57344b5bedbf7c5d0417841061607ba"]
   },
   mumbai: {
     url: 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4',
-    accounts: ["b46aa29588eb4320a0901dfdbb4473de08c6c916a4bd99cbfd7d7209f3f3d310"]
+    accounts: ["8fa514a2cb0ac1ae7700d97cddb04addb57344b5bedbf7c5d0417841061607ba"]
   },
   shardeum: {
     url: 'https://sphinx.shardeum.org/',

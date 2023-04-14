@@ -6,7 +6,7 @@ export const BANANA_SERVER = 'https://banana-server.xyz'
 export const OPTIMISM_TESTNET_RPC = 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas';
 export const MUMBAI_RPC = 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4';
 export const ARBITRUM_TESTNET_RPC = 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw';
-export const GOERLI_RPC = 'https://eth-goerli.g.alchemy.com/v2/V5p1PckEwUqIq5s5rA2zvwRKH0V9Hslr';
+export const GOERLI_RPC = 'https://eth-goerli.g.alchemy.com/v2/IaVkSX3wU98rK7vpVyFgIryaaHfYpoST';
 
 export enum Chains {
     goerli = 5,
@@ -42,26 +42,26 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
 
 export function getChainSpecificAddress(chain: Chains): ChainConfig {
     switch (chain) {
-        case Chains.goerli: 
+        case Chains.goerli: //mi
         return {
             "Elliptic": "0xDf6fFfB5Ec52A73F7C96e2818dBD46B7d4009b94",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0xaa6bBbA9Cde638e58b4F01b4f98D73011FaB2b23",
-            "TouchIdSafeWalletContractSingletonAddress": "0xdD230e4F566178739B999c1dF4F7362240887E46",
-            "fallBackHandlerAddress": "0x668299a3cAB0821b6A9A6AA401a0Fe7f16cB0642"
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x51283946fbB01150B558159ea4B6F43Dedd253A4",
+            "TouchIdSafeWalletContractSingletonAddress": "0xA0b3C7c163A17C0BC11939745cAd0C1EB82108E0",
+            "fallBackHandlerAddress": "0x0ed1f75AA9A33ab0756725cE7f841b13Fde47B0C"
         };
         case Chains.optimismTestnet: // mi
         return {
             "Elliptic": "0xDf6fFfB5Ec52A73F7C96e2818dBD46B7d4009b94",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0x9F21ECfD79A79d40d0B47005F1b7C217009594c5",
-            "TouchIdSafeWalletContractSingletonAddress": "0x6001E203c53Df75A1b0bc44A9438e84628B95c12",
-            "fallBackHandlerAddress": "0x6eAeD0C3429808DE0a6C177AC63aC46c594b283f"
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x51283946fbB01150B558159ea4B6F43Dedd253A4",
+            "TouchIdSafeWalletContractSingletonAddress": "0xA0b3C7c163A17C0BC11939745cAd0C1EB82108E0",
+            "fallBackHandlerAddress": "0x0ed1f75AA9A33ab0756725cE7f841b13Fde47B0C"
         };
         case Chains.mumbai: // mi
         return {
             "Elliptic": "0xDf6fFfB5Ec52A73F7C96e2818dBD46B7d4009b94",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0x9F21ECfD79A79d40d0B47005F1b7C217009594c5",
-            "TouchIdSafeWalletContractSingletonAddress": "0x6001E203c53Df75A1b0bc44A9438e84628B95c12",
-            "fallBackHandlerAddress": "0x6eAeD0C3429808DE0a6C177AC63aC46c594b283f"
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x51283946fbB01150B558159ea4B6F43Dedd253A4",
+            "TouchIdSafeWalletContractSingletonAddress": "0xA0b3C7c163A17C0BC11939745cAd0C1EB82108E0",
+            "fallBackHandlerAddress": "0x0ed1f75AA9A33ab0756725cE7f841b13Fde47B0C"
         };
         case Chains.arbitrumTestnet: 
         return {
