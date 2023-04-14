@@ -1,8 +1,8 @@
-import { MUMBAI_RPC, ARBITRUM_TESTNET_RPC, OPTIMISM_TESTNET_RPC } from "../Constants"
+import { MUMBAI_RPC, ARBITRUM_TESTNET_RPC, OPTIMISM_TESTNET_RPC, GOERLI_RPC } from "../Constants"
 import { ethers } from "ethers"
 
 export const NetworkAddressChecker = async (address: string) => {
-    let isMumbai = false, isArbitrumTestnet = false, isOptimismTestnet = false;
+    let isMumbai = false, isArbitrumTestnet = false, isOptimismTestnet = false, isGoerliTestnet = false;
     // mumbai check 
     const mumbaiProvider = new ethers.providers.JsonRpcProvider(MUMBAI_RPC);
     const mumbaiCodeStatus = await mumbaiProvider.getCode(address);
@@ -12,11 +12,20 @@ export const NetworkAddressChecker = async (address: string) => {
     }
 
     // arbitrum testnet check
-    const arbitrumTestnetProvider = new ethers.providers.JsonRpcProvider(ARBITRUM_TESTNET_RPC);
-    const arbitrumTestnetCodeStatus = await arbitrumTestnetProvider.getCode(address);
-    if (arbitrumTestnetCodeStatus === '0x') {
-        console.log("Arbitrum status ", arbitrumTestnetCodeStatus);
-        isArbitrumTestnet = true;
+    // commenting it as we don't have production bundler for this network
+    // const arbitrumTestnetProvider = new ethers.providers.JsonRpcProvider(ARBITRUM_TESTNET_RPC);
+    // const arbitrumTestnetCodeStatus = await arbitrumTestnetProvider.getCode(address);
+    // if (arbitrumTestnetCodeStatus === '0x') {
+    //     console.log("Arbitrum status ", arbitrumTestnetCodeStatus);
+    //     isArbitrumTestnet = true;
+    // }
+
+    // goerli testnet check
+    const goerliTestnetProvider = new ethers.providers.JsonRpcProvider(GOERLI_RPC);
+    const goerliTestnetCodeStatus = await goerliTestnetProvider.getCode(address);
+    if (goerliTestnetCodeStatus === '0x') {
+        console.log("Goerli status ", goerliTestnetCodeStatus);
+        isGoerliTestnet = true;
     }
 
     // optimism testnet check
@@ -27,6 +36,5 @@ export const NetworkAddressChecker = async (address: string) => {
         isOptimismTestnet = true;
     }
 
-    // imbalance in arbitrum address
-    return isMumbai && isOptimismTestnet;
+    return isMumbai && isOptimismTestnet && isGoerliTestnet;
 }
