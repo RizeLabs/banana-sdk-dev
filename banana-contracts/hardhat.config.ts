@@ -34,26 +34,36 @@ export default {
       
   // },
   goerli: {
-    url: `https://eth-goerli.g.alchemy.com/v2/V5p1PckEwUqIq5s5rA2zvwRKH0V9Hslr`,
-    accounts: ["6923720ab043d19f5975644c6312f0de7ffbe7bc446c871abde2c078eaeae53f"]
+    url: `https://eth-goerli.g.alchemy.com/v2/IaVkSX3wU98rK7vpVyFgIryaaHfYpoST`,
+    accounts: ["8fa514a2cb0ac1ae7700d97cddb04addb57344b5bedbf7c5d0417841061607ba"]
   },
-  optimism: {
+  optimismTestnet: {
     url: `https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas`,
-    accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : ["326d3b8f081040e0044fde540508dde301cdae5c387d207f7ea15ceb32b9630d"]
+    accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : ["8fa514a2cb0ac1ae7700d97cddb04addb57344b5bedbf7c5d0417841061607ba"]
   },
   mumbai: {
     url: 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4',
-    accounts: ["a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74"]
+    accounts: ["8fa514a2cb0ac1ae7700d97cddb04addb57344b5bedbf7c5d0417841061607ba"]
   },
   shardeum: {
     url: 'https://sphinx.shardeum.org/',
     accounts: ["a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74"],
     chainId: 8082,
+  },
+  arbitrumTestnet: {
+    url: 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw',
+    accounts: ["ed096a60e1af7c04519965c9e1fe105b2cd287afd49e4f1d77744f91ab5eb36e"] // change it before multi network deployment
+  },
+  gnosis: {
+    url: 'https://rpc.ankr.com/gnosis',
+    accounts: ["a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74"],
+    chainId: 100,
   }
   },
   etherscan: {
     // apiKey: "YJ546HGGQFGMEE4B22QNGB58QKZ97G8YSP"
-    apiKey: "2S8CM6KUUPXGG7JV63UZVVVZTWP6RYJXYE"
+    // apiKey: "2S8CM6KUUPXGG7JV63UZVVVZTWP6RYJXYE"
     // apiKey: "C2J3GI995B9DKK1XVF3P67UDHU72P4Q15D",
+    apiKey: "ESHESDSD935HS3IAW42I9X8HDJ13TX4IUM" //gnosis
  }
 };

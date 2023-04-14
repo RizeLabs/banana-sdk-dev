@@ -20,9 +20,9 @@ const Navbar = () => {
   const [scwAddress, setSCWAddress] = useState("");
   const [load, setLoad] = useState(false);
 
-  // let nullBanana = new Banana(Chains.optimismTestnet, 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas');
+  let nullBanana = new Banana(Chains.optimismTestnet, 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas');
 
- let nullBanana = new Banana(Chains.mumbai , 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4');
+//  let nullBanana = new Banana(Chains.mumbai , 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4');
 
   const [banana, setbanana] = useState(nullBanana)
   const signerContext = useContext(SignerContext);
@@ -43,14 +43,18 @@ const Navbar = () => {
       let SCWAddress;
       console.log(" this is uername idenfitier ", userIdentifier)
 
-      if(userIdentifier === '') {
-        SCWAddress = (await bananaInstance.connectWallet(walletName)).address
+      if(userIdentifier === '' && walletName) {
+        const walletInstance = await bananaInstance.connectWallet(walletName)
+        console.log('Wallet instance ', walletInstance);
+        SCWAddress = await walletInstance.getAddress();
         console.log('from connect walle ', SCWAddress);
       } else {
         walletName = userIdentifier;
         if(walletName) {
-          SCWAddress = (await bananaInstance.createWallet(walletName)).address
+          const walletInstance = await bananaInstance.createWallet(walletName)
           // getWalletAddress(walletName);
+          SCWAddress = await walletInstance.getAddress();
+          console.log("Wallet instance ", walletInstance);
           console.log("SCW addrss", SCWAddress)
         } else {
           // dev need to ask for user 
@@ -60,7 +64,9 @@ const Navbar = () => {
             toast.success('please enter wallet identifier ');
             return;
           }
-          SCWAddress = (await bananaInstance.connectWallet(walletName)).address
+          const walletInstance = await bananaInstance.connectWallet(walletName)
+          console.log("wallet instance ", walletInstance);
+          SCWAddress = await walletInstance.getAddress();
           console.log("controlled reach here!!! ");
           setWalletName(walletName);
           toast.success("Successfully deployed wallet !!");

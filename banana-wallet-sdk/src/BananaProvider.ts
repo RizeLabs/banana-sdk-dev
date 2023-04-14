@@ -4,7 +4,7 @@ import { MyPaymasterApi } from "./MyPayMasterApi";
 import { MyWalletApi } from "./MyWalletApi";
 import { HttpRpcClient } from "@account-abstraction/sdk/dist/src/HttpRpcClient";
 import { ERC4337EthersProvider } from "@account-abstraction/sdk";
-import { Chains, getClientConfigInfo, getChainSpecificAddress  } from "./Constants";
+import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./Constants";
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
 import { EllipticCurve__factory } from "./types";
@@ -22,15 +22,12 @@ import {
 } from "./interfaces/Banana.interface";
 import { BananaAccount, BananaAccountProxyFactory } from './types'
 import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types/factories'
-import { K1_SIGNATURE_LAMBDA_URL  } from './routes'
-import { Bytes, concat } from "@ethersproject/bytes";
-import { keccak256 } from "@ethersproject/keccak256";
-import { toUtf8Bytes } from "@ethersproject/strings";
-import { Signer } from "@ethersproject/abstract-signer";
-import { BigNumber } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
-import { getGasFee } from "./utils/GetGasFee";
+import { Wallet } from "./BananaWallet"
+import { Banana4337Provider } from "./Banana4337Provider";
+import { NetworkAddressChecker } from "./utils/addressChecker";
+import { walletNameInput } from "./utils/walletNameInput";
 
 export class Banana {
   Provider: ClientConfig;
@@ -42,32 +39,24 @@ export class Banana {
   bananaSigner!: BananaSigner;
   jsonRpcProvider!: ethers.providers.JsonRpcProvider;
   walletAddress!: string;
-  bananaProvider!: ERC4337EthersProvider;
+  bananaProvider!: Banana4337Provider;
   cookieObject!: UserCredentialObject;
   cookie: BananaCookie;
   walletIdentifier!: string;
   jsonRpcProviderUrl: string;
   addresses: ChainConfig;
+  network: Chains
 
-  constructor(readonly chain: Chains, readonly jsonRpcProvideurl: string) {
+  constructor(readonly chain: Chains) {
     this.Provider = getClientConfigInfo(chain);
     this.addresses = getChainSpecificAddress(chain)
-    this.jsonRpcProviderUrl = jsonRpcProvideurl;
+    this.jsonRpcProviderUrl = getChainSpecificConfig(chain).jsonRpcUrl;
     this.jsonRpcProvider = new ethers.providers.JsonRpcProvider(
       this.jsonRpcProviderUrl
     );
     this.cookie = new BananaCookie();
+    this.network = chain;
   }
-
-  /**
-   * @method createBananaSignerInstance
-   * @params none
-   * @returns none
-   * create signer for user's smart contract wallet
-   */
-  private createBananaSignerInstance = () => {
-    this.bananaSigner = new BananaSigner(this.jsonRpcProvider, this.publicKey);
-  };
 
   /**
    * @method getTouchIdSafeWalletContractProxyFactory
@@ -75,7 +64,7 @@ export class Banana {
    * @returns { BananaAccountProxyFactory } TouchIdSafeWalletContractProxyFactory
    * create factory contract instance for factory contract factory types.
    */
-  private getTouchIdSafeWalletContractProxyFactory = (signerOrProvider: Signer | JsonRpcProvider ): BananaAccountProxyFactory => {
+  private getTouchIdSafeWalletContractProxyFactory = (signerOrProvider: JsonRpcProvider ): BananaAccountProxyFactory => {
     const TouchIdSafeWalletContractProxyFactory: BananaAccountProxyFactory = BananaAccountProxyFactory__factory.connect(
       this.addresses.TouchIdSafeWalletContractProxyFactoryAddress,
       signerOrProvider
@@ -89,7 +78,7 @@ export class Banana {
    * @returns none
    * Set cookie to local and global storage after wallet creation.
    */
-  private setCookieAfterAddressCreation = async (walletIdentifier: string) => {
+  private setCookieAfterAddressCreation = async (walletIdentifier: string, saltNonce: number) => {
     this.cookieObject = {
       q0: this.publicKey.q0,
       q1: this.publicKey.q1,
@@ -97,6 +86,7 @@ export class Banana {
       initcode: false,
       encodedId: this.publicKey.encodedId,
       username: walletIdentifier,
+      saltNonce: saltNonce //! Need to make changes to the mapper code for this additional property
     };
     // saving cookie correspond to user Identifier in cookie
     this.cookie.setCookie(
@@ -136,7 +126,7 @@ export class Banana {
           encodedId: encodedId,
         };
         this.walletIdentifier = walletName;
-        this.createBananaSignerInstance();
+        // this.createBananaSignerInstance();
         return;
       } else {
         const walletCreds = await getUserCredentials(walletIdentifier);
@@ -153,7 +143,7 @@ export class Banana {
             encodedId: encodedId,
           };
           this.walletIdentifier = walletName;
-          this.createBananaSignerInstance();
+          // this.createBananaSignerInstance();
           return;
         }
       }
@@ -171,7 +161,6 @@ export class Banana {
           encodedId: encodedId,
         };
         this.walletIdentifier = walletIdentifier;
-        this.createBananaSignerInstance();
         return;
       }
       // he must have sent the username for registering wallet
@@ -186,8 +175,12 @@ export class Banana {
     if(!isPointOnCurve){
        throw new Error("ERROR: Device does not support R1 curve")
     }
-    this.bananaSigner = new BananaSigner(this.jsonRpcProvider, this.publicKey);
   };
+
+  getAddress(): string {
+    const uncompressedPublicKey = `0x04${this.publicKey.q0.slice(2)}${this.publicKey.q1.slice(2)}`;
+    return ethers.utils.computeAddress(uncompressedPublicKey)
+  }
 
   /**
    * @method getBananaProvider
@@ -195,10 +188,9 @@ export class Banana {
    * @returns { ERC4337EthersProvider } bananaProvider
    * create ERC4337Provider instance of user's smart contract wallet. Used as BananaProvider.
    */
-  getBananaProvider = async (): Promise<ERC4337EthersProvider> => {
+  getBananaProvider = async (saltNonce: number): Promise<Banana4337Provider> => {
     if (this.bananaProvider) return this.bananaProvider;
 
-    let signer: Signer = this.bananaSigner;
     let network: Network = await this.jsonRpcProvider.getNetwork();
 
     const entryPoint: EntryPoint = EntryPoint__factory.connect(
@@ -206,7 +198,7 @@ export class Banana {
       this.jsonRpcProvider
     );
 
-    const TouchIdSafeWalletContractProxyFactory: BananaAccountProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(signer)
+    const TouchIdSafeWalletContractProxyFactory: BananaAccountProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(this.jsonRpcProvider)
 
     const TouchIdSafeWalletContractProxyFactoryAddress: string = TouchIdSafeWalletContractProxyFactory.address;
 
@@ -216,14 +208,14 @@ export class Banana {
       provider: this.jsonRpcProvider,
       entryPointAddress: this.Provider.entryPointAddress,
       accountAddress: this.walletAddress,
-      owner: signer,
+      owner: this.jsonRpcProvider.getSigner(),
       factoryAddress: TouchIdSafeWalletContractProxyFactoryAddress,
       paymasterAPI: myPaymasterApi,
-      _EllipticCurveAddress: this.addresses.Elliptic,
       _qValues: [this.publicKey.q0, this.publicKey.q1],
       _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress,
-      _ownerAddress: this.bananaSigner.address,
-      _fallBackHandler: this.addresses.fallBackHandlerAddress
+      _ownerAddress: this.getAddress(),
+      _fallBackHandler: this.addresses.fallBackHandlerAddress,
+      _saltNonce: saltNonce
     });
 
     this.accountApi = smartWalletAPI;
@@ -236,14 +228,16 @@ export class Banana {
 
     this.httpRpcClient = httpRpcClient;
 
-    this.bananaProvider = await new ERC4337EthersProvider(
+    this.bananaProvider = await new Banana4337Provider(
       network.chainId,
       this.Provider,
-      signer,
+      this.jsonRpcProvider.getSigner(),
       this.jsonRpcProvider,
       httpRpcClient,
       entryPoint,
-      smartWalletAPI
+      smartWalletAPI,
+      this.publicKey,
+      this.jsonRpcProvider
     ).init();
 
     return this.bananaProvider;
@@ -261,11 +255,13 @@ export class Banana {
       this.addresses.TouchIdSafeWalletContractSingletonAddress,
       this.jsonRpcProvider
     );
+    console.log("TouchIdSafeWalletContractSingleton", TouchIdSafeWalletContractSingleton)
     const TouchIdSafeWalletContractQValuesArray: Array<string> = [this.publicKey.q0, this.publicKey.q1];
+    console.log("TouchIdSafeWalletContractQValuesArray", TouchIdSafeWalletContractQValuesArray)
     //@ts-ignore
     const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
     [
-      [this.bananaSigner.address], // owners 
+      [this.getAddress()], // owners 
       1,                                              // thresold will remain fix 
       "0x0000000000000000000000000000000000000000",   // to address 
       "0x",                                           // modules setup calldata
@@ -276,9 +272,9 @@ export class Banana {
       this.Provider.entryPointAddress,                // entrypoint
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray,          // q values 
-      this.addresses.Elliptic                         // elliptic curve
     ]);
 
+    console.log("TouchIdSafeWalletContractInitializer", TouchIdSafeWalletContractInitializer)
     return TouchIdSafeWalletContractInitializer
   };
 
@@ -291,25 +287,31 @@ export class Banana {
    * setup signers and provider along with it create walletmetadata corresponding to the new wallet request.
    */
 
-  createWallet = async (walletIdentifier: string) => {
-    try {
+  createWallet = async (): Promise<Wallet> => {
+      const walletIdentifier = await walletNameInput();
       await this.createSignerAndCookieObject(walletIdentifier);
       this.walletIdentifier = walletIdentifier
-      const signer = this.bananaSigner;
-      const TouchIdSafeWalletContractProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(signer);
+      const TouchIdSafeWalletContractProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(this.jsonRpcProvider);
       const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
-      const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.addresses.TouchIdSafeWalletContractSingletonAddress, "0", TouchIdSafeWalletContractInitializer);
-      this.walletAddress = TouchIdSafeWalletContractAddress;
-      this.bananaProvider = await this.getBananaProvider();
-      this.setCookieAfterAddressCreation(walletIdentifier);
-      this.postCookieChecks(walletIdentifier);
-      return {
-        status: "success",
-        address: TouchIdSafeWalletContractAddress
+      let saltNonce = 0;
+      let isAddressUnique = false;
+      let TouchIdSafeWalletContractAddress
+
+      while(!isAddressUnique) {
+        TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.addresses.TouchIdSafeWalletContractSingletonAddress, saltNonce.toString(), TouchIdSafeWalletContractInitializer);
+        isAddressUnique = await NetworkAddressChecker(TouchIdSafeWalletContractAddress)
+        if(!isAddressUnique)
+        saltNonce++;
       }
-    } catch (err) {
-      return { status: "error", address: "" };
-    }
+
+      if(TouchIdSafeWalletContractAddress) {
+        this.walletAddress = TouchIdSafeWalletContractAddress;
+      }
+      this.bananaProvider = await this.getBananaProvider(saltNonce);
+      this.setCookieAfterAddressCreation(walletIdentifier, saltNonce);
+      this.postCookieChecks(walletIdentifier);
+      //! for now our wallet is chainSpecific
+      return new Wallet(this.walletAddress, this.bananaProvider, this.network);
   }
 
   /**
@@ -322,14 +324,11 @@ export class Banana {
    */
 
   connectWallet = async (walletIdentifier: string) => {
-    try {
-      await this.createSignerAndCookieObject(walletIdentifier)
-      this.walletAddress = this.cookieObject.walletAddress;
-      this.postCookieChecks(walletIdentifier);
-      return { status: "success", address: this.walletAddress }
-    } catch (err) {
-      return { status: "error", address: "" }
-    }
+    await this.createSignerAndCookieObject(walletIdentifier)
+    this.bananaProvider = await this.getBananaProvider(this.cookieObject.saltNonce);
+    this.walletAddress = this.cookieObject.walletAddress;
+    this.postCookieChecks(walletIdentifier);
+    return new Wallet(this.walletAddress, this.bananaProvider, this.network);
   }
 
   /**
@@ -344,9 +343,9 @@ export class Banana {
       const walletName = this.cookie.getCookie("bananaUser");
       this.cookie.deleteCookie(walletName);
       this.cookie.deleteCookie("bananaUser");
-      return { status: "success" }
+      return { success: true }
     } catch (err) {
-      return { status: "error", error: err }
+      return { success: false, error: err }
     }
   }
 
@@ -411,115 +410,6 @@ export class Banana {
     this.cookie.setCookie(walletIdentifier, JSON.stringify(this.cookieObject));
   };
 
-  /**
-   * @method sendUserOpToBundler
-   * @param { UserOperationStruct } userOp
-   * @returns none
-   * Updates the initCode status in walletMetaData in local and global storage database.
-   */
-
-  private sendUserOpToBundler = async (userOp: UserOperationStruct) => {
-    try {
-      const uHash = await this.httpRpcClient.sendUserOpToBundler(
-        userOp as any
-      );
-      return uHash;
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  /**
-   * @method contructUserOp
-   * @param { string } functionCallData, { string } value, { string } destination, { boolean } isContractDeployed, { BytesLike }initCode
-   * @returns { UserOperationStruct } userOp
-   * Construct userOp based on passed parameters
-   */
-
-  private contructUserOp = async (
-    functionCallData: string, 
-    value: string, 
-    destination: string, 
-    ) => {
-    let userOp;
-
-    try {
-      userOp = await this.accountApi.createUnsignedUserOp({
-        target: destination,
-        data: functionCallData,
-        value: ethers.utils.parseEther(value),
-        ...(await getGasFee(this.jsonRpcProvider)),
-      });
-    } catch (err) {
-      console.log(err);
-    }
-    return userOp;
-  }
-
-  /**
-   * @method constructAndSendUserOp
-   * @param { string } functionCallData, { string } value, { string } destination, { boolean } isContractDeployed, { BytesLike }initCode
-   * @returns { string } uHash
-   * Construct userOp and send to bundler and returns userOp requesId
-   */
-
-  private constructAndSendUserOp = async (funcCallData: string, destination:string, value: string) => {
-    const userOp = await this.contructUserOp(funcCallData, value, destination);
-    //@ts-ignore
-    userOp.verificationGasLimit = 3e6;
-    //@ts-ignore
-    userOp.preVerificationGas = ethers.BigNumber.from(await userOp.preVerificationGas).add(5000);
-    const entryPoint: EntryPoint = EntryPoint__factory.connect(
-      this.Provider.entryPointAddress,
-      this.jsonRpcProvider
-    );
-    const reqId = await this.accountApi.getUserOpHash(userOp as any);
-    console.log("UserOpHash: ", reqId);
-    let processStatus = true;
-    let finalUserOp;
-    while(processStatus) {
-      let minGasRequired =  ethers.BigNumber.from(userOp?.callGasLimit)
-                            .add(ethers.BigNumber.from(userOp?.verificationGasLimit))
-                            .add(ethers.BigNumber.from(userOp?.callGasLimit));
-      let currentGasPrice = await this.jsonRpcProvider.getGasPrice()
-      let minBalanceRequired = minGasRequired.mul(currentGasPrice)
-      //@ts-ignore
-      let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(userOp?.sender);
-      if(userBalance.lt(minBalanceRequired)){
-        throw new Error("ERROR: Insufficient balance in Wallet")
-      }
-      const { newUserOp, process } = await this.bananaSigner.signUserOp(userOp as any, reqId, this.publicKey.encodedId);
-      if(process === 'success') { 
-        finalUserOp = newUserOp;
-        processStatus = false; 
-      }
-    }
-    
-    const uHash: string = await this.sendUserOpToBundler(finalUserOp as any) || '';
-    return uHash;
-  } 
-
-  /**
-   * @method execute
-   * @param { string } functionCallData, { string } value, { string } destination
-   * @returns { string } requestId
-   * handles the transaction to be initiated using user smart contract wallet.
-   */
-
-  execute = async (
-    funcCallData: string,
-    destination: string,
-    value: string
-  ) => {
-    //! incase user not connected wallet walletIdentifier === ''
-    if(!this.walletIdentifier) throw new Error("Error: wallet not connected!");
-    const bananaProvider = await this.getBananaProvider();
-    const aaSigner = bananaProvider.getSigner();
-    this.TouchIdSafeWalletContract = BananaAccount__factory.connect(this.walletAddress || "", this.bananaSigner);
-    this.TouchIdSafeWalletContract = this.TouchIdSafeWalletContract.connect(aaSigner);
-    const requestId = await this.constructAndSendUserOp(funcCallData, destination, value);
-    return requestId;
-  };
 
   /**
    * @method isWalletNameUnique
@@ -536,40 +426,5 @@ export class Banana {
       console.log(err);
       throw err;
     }
-  }
-
-/**
- * @params message: string
- * @returns object { messageSigned: signedMessage.toHexString(), signature: finalSignature }
- * signature: Signature retrieved after signing message.
- * messageSigned: Message which is signed.
- */
-
-  signMessage = async(message:string) =>{
-    // To generate signature, first calculate the keccak256 hash of encodePacked message
-    const messageHash = ethers.utils.keccak256(ethers.utils.solidityPack(["string"],[message]))
-    const signatureAndMessage = await this.bananaSigner.signMessage(messageHash, this.cookieObject.encodedId)
-    const abi = ethers.utils.defaultAbiCoder
-    const decoded = abi.decode(["uint256", "uint256", "uint256"], signatureAndMessage);
-    const signedMessage = decoded[2];
-    const rHex = decoded[0].toHexString();
-    const sHex = decoded[1].toHexString();
-    const finalSignature = rHex + sHex.slice(2);
-    /**
-     * Note:
-     * the `message` is signed using secp256r1 instead of secp256k1, hence to verify
-     * signedMessage we cannot use ecrecover!
-     */
-    return {messageSigned:signedMessage.toHexString(), signature: finalSignature}
-  }
-
- hashMessage = (message: Bytes | string): string =>{
-  const messagePrefix = "\x19Ethereum Signed Message:\n";
-    if (typeof(message) === "string") { message = toUtf8Bytes(message); }
-    return keccak256(concat([
-        toUtf8Bytes(messagePrefix),
-        toUtf8Bytes(String(message.length)),
-        message
-    ]));
   }
 }
