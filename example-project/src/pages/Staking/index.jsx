@@ -46,12 +46,14 @@ const Staking = () => {
 
 
   const signMessage = async () => {
+
+    if(!signer) await connectAccount();
     const sampleMsg = "Hello message";
     const bananaInstance = signerContext.bananaInstance;
-    const signedMesage = await bananaInstance.signMessage(sampleMsg, true);
+    const signedMesage = await signer.signBananaMessage(sampleMsg);
     console.log("Signed message and status: ", signedMesage);
-    const isVerified = await bananaInstance.verifySignature(signedMesage.signature, signedMesage.messageToBeSigned, await bananaInstance.getEOAAddress()); 
-    console.log("Is verified: ", isVerified);
+    // const isVerified = await bananaInstance.verifySignature(signedMesage.signature, signedMesage.messageToBeSigned, await bananaInstance.getEOAAddress()); 
+    // console.log("Is verified: ", isVerified);
   }
 
   const resetWallet = async () => {
@@ -78,6 +80,7 @@ const Staking = () => {
   const stakeAfterAuth = async () => {
 
     setIsLoading(true);
+    if(!signer) await connectAccount();
     //@ts-ignore
     // const bananaInstance = new Banana(Chains.goerli);
 
@@ -113,8 +116,8 @@ const Staking = () => {
       // console.log(" this is txn ", txn);
       const txn = await signer.sendTransaction(tx);
       console.log("transaction ", txn);
-      const receipt = await txn.wait();
-      console.log("txn receipt ", receipt)
+      // const receipt = await txn.wait();
+      // console.log("txn receipt ", receipt)
 
       toast.success("Successfully staked your funds !!");
     // } else {
