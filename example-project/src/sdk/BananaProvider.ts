@@ -362,7 +362,7 @@ export class Banana {
     }
     if(!isInitCode && finalUserOp) {
       finalUserOp.callGasLimit = 3e6;
-      finalUserOp.verificationGasLimit = 3e6;
+      finalUserOp.verificationGasLimit = 1.5e6;
     }
     const uHash: string = await this.sendUserOpToBundler(finalUserOp as any) || '';
     let initCodeSetStatus = false;;

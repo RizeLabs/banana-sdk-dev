@@ -8,7 +8,7 @@ const Home = () => {
       <div
         className="dashboard-container-1"
       >
-        <a href="whatsapp://send?text=Check%20out%20this%20image:&amp;image=https://banana-shards-qr-img.s3.us-east-1.amazonaws.com/img_0e09dce4-e84c-4d82-94d2-14bb4bbfe8f9" data-action="share/whatsapp/share">Share on WhatsApp</a>
+        {/* <a href="whatsapp://send?text=Check%20out%20this%20image:&amp;image=https://banana-shards-qr-img.s3.us-east-1.amazonaws.com/img_0e09dce4-e84c-4d82-94d2-14bb4bbfe8f9" data-action="share/whatsapp/share">Share on WhatsApp</a> */}
         <div
           className="inner-top-div"
         >

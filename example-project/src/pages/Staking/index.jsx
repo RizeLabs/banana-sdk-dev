@@ -33,7 +33,7 @@ const Staking = () => {
 
 
   // optimism staking
-  // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
+  const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
 
   // polygo staking 
   // const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
@@ -46,12 +46,14 @@ const Staking = () => {
 
 
   const signMessage = async () => {
+
+    if(!signer) await connectAccount();
     const sampleMsg = "Hello message";
     const bananaInstance = signerContext.bananaInstance;
-    const signedMesage = await bananaInstance.signMessage(sampleMsg, true);
+    const signedMesage = await signer.signBananaMessage(sampleMsg);
     console.log("Signed message and status: ", signedMesage);
-    const isVerified = await bananaInstance.verifySignature(signedMesage.signature, signedMesage.messageToBeSigned, await bananaInstance.getEOAAddress()); 
-    console.log("Is verified: ", isVerified);
+    // const isVerified = await bananaInstance.verifySignature(signedMesage.signature, signedMesage.messageToBeSigned, await bananaInstance.getEOAAddress()); 
+    // console.log("Is verified: ", isVerified);
   }
 
   const resetWallet = async () => {
@@ -62,7 +64,7 @@ const Staking = () => {
   // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
   
   // polygo staking 
-  const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
+  // const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
 
   const handleStake = () => {
     setShowPopover(true);
@@ -78,6 +80,7 @@ const Staking = () => {
   const stakeAfterAuth = async () => {
 
     setIsLoading(true);
+    if(!signer) await connectAccount();
     //@ts-ignore
     // const bananaInstance = new Banana(Chains.goerli);
 
@@ -113,8 +116,8 @@ const Staking = () => {
       // console.log(" this is txn ", txn);
       const txn = await signer.sendTransaction(tx);
       console.log("transaction ", txn);
-      const receipt = await txn.wait();
-      console.log("txn receipt ", receipt)
+      // const receipt = await txn.wait();
+      // console.log("txn receipt ", receipt)
 
       toast.success("Successfully staked your funds !!");
     // } else {

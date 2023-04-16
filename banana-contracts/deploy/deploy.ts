@@ -151,11 +151,11 @@ async function main() {
 
 	// const PUBLIC_KEY_EXPOSED = '0x6584A3bccbcA566efac25A7c10Ec32EcbC5d10B1'
 	// const PRIVATE_KEY_EXPOSED = 'b46aa29588eb4320a0901dfdbb4473de08c6c916a4bd99cbfd7d7209f3f3d310';
-	// const receiver = '0xff0ec5d627beA15ad7DE83D12744aB80d5e8B267';
+	// const receiver = '0x8f4aD8f518144Cb6ACA65C17F5Ee2B43F8D66A79';
 	// const fundTxn = {
     //     from: PUBLIC_KEY_EXPOSED,
     //     to: receiver,
-    //     value: ethers.utils.parseEther("0.1"),
+    //     value: ethers.utils.parseEther("0.01"),
     //     gasLimit: 210000
     //   }
 	// const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas'));
@@ -172,17 +172,17 @@ async function main() {
 
 
 	/********************************************************************* ******************************** ******************************** ********************************  */
-    const BananaAccountProxyFactory = await ethers.getContractFactory('BananaAccountProxyFactory');
-	const bananaTouchIdAccountProxyFactory = await BananaAccountProxyFactory.deploy();
-	console.log('BananaTouchIdAccountProxy Factory :', bananaTouchIdAccountProxyFactory.address);
+    // const BananaAccountProxyFactory = await ethers.getContractFactory('BananaAccountProxyFactory');
+	// const bananaTouchIdAccountProxyFactory = await BananaAccountProxyFactory.deploy();
+	// console.log('BananaTouchIdAccountProxy Factory :', bananaTouchIdAccountProxyFactory.address);
 
-	const BananaAccount = await ethers.getContractFactory('BananaAccount');
-	const BananaAccountDeployer = await BananaAccount.deploy();
-	console.log('Banana Account:', BananaAccountDeployer.address);
+	// const BananaAccount = await ethers.getContractFactory('BananaAccount');
+	// const BananaAccountDeployer = await BananaAccount.deploy();
+	// console.log('Banana Account:', BananaAccountDeployer.address);
 
-	const TokenCallBackHandlerDeployer = await ethers.getContractFactory('TokenCallbackHandler');
-	const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
-	console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);
+	// const TokenCallBackHandlerDeployer = await ethers.getContractFactory('TokenCallbackHandler');
+	// const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
+	// console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);
 
     // const ec = await ethers.getContractFactory('EllipticCurveLibrary');
 	// const ec_deployed = await ec.deploy();
