@@ -20,9 +20,10 @@ const Navbar = () => {
   const [scwAddress, setSCWAddress] = useState("");
   const [load, setLoad] = useState(false);
 
-  // let nullBanana = new Banana(Chains.optimismTestnet, 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas');
+  let nullBanana = new Banana(Chains.optimismTestnet);
+    // 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas');
 
- let nullBanana = new Banana(Chains.mumbai , 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4');
+//  let nullBanana = new Banana(Chains.mumbai , 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4');
 
   const [banana, setbanana] = useState(nullBanana)
   const signerContext = useContext(SignerContext);
