@@ -25,7 +25,7 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
         case Chains.mumbai:
             return {
                 "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
-                "bundlerUrl": "https://eip4337-banana-bundler.xyz/rpc" // mumbai bundler 
+                "bundlerUrl": "https://node.stackup.sh/v1/rpc/4bdce488aaada61f31c31315a18106eda076b12836a9ab44158fbf7a5c6cbea9" // mumbai bundler 
             };
         case Chains.optimismTestnet:
             return {
