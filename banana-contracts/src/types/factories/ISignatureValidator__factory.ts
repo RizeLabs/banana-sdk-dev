@@ -13,9 +13,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes",
-        name: "_data",
-        type: "bytes",
+        internalType: "bytes32",
+        name: "_dataHash",
+        type: "bytes32",
       },
       {
         internalType: "bytes",

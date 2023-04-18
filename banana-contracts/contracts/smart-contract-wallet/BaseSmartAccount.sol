@@ -128,11 +128,11 @@ abstract contract BaseSmartAccount is IAccount, BaseSmartAccountErrors {
 
     /**
      * @dev Initialize the Smart Account with required states
-     * @param _owner Signatory of the Smart Account
+     * @param _qValues Signatory of the Smart Account
      * @param _handler Default fallback handler provided in Smart Account
      * @notice devs need to make sure it is only callble once by initiazer or state check restrictions
      */
-    function init(address _owner, address _handler) external virtual;
+    function init(uint[2] memory _qValues, address _handler) external virtual;
 
     /**
      * @dev Gnosis style transaction with optional repay in native tokens OR ERC20

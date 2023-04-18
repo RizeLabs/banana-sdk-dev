@@ -19,6 +19,7 @@ import {
 } from "@account-abstraction/sdk";
 import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
 import { Banana4337Provider } from "./Banana4337Provider";
+import { EntryPoint__factory } from "@account-abstraction/contracts";
 
 export class BananaSigner extends ERC4337EthersSigner {
   jsonRpcProvider: JsonRpcProvider;
@@ -74,6 +75,7 @@ export class BananaSigner extends ERC4337EthersSigner {
       );
 
       if (userBalance.lt(minBalanceRequired)) {
+        console.log("Insufficient balance in Wallet");
         throw new Error("ERROR: Insufficient balance in Wallet");
       }
 
@@ -95,6 +97,11 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation
       );
     try {
+      let ep = EntryPoint__factory.connect("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", this.originalSigner);
+      console.log("EP handleOps")
+      //@ts-ignore
+      console.log(ep.interface.encodeFunctionData("handleOps", [[userOperation], "0x3e60B11022238Af208D4FAEe9192dAEE46D225a6"]));
+
       await this.httpRpcClient.sendUserOpToBundler(userOperation);
     } catch (error: any) {
       // console.error('sendUserOpToBundler failed', error)

@@ -24,8 +24,8 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
             };
         case Chains.mumbai:
             return {
-                "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
-                "bundlerUrl": "https://node.stackup.sh/v1/rpc/4bdce488aaada61f31c31315a18106eda076b12836a9ab44158fbf7a5c6cbea9" // mumbai bundler 
+                "entryPointAddress": "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+                "bundlerUrl": "https://api.stackup.sh/v1/node/4bdce488aaada61f31c31315a18106eda076b12836a9ab44158fbf7a5c6cbea9" // mumbai bundler 
             };
         case Chains.optimismTestnet:
             return {
@@ -59,8 +59,8 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         case Chains.mumbai: // mi
         return {
             "Elliptic": "0xDf6fFfB5Ec52A73F7C96e2818dBD46B7d4009b94",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0x51283946fbB01150B558159ea4B6F43Dedd253A4",
-            "TouchIdSafeWalletContractSingletonAddress": "0xA0b3C7c163A17C0BC11939745cAd0C1EB82108E0",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x0877d23454e90e372D89b1011dc1F5EB3D9Ba6A9",
+            "TouchIdSafeWalletContractSingletonAddress": "0x2BBA2923E2aeDE0caDA8f6DC9141F1904e9E298e",
             "fallBackHandlerAddress": "0x0ed1f75AA9A33ab0756725cE7f841b13Fde47B0C"
         };
         case Chains.arbitrumTestnet: 

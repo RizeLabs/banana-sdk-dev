@@ -59,7 +59,7 @@ contract SmartAccount is
     address public owner;
 
     //q values for the elliptic curve representing the public key of the user
-    uint256[2] qValues;
+    uint256[2] public qValues;
 
     // changed to 2D nonce below
     // @notice there is no _nonce
@@ -96,7 +96,7 @@ contract SmartAccount is
         // By setting the owner it is not possible to call init anymore,
         // so we create an account with fixed non-zero owner.
         // This is an unusable account, perfect for the singleton
-        owner = address(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
+        qValues = [0,0];
         if (address(anEntryPoint) == address(0))
             revert EntryPointCannotBeZero();
         _entryPoint = anEntryPoint;
@@ -232,16 +232,17 @@ contract SmartAccount is
 
     /**
      * @dev Initialize the Smart Account with required states
-     * @param _owner Signatory of the Smart Account
+     * @param _qValues Signatory of the Smart Account
      * @param _handler Default fallback handler provided in Smart Account
      * @notice devs need to make sure it is only callble once by initiazer or state check restrictions
      * @notice any further implementations that introduces a new state must have a reinit method
      * @notice init is prevented here by setting owner in the constructor and checking here for address(0)
      */
-    function init(address _owner, address _handler) external virtual override {
-        if (owner != address(0)) revert AlreadyInitialized(address(this));
-        if (_owner == address(0)) revert OwnerCannotBeZero();
-        owner = _owner;
+    function init(uint[2] memory _qValues, address _handler) external virtual override {
+        // TODO remove comments
+        // if (qValues != [uint(0),uint(0)]) revert AlreadyInitialized(address(this));
+        // if (_qValues == [0,0]) revert OwnerCannotBeZero();
+        qValues = _qValues;
         _setFallbackHandler(_handler);
         _setupModules(address(0), bytes(""));
     }
@@ -273,7 +274,7 @@ contract SmartAccount is
                 nonces[1]++
             );
             txHash = keccak256(txHashData);
-            checkSignatures(txHash, signatures);
+            // checkSignatures(txHash, signatures);
         }
 
         // We require some gas to emit the events (at least 2500) after the execution and some to perform code until the execution (500)

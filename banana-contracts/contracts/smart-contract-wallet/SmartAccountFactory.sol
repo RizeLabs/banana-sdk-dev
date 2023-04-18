@@ -45,15 +45,15 @@ contract SmartAccountFactory {
 
     /**
      * @notice Deploys account using create2 and points it to basicImplementation
-     * @param _owner EOA signatory for the account to be deployed
+     * @param _qValues EOA signatory for the account to be deployed
      * @param _index extra salt that allows to deploy more account if needed for same EOA (default 0)
      */
     function deployCounterFactualAccount(
-        address _owner,
+        uint[2] memory _qValues,
         uint256 _index
     ) public returns (address proxy) {
         // create initializer data based on init method, _owner and minimalHandler
-        bytes memory initializer = getInitializer(_owner);
+        bytes memory initializer = getInitializer(_qValues);
 
         bytes32 salt = keccak256(
             abi.encodePacked(keccak256(initializer), _index)
@@ -95,15 +95,15 @@ contract SmartAccountFactory {
                 }
             }
         }
-        emit AccountCreation(proxy, _owner, _index);
+        // emit AccountCreation(proxy, _qValues, _index);
     }
 
     /**
      * @notice Deploys account using create and points it to _implementation
-     * @param _owner EOA signatory for the account to be deployed
+     * @param _qValues EOA signatory for the account to be deployed
      * @return proxy address of the deployed account
      */
-    function deployAccount(address _owner) public returns (address proxy) {
+    function deployAccount(uint[2] memory _qValues) public returns (address proxy) {
         bytes memory deploymentData = abi.encodePacked(
             type(Proxy).creationCode,
             uint256(uint160(basicImplementation))
@@ -119,7 +119,7 @@ contract SmartAccountFactory {
         }
         require(address(proxy) != address(0), "Create call failed");
 
-        bytes memory initializer = getInitializer(_owner);
+        bytes memory initializer = getInitializer(_qValues);
 
         // calldata for init method
         if (initializer.length > 0) {
@@ -141,35 +141,35 @@ contract SmartAccountFactory {
                 }
             }
         }
-        emit AccountCreationWithoutIndex(proxy, _owner);
+        // emit AccountCreationWithoutIndex(proxy, _qValues);
     }
 
     /**
      * @dev Allows to retrieve the initializer data for the account.
-     * @param _owner EOA signatory for the account to be deployed
+     * @param _qValues EOA signatory for the account to be deployed
      * @return initializer bytes for init method
      */
     function getInitializer(
-        address _owner
+        uint[2] memory _qValues
     ) internal view returns (bytes memory) {
         return
             abi.encodeCall(
                 BaseSmartAccount.init,
-                (_owner, address(minimalHandler))
+                (_qValues, address(minimalHandler))
             );
     }
 
     /**
      * @notice Allows to find out account address prior to deployment
-     * @param _owner EOA signatory for the account to be deployed
+     * @param _qValues EOA signatory for the account to be deployed
      * @param _index extra salt that allows to deploy more accounts if needed for same EOA (default 0)
      */
     function getAddressForCounterFactualAccount(
-        address _owner,
+        uint[2] memory _qValues,
         uint256 _index
     ) external view returns (address _account) {
         // create initializer data based on init method, _owner and minimalHandler
-        bytes memory initializer = getInitializer(_owner);
+        bytes memory initializer = getInitializer(_qValues);
         bytes memory code = abi.encodePacked(
             type(Proxy).creationCode,
             uint256(uint160(basicImplementation))

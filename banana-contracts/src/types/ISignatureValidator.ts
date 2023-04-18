@@ -22,7 +22,7 @@ import type {
 
 export interface ISignatureValidatorInterface extends utils.Interface {
   functions: {
-    "isValidSignature(bytes,bytes)": FunctionFragment;
+    "isValidSignature(bytes32,bytes)": FunctionFragment;
   };
 
   getFunction(nameOrSignatureOrTopic: "isValidSignature"): FunctionFragment;
@@ -68,21 +68,21 @@ export interface ISignatureValidator extends BaseContract {
 
   functions: {
     isValidSignature(
-      _data: PromiseOrValue<BytesLike>,
+      _dataHash: PromiseOrValue<BytesLike>,
       _signature: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[string]>;
   };
 
   isValidSignature(
-    _data: PromiseOrValue<BytesLike>,
+    _dataHash: PromiseOrValue<BytesLike>,
     _signature: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<string>;
 
   callStatic: {
     isValidSignature(
-      _data: PromiseOrValue<BytesLike>,
+      _dataHash: PromiseOrValue<BytesLike>,
       _signature: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -92,7 +92,7 @@ export interface ISignatureValidator extends BaseContract {
 
   estimateGas: {
     isValidSignature(
-      _data: PromiseOrValue<BytesLike>,
+      _dataHash: PromiseOrValue<BytesLike>,
       _signature: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -100,7 +100,7 @@ export interface ISignatureValidator extends BaseContract {
 
   populateTransaction: {
     isValidSignature(
-      _data: PromiseOrValue<BytesLike>,
+      _dataHash: PromiseOrValue<BytesLike>,
       _signature: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

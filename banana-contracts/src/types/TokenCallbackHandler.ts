@@ -23,8 +23,6 @@ import type {
 
 export interface TokenCallbackHandlerInterface extends utils.Interface {
   functions: {
-    "NAME()": FunctionFragment;
-    "VERSION()": FunctionFragment;
     "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
@@ -34,8 +32,6 @@ export interface TokenCallbackHandlerInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
-      | "NAME"
-      | "VERSION"
       | "onERC1155BatchReceived"
       | "onERC1155Received"
       | "onERC721Received"
@@ -43,8 +39,6 @@ export interface TokenCallbackHandlerInterface extends utils.Interface {
       | "tokensReceived"
   ): FunctionFragment;
 
-  encodeFunctionData(functionFragment: "NAME", values?: undefined): string;
-  encodeFunctionData(functionFragment: "VERSION", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "onERC1155BatchReceived",
     values: [
@@ -90,8 +84,6 @@ export interface TokenCallbackHandlerInterface extends utils.Interface {
     ]
   ): string;
 
-  decodeFunctionResult(functionFragment: "NAME", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "VERSION", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "onERC1155BatchReceived",
     data: BytesLike
@@ -143,10 +135,6 @@ export interface TokenCallbackHandler extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    NAME(overrides?: CallOverrides): Promise<[string]>;
-
-    VERSION(overrides?: CallOverrides): Promise<[string]>;
-
     onERC1155BatchReceived(
       arg0: PromiseOrValue<string>,
       arg1: PromiseOrValue<string>,
@@ -188,10 +176,6 @@ export interface TokenCallbackHandler extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[void]>;
   };
-
-  NAME(overrides?: CallOverrides): Promise<string>;
-
-  VERSION(overrides?: CallOverrides): Promise<string>;
 
   onERC1155BatchReceived(
     arg0: PromiseOrValue<string>,
@@ -235,10 +219,6 @@ export interface TokenCallbackHandler extends BaseContract {
   ): Promise<void>;
 
   callStatic: {
-    NAME(overrides?: CallOverrides): Promise<string>;
-
-    VERSION(overrides?: CallOverrides): Promise<string>;
-
     onERC1155BatchReceived(
       arg0: PromiseOrValue<string>,
       arg1: PromiseOrValue<string>,
@@ -284,10 +264,6 @@ export interface TokenCallbackHandler extends BaseContract {
   filters: {};
 
   estimateGas: {
-    NAME(overrides?: CallOverrides): Promise<BigNumber>;
-
-    VERSION(overrides?: CallOverrides): Promise<BigNumber>;
-
     onERC1155BatchReceived(
       arg0: PromiseOrValue<string>,
       arg1: PromiseOrValue<string>,
@@ -331,10 +307,6 @@ export interface TokenCallbackHandler extends BaseContract {
   };
 
   populateTransaction: {
-    NAME(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    VERSION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     onERC1155BatchReceived(
       arg0: PromiseOrValue<string>,
       arg1: PromiseOrValue<string>,

@@ -9,7 +9,7 @@ contract GasEstimatorSmartAccount {
     function estimate(
         address _actualWallet,
         address _factory,
-        address _owner,
+        uint[2] memory _owner,
         uint256 _index,
         bytes calldata _data // execTransaction data // counterFactual wallet should have assets if required
     ) external returns (bool success, bytes memory result, uint256 gas) {

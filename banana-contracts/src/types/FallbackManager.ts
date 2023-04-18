@@ -28,33 +28,45 @@ import type {
 
 export interface FallbackManagerInterface extends utils.Interface {
   functions: {
+    "getFallbackHandler()": FunctionFragment;
     "setFallbackHandler(address)": FunctionFragment;
   };
 
-  getFunction(nameOrSignatureOrTopic: "setFallbackHandler"): FunctionFragment;
+  getFunction(
+    nameOrSignatureOrTopic: "getFallbackHandler" | "setFallbackHandler"
+  ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "getFallbackHandler",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "setFallbackHandler",
     values: [PromiseOrValue<string>]
   ): string;
 
   decodeFunctionResult(
+    functionFragment: "getFallbackHandler",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setFallbackHandler",
     data: BytesLike
   ): Result;
 
   events: {
-    "ChangedFallbackHandler(address)": EventFragment;
+    "ChangedFallbackHandler(address,address)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ChangedFallbackHandler"): EventFragment;
 }
 
 export interface ChangedFallbackHandlerEventObject {
+  previousHandler: string;
   handler: string;
 }
 export type ChangedFallbackHandlerEvent = TypedEvent<
-  [string],
+  [string, string],
   ChangedFallbackHandlerEventObject
 >;
 
@@ -88,11 +100,17 @@ export interface FallbackManager extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    getFallbackHandler(
+      overrides?: CallOverrides
+    ): Promise<[string] & { _handler: string }>;
+
     setFallbackHandler(
       handler: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
+
+  getFallbackHandler(overrides?: CallOverrides): Promise<string>;
 
   setFallbackHandler(
     handler: PromiseOrValue<string>,
@@ -100,6 +118,8 @@ export interface FallbackManager extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    getFallbackHandler(overrides?: CallOverrides): Promise<string>;
+
     setFallbackHandler(
       handler: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -107,13 +127,19 @@ export interface FallbackManager extends BaseContract {
   };
 
   filters: {
-    "ChangedFallbackHandler(address)"(
-      handler?: null
+    "ChangedFallbackHandler(address,address)"(
+      previousHandler?: PromiseOrValue<string> | null,
+      handler?: PromiseOrValue<string> | null
     ): ChangedFallbackHandlerEventFilter;
-    ChangedFallbackHandler(handler?: null): ChangedFallbackHandlerEventFilter;
+    ChangedFallbackHandler(
+      previousHandler?: PromiseOrValue<string> | null,
+      handler?: PromiseOrValue<string> | null
+    ): ChangedFallbackHandlerEventFilter;
   };
 
   estimateGas: {
+    getFallbackHandler(overrides?: CallOverrides): Promise<BigNumber>;
+
     setFallbackHandler(
       handler: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -121,6 +147,10 @@ export interface FallbackManager extends BaseContract {
   };
 
   populateTransaction: {
+    getFallbackHandler(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     setFallbackHandler(
       handler: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }

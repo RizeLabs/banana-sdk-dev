@@ -7,7 +7,7 @@ import type {
   BytesLike,
   CallOverrides,
   ContractTransaction,
-  PayableOverrides,
+  Overrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -68,13 +68,13 @@ export interface MultiSend extends BaseContract {
   functions: {
     multiSend(
       transactions: PromiseOrValue<BytesLike>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
 
   multiSend(
     transactions: PromiseOrValue<BytesLike>,
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
@@ -89,14 +89,14 @@ export interface MultiSend extends BaseContract {
   estimateGas: {
     multiSend(
       transactions: PromiseOrValue<BytesLike>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     multiSend(
       transactions: PromiseOrValue<BytesLike>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };
 }
