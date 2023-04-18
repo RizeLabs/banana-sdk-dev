@@ -180,6 +180,20 @@ async function main() {
 	// const BananaAccountDeployer = await BananaAccount.deploy();
 	// console.log('Banana Account:', BananaAccountDeployer.address);
 
+    const SmartAccount = await ethers.getContractFactory('SmartAccount');
+	const SmartAccountDeployer = await SmartAccount.deploy("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789");
+	console.log('Smart Account:', SmartAccountDeployer.address);
+
+	const SmartAccountFactory = await ethers.getContractFactory('SmartAccountFactory');
+	const SmartAccountFactoryDeployer = await SmartAccountFactory.deploy(SmartAccountDeployer.address);
+	console.log('Smart Account factory:', SmartAccountFactoryDeployer.address);
+
+	// const SmartAccountProxy = await ethers.getContractFactory('Proxy');
+	// const SmartAccountProxyDeployer = await SmartAccountProxy.deploy("0x98Be5afC696CD135a8E68fA2CDae2C804F219734");
+	// console.log('Smart Account factory:', SmartAccountProxyDeployer.address);
+
+	
+
 	// const TokenCallBackHandlerDeployer = await ethers.getContractFactory('TokenCallbackHandler');
 	// const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
 	// console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);

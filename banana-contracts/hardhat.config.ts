@@ -11,17 +11,28 @@ dotenv.config({ path: ".env.local" });
 
 export default {
   solidity: {
-    version: "0.8.15",
-    settings: {
-      viaIR: true,
-      optimizer: {
-        enabled: true,
-        runs: 1000000,
-        // details: {
-        //   yul: false
-        // }
+    compilers: [
+      {
+        version: "0.8.15",
+        settings: {
+          viaIR: true,
+          optimizer: {
+            enabled: true,
+            runs: 1000000,
+          },
+        },
       },
-    },
+      {
+        version: "0.8.17",
+        settings: {
+          viaIR: true,
+          optimizer: {
+            enabled: true,
+            runs: 1000000,
+          },
+        },
+      }
+    ],
   },
   defaultNetwork: "mumbai",
   networks: {
@@ -63,7 +74,7 @@ export default {
   etherscan: {
     // apiKey: "YJ546HGGQFGMEE4B22QNGB58QKZ97G8YSP"
     // apiKey: "2S8CM6KUUPXGG7JV63UZVVVZTWP6RYJXYE"
-    // apiKey: "C2J3GI995B9DKK1XVF3P67UDHU72P4Q15D",
-    apiKey: "ESHESDSD935HS3IAW42I9X8HDJ13TX4IUM" //gnosis
+    apiKey: "C2J3GI995B9DKK1XVF3P67UDHU72P4Q15D",
+    // apiKey: "ESHESDSD935HS3IAW42I9X8HDJ13TX4IUM" //gnosis
  }
 };

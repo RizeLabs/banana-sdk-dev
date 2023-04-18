@@ -240,8 +240,9 @@ contract SmartAccount is
      */
     function init(uint[2] memory _qValues, address _handler) external virtual override {
         // TODO remove comments
-        // if (qValues != [uint(0),uint(0)]) revert AlreadyInitialized(address(this));
-        // if (_qValues == [0,0]) revert OwnerCannotBeZero();
+        if (qValues[0] != 0 || qValues[1] != 0) revert AlreadyInitialized(address(this));
+        if (_qValues[0] == 0 && _qValues[1] == 0) revert OwnerCannotBeZero();
+
         qValues = _qValues;
         _setFallbackHandler(_handler);
         _setupModules(address(0), bytes(""));
@@ -274,7 +275,7 @@ contract SmartAccount is
                 nonces[1]++
             );
             txHash = keccak256(txHashData);
-            // checkSignatures(txHash, signatures);
+            checkSignatures(txHash, signatures);
         }
 
         // We require some gas to emit the events (at least 2500) after the execution and some to perform code until the execution (500)
