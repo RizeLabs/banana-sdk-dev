@@ -71,16 +71,12 @@ export type UserOperationStructOutput = [
 export interface BananaAccountInterface extends utils.Interface {
   functions: {
     "VERSION()": FunctionFragment;
-    "_getRSValues(bytes)": FunctionFragment;
-    "_getRequestId(bytes)": FunctionFragment;
     "addOwnerWithThreshold(address,uint256)": FunctionFragment;
     "approveHash(bytes32)": FunctionFragment;
     "approvedHashes(address,bytes32)": FunctionFragment;
     "changeThreshold(uint256)": FunctionFragment;
     "checkNSignatures(bytes32,bytes,bytes,uint256)": FunctionFragment;
     "checkSignatures(bytes32,bytes,bytes)": FunctionFragment;
-    "compareBytes(bytes,bytes)": FunctionFragment;
-    "concatBytes(bytes,bytes)": FunctionFragment;
     "disableModule(address,address)": FunctionFragment;
     "domainSeparator()": FunctionFragment;
     "enableModule(address)": FunctionFragment;
@@ -93,7 +89,6 @@ export interface BananaAccountInterface extends utils.Interface {
     "getChainId()": FunctionFragment;
     "getModulesPaginated(address,uint256)": FunctionFragment;
     "getOwners()": FunctionFragment;
-    "getRequestIdFromClientDataJSON(bytes)": FunctionFragment;
     "getStorageAt(uint256,uint256)": FunctionFragment;
     "getThreshold()": FunctionFragment;
     "getTransactionHash(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,uint256)": FunctionFragment;
@@ -109,7 +104,6 @@ export interface BananaAccountInterface extends utils.Interface {
     "signedMessages(bytes32)": FunctionFragment;
     "simulateAndRevert(address,bytes)": FunctionFragment;
     "swapOwner(address,address,address)": FunctionFragment;
-    "toHex(bytes32)": FunctionFragment;
     "usedMessages(bytes32)": FunctionFragment;
     "validateUserOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,uint256)": FunctionFragment;
   };
@@ -117,16 +111,12 @@ export interface BananaAccountInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "VERSION"
-      | "_getRSValues"
-      | "_getRequestId"
       | "addOwnerWithThreshold"
       | "approveHash"
       | "approvedHashes"
       | "changeThreshold"
       | "checkNSignatures"
       | "checkSignatures"
-      | "compareBytes"
-      | "concatBytes"
       | "disableModule"
       | "domainSeparator"
       | "enableModule"
@@ -139,7 +129,6 @@ export interface BananaAccountInterface extends utils.Interface {
       | "getChainId"
       | "getModulesPaginated"
       | "getOwners"
-      | "getRequestIdFromClientDataJSON"
       | "getStorageAt"
       | "getThreshold"
       | "getTransactionHash"
@@ -155,20 +144,11 @@ export interface BananaAccountInterface extends utils.Interface {
       | "signedMessages"
       | "simulateAndRevert"
       | "swapOwner"
-      | "toHex"
       | "usedMessages"
       | "validateUserOp"
   ): FunctionFragment;
 
   encodeFunctionData(functionFragment: "VERSION", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "_getRSValues",
-    values: [PromiseOrValue<BytesLike>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "_getRequestId",
-    values: [PromiseOrValue<BytesLike>]
-  ): string;
   encodeFunctionData(
     functionFragment: "addOwnerWithThreshold",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
@@ -201,14 +181,6 @@ export interface BananaAccountInterface extends utils.Interface {
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>
     ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "compareBytes",
-    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BytesLike>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "concatBytes",
-    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "disableModule",
@@ -292,10 +264,6 @@ export interface BananaAccountInterface extends utils.Interface {
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(functionFragment: "getOwners", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "getRequestIdFromClientDataJSON",
-    values: [PromiseOrValue<BytesLike>]
-  ): string;
   encodeFunctionData(
     functionFragment: "getStorageAt",
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
@@ -393,10 +361,6 @@ export interface BananaAccountInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "toHex",
-    values: [PromiseOrValue<BytesLike>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "usedMessages",
     values: [PromiseOrValue<BytesLike>]
   ): string;
@@ -410,14 +374,6 @@ export interface BananaAccountInterface extends utils.Interface {
   ): string;
 
   decodeFunctionResult(functionFragment: "VERSION", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "_getRSValues",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "_getRequestId",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "addOwnerWithThreshold",
     data: BytesLike
@@ -440,14 +396,6 @@ export interface BananaAccountInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "checkSignatures",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "compareBytes",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "concatBytes",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -489,10 +437,6 @@ export interface BananaAccountInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getOwners", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "getRequestIdFromClientDataJSON",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "getStorageAt",
     data: BytesLike
@@ -538,7 +482,6 @@ export interface BananaAccountInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "swapOwner", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "toHex", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "usedMessages",
     data: BytesLike
@@ -761,16 +704,6 @@ export interface BananaAccount extends BaseContract {
   functions: {
     VERSION(overrides?: CallOverrides): Promise<[string]>;
 
-    _getRSValues(
-      signature: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber] & { r: BigNumber; s: BigNumber }>;
-
-    _getRequestId(
-      clientDataJSON: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<[string] & { requestIdFromClientDataJSON: string }>;
-
     addOwnerWithThreshold(
       owner: PromiseOrValue<string>,
       _threshold: PromiseOrValue<BigNumberish>,
@@ -807,18 +740,6 @@ export interface BananaAccount extends BaseContract {
       signatures: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[void]>;
-
-    compareBytes(
-      b1: PromiseOrValue<BytesLike>,
-      b2: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    concatBytes(
-      a: PromiseOrValue<BytesLike>,
-      b: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
 
     disableModule(
       prevModule: PromiseOrValue<string>,
@@ -896,11 +817,6 @@ export interface BananaAccount extends BaseContract {
     ): Promise<[string[], string] & { array: string[]; next: string }>;
 
     getOwners(overrides?: CallOverrides): Promise<[string[]]>;
-
-    getRequestIdFromClientDataJSON(
-      clientDataJSON: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
 
     getStorageAt(
       offset: PromiseOrValue<BigNumberish>,
@@ -1002,11 +918,6 @@ export interface BananaAccount extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    toHex(
-      data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
-
     usedMessages(
       arg0: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -1021,16 +932,6 @@ export interface BananaAccount extends BaseContract {
   };
 
   VERSION(overrides?: CallOverrides): Promise<string>;
-
-  _getRSValues(
-    signature: PromiseOrValue<BytesLike>,
-    overrides?: CallOverrides
-  ): Promise<[BigNumber, BigNumber] & { r: BigNumber; s: BigNumber }>;
-
-  _getRequestId(
-    clientDataJSON: PromiseOrValue<BytesLike>,
-    overrides?: CallOverrides
-  ): Promise<string>;
 
   addOwnerWithThreshold(
     owner: PromiseOrValue<string>,
@@ -1068,18 +969,6 @@ export interface BananaAccount extends BaseContract {
     signatures: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<void>;
-
-  compareBytes(
-    b1: PromiseOrValue<BytesLike>,
-    b2: PromiseOrValue<BytesLike>,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  concatBytes(
-    a: PromiseOrValue<BytesLike>,
-    b: PromiseOrValue<BytesLike>,
-    overrides?: CallOverrides
-  ): Promise<string>;
 
   disableModule(
     prevModule: PromiseOrValue<string>,
@@ -1157,11 +1046,6 @@ export interface BananaAccount extends BaseContract {
   ): Promise<[string[], string] & { array: string[]; next: string }>;
 
   getOwners(overrides?: CallOverrides): Promise<string[]>;
-
-  getRequestIdFromClientDataJSON(
-    clientDataJSON: PromiseOrValue<BytesLike>,
-    overrides?: CallOverrides
-  ): Promise<string>;
 
   getStorageAt(
     offset: PromiseOrValue<BigNumberish>,
@@ -1263,11 +1147,6 @@ export interface BananaAccount extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  toHex(
-    data: PromiseOrValue<BytesLike>,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   usedMessages(
     arg0: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
@@ -1282,16 +1161,6 @@ export interface BananaAccount extends BaseContract {
 
   callStatic: {
     VERSION(overrides?: CallOverrides): Promise<string>;
-
-    _getRSValues(
-      signature: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber] & { r: BigNumber; s: BigNumber }>;
-
-    _getRequestId(
-      clientDataJSON: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<string>;
 
     addOwnerWithThreshold(
       owner: PromiseOrValue<string>,
@@ -1329,18 +1198,6 @@ export interface BananaAccount extends BaseContract {
       signatures: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    compareBytes(
-      b1: PromiseOrValue<BytesLike>,
-      b2: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    concatBytes(
-      a: PromiseOrValue<BytesLike>,
-      b: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<string>;
 
     disableModule(
       prevModule: PromiseOrValue<string>,
@@ -1418,11 +1275,6 @@ export interface BananaAccount extends BaseContract {
     ): Promise<[string[], string] & { array: string[]; next: string }>;
 
     getOwners(overrides?: CallOverrides): Promise<string[]>;
-
-    getRequestIdFromClientDataJSON(
-      clientDataJSON: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<string>;
 
     getStorageAt(
       offset: PromiseOrValue<BigNumberish>,
@@ -1523,11 +1375,6 @@ export interface BananaAccount extends BaseContract {
       newOwner: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    toHex(
-      data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<string>;
 
     usedMessages(
       arg0: PromiseOrValue<BytesLike>,
@@ -1640,16 +1487,6 @@ export interface BananaAccount extends BaseContract {
   estimateGas: {
     VERSION(overrides?: CallOverrides): Promise<BigNumber>;
 
-    _getRSValues(
-      signature: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    _getRequestId(
-      clientDataJSON: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     addOwnerWithThreshold(
       owner: PromiseOrValue<string>,
       _threshold: PromiseOrValue<BigNumberish>,
@@ -1684,18 +1521,6 @@ export interface BananaAccount extends BaseContract {
       dataHash: PromiseOrValue<BytesLike>,
       data: PromiseOrValue<BytesLike>,
       signatures: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    compareBytes(
-      b1: PromiseOrValue<BytesLike>,
-      b2: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    concatBytes(
-      a: PromiseOrValue<BytesLike>,
-      b: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1775,11 +1600,6 @@ export interface BananaAccount extends BaseContract {
     ): Promise<BigNumber>;
 
     getOwners(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getRequestIdFromClientDataJSON(
-      clientDataJSON: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     getStorageAt(
       offset: PromiseOrValue<BigNumberish>,
@@ -1881,11 +1701,6 @@ export interface BananaAccount extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    toHex(
-      data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     usedMessages(
       arg0: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -1901,16 +1716,6 @@ export interface BananaAccount extends BaseContract {
 
   populateTransaction: {
     VERSION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    _getRSValues(
-      signature: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    _getRequestId(
-      clientDataJSON: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     addOwnerWithThreshold(
       owner: PromiseOrValue<string>,
@@ -1946,18 +1751,6 @@ export interface BananaAccount extends BaseContract {
       dataHash: PromiseOrValue<BytesLike>,
       data: PromiseOrValue<BytesLike>,
       signatures: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    compareBytes(
-      b1: PromiseOrValue<BytesLike>,
-      b2: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    concatBytes(
-      a: PromiseOrValue<BytesLike>,
-      b: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -2037,11 +1830,6 @@ export interface BananaAccount extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     getOwners(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getRequestIdFromClientDataJSON(
-      clientDataJSON: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     getStorageAt(
       offset: PromiseOrValue<BigNumberish>,
@@ -2141,11 +1929,6 @@ export interface BananaAccount extends BaseContract {
       oldOwner: PromiseOrValue<string>,
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    toHex(
-      data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     usedMessages(

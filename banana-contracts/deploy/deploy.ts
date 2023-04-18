@@ -4,11 +4,11 @@ const { ethers } = require('hardhat');
 const fs = require('fs')
 const  { } = require('../../banana-wallet-sdk/src/types')
 const { BigNumber } = require('ethers')
-const { NewTouchIdAccountSafe, BananaTest } = require('../src/types')
-const { NewTouchIdAccountSafe__factory, BananaTest__factory } = require('../src/types/factories')
-const NewTouchIdAccountProxyFactory = require('./factory.json')
+// const { NewTouchIdAccountSafe, BananaTest } = require('../src/types')
+// const { NewTouchIdAccountSafe__factory, BananaTest__factory } = require('../src/types/factories')
+// const NewTouchIdAccountProxyFactory = require('./factory.json')
 // const abi = require('./factory.json')
-const newAbi = require('./factory.json')
+// const newAbi = require('./factory.json')
 // require('../artifacts/contracts/samples/NewTouchIdSafeAccountProxyFactory.sol/NewTouchIdSafeAccountProxyFactory.json')
 
 async function main() {
@@ -140,9 +140,9 @@ async function main() {
 	// const stDeployer = await st.deploy();
 	// console.log('staking :', stDeployer.address);
 
-	// const BananaAccount = await ethers.getContractFactory('BananaAccount');
-	// const BananaAccountDeployer = await BananaAccount.deploy();
-	// console.log('Banana Account:', BananaAccountDeployer.address);
+	const BananaAccount = await ethers.getContractFactory('BananaAccount');
+	const BananaAccountDeployer = await BananaAccount.deploy();
+	console.log('Banana Account:', BananaAccountDeployer.address);
 	// 0x106DD6EdaF8Db8a3ACFa215c8C6ADf0730175CaF
 
 	// 	const BananaAccount = await ethers.getContractFactory('BananaTest');
