@@ -20,7 +20,7 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
         case Chains.goerli:
             return {
                 "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
-                "bundlerUrl": "https://goerli.eip4337-banana-bundler.xyz/" // goerli bundler 
+                "bundlerUrl": "https://goerli.eip4337-banana-bundler.xyz/rpc" // goerli bundler 
             };
         case Chains.mumbai:
             return {
