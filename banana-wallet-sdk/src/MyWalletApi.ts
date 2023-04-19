@@ -150,7 +150,8 @@ export class MyWalletApi extends SimpleAccountAPI {
         // @ts-ignore
     const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddressForCounterFactualAccount(TouchIdSafeWalletContractQValuesArray, this.saltNonce.toString());
     // const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.singletonTouchIdSafeAddress, this.saltNonce.toString(), TouchIdSafeWalletContractInitializer);
-    
+
+    console.log("Address gen; ", TouchIdSafeWalletContractAddress);
     return TouchIdSafeWalletContractAddress
   }
 }

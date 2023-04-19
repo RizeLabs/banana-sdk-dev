@@ -81,10 +81,32 @@ export class BananaSigner extends ERC4337EthersSigner {
 
       userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
       userOperation.verificationGasLimit = 1.5e6;
+
+      // let ep = EntryPoint__factory.connect("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", this.originalSigner);
+      // console.log("EP handleOps")
+      // userOperation.sender = await userOperation.sender;
+      // userOperation.nonce = await userOperation.nonce
+
+      // console.log("UserOperation ", userOperation);
+      // let callData = ep.interface.encodeFunctionData("handleOps", [[userOperation], "0x3e60B11022238Af208D4FAEe9192dAEE46D225a6"]);
+
+      // console.log("Final call data ", callData);
+      const ep = EntryPoint__factory.connect("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", this.provider as any);
       const message = await this.smartAccountAPI.getUserOpHash(userOperation);
+
+      console.log("Hash generated ", message);
+
+      userOperation.sender = await userOperation.sender;
+      userOperation.nonce = await userOperation.nonce
+      userOperation.signature = "0x99373453001dac4b1d2822ba30ff6157af9cbc647456bc1300a36407ece75f112bda0cc473ba01e1dd7900b54689f8aaddea741a83c4405ce80af9f82eb3e1d3557f7e8212a724c205f022e9d4755ef99a09a67bea696d0816047c2bed2831480f60f092463027bda7efae8065ccf7791721e37dd39dbf6b77d692f7bd4a7bc1";
+
+      console.log("useroperation ", userOperation);
+      const newMessage = await ep.getUserOpHash(userOperation);
+      console.log(" new message ", newMessage);
+
       const { newUserOp, process } = await this.signUserOp(
         userOperation as any,
-        message,
+        newMessage,
         this.encodedId
       );
       if (process === "success") {
@@ -97,10 +119,17 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation
       );
     try {
-      let ep = EntryPoint__factory.connect("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", this.originalSigner);
+
+      const ep = EntryPoint__factory.connect("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", this.originalSigner);
+     
       console.log("EP handleOps")
-      //@ts-ignore
-      console.log(ep.interface.encodeFunctionData("handleOps", [[userOperation], "0x3e60B11022238Af208D4FAEe9192dAEE46D225a6"]));
+      userOperation.sender = await userOperation.sender;
+      userOperation.nonce = await userOperation.nonce
+
+      console.log("UserOperation ", userOperation);
+      let callData = ep.interface.encodeFunctionData("handleOps", [[userOperation], "0x3e60B11022238Af208D4FAEe9192dAEE46D225a6"]);
+
+      console.log("Final call data ", callData);
 
       await this.httpRpcClient.sendUserOpToBundler(userOperation);
     } catch (error: any) {
