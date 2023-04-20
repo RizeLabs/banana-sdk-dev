@@ -6,12 +6,10 @@ pragma solidity ^0.8.12;
 /* solhint-disable reason-string */
 
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
 
 import "../safe-contracts/Safe.sol";
 import "../interfaces/UserOperation.sol";
-import "./EllipticCurve.sol";
+import "./EllipticalCurveLibrary.sol";
 import "../utils/Exec.sol";
 import './Base64.sol';
 
@@ -20,9 +18,6 @@ contract BananaAccount is Safe {
 
     //return value in case of signature failure, with no time-range.
     uint256 constant internal SIG_VALIDATION_FAILED = 1;
-
-    //elliptic curve used for the signature verification
-    address ellipticCurve;
 
     //EIP4337 trusted entrypoint
     address public entryPoint;
@@ -61,6 +56,7 @@ contract BananaAccount is Safe {
     /// @param payment Value that should be paid
     /// @param paymentReceiver Address that should receive the payment (or 0 if tx.origin)
     /// @param _entryPoint Address for the trusted EIP4337 entrypoint
+    /// @param _qValues public address x and y coordinates of the user
     function setupWithEntrypoint(
         address[] calldata _owners,
         uint256 _threshold,
@@ -71,12 +67,10 @@ contract BananaAccount is Safe {
         uint256 payment,
         address payable paymentReceiver,
         address _entryPoint,
-        uint256[2] memory _qValues,
-        address _ellipticCurve
+        uint256[2] memory _qValues
     ) external {
         entryPoint = _entryPoint;
         qValues = _qValues;
-        ellipticCurve = _ellipticCurve;
 
         _executeAndRevert(
             address(this),
@@ -269,8 +263,8 @@ contract BananaAccount is Safe {
 
         require(keccak256(base64RequestId) == clientDataJsonHash, "Signed userOp doesn't match");
 
-        bool success = EllipticCurve(ellipticCurve).validateSignature(
-            message,
+        bool success = Secp256r1.Verify(
+            uint(message),
             [r, s],
             qValues
         );
