@@ -98,7 +98,7 @@ export class BananaSigner extends ERC4337EthersSigner {
 
       userOperation.sender = await userOperation.sender;
       userOperation.nonce = await userOperation.nonce
-      userOperation.signature = "0x99373453001dac4b1d2822ba30ff6157af9cbc647456bc1300a36407ece75f112bda0cc473ba01e1dd7900b54689f8aaddea741a83c4405ce80af9f82eb3e1d3557f7e8212a724c205f022e9d4755ef99a09a67bea696d0816047c2bed2831480f60f092463027bda7efae8065ccf7791721e37dd39dbf6b77d692f7bd4a7bc1";
+      userOperation.signature = "0x";
 
       console.log("useroperation ", userOperation);
       const newMessage = await ep.getUserOpHash(userOperation);

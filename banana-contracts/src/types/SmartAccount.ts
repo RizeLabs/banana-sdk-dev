@@ -150,7 +150,6 @@ export interface SmartAccountInterface extends utils.Interface {
     "setFallbackHandler(address)": FunctionFragment;
     "setOwner(address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
-    "toHex(bytes32)": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "updateImplementation(address)": FunctionFragment;
     "validateUserOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,uint256)": FunctionFragment;
@@ -195,7 +194,6 @@ export interface SmartAccountInterface extends utils.Interface {
       | "setFallbackHandler"
       | "setOwner"
       | "supportsInterface"
-      | "toHex"
       | "transfer"
       | "updateImplementation"
       | "validateUserOp"
@@ -395,10 +393,6 @@ export interface SmartAccountInterface extends utils.Interface {
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
-    functionFragment: "toHex",
-    values: [PromiseOrValue<BytesLike>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "transfer",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
@@ -524,7 +518,6 @@ export interface SmartAccountInterface extends utils.Interface {
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "toHex", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "updateImplementation",
@@ -942,11 +935,6 @@ export interface SmartAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    toHex(
-      data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
-
     transfer(
       dest: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
@@ -1169,11 +1157,6 @@ export interface SmartAccount extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  toHex(
-    data: PromiseOrValue<BytesLike>,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   transfer(
     dest: PromiseOrValue<string>,
     amount: PromiseOrValue<BigNumberish>,
@@ -1393,11 +1376,6 @@ export interface SmartAccount extends BaseContract {
       _interfaceId: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<boolean>;
-
-    toHex(
-      data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<string>;
 
     transfer(
       dest: PromiseOrValue<string>,
@@ -1736,11 +1714,6 @@ export interface SmartAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    toHex(
-      data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     transfer(
       dest: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
@@ -1963,11 +1936,6 @@ export interface SmartAccount extends BaseContract {
 
     supportsInterface(
       _interfaceId: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    toHex(
-      data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
