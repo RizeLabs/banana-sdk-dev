@@ -22,22 +22,16 @@ import type {
 
 export interface BananaVerificationModuleInterface extends utils.Interface {
   functions: {
-    "nn()": FunctionFragment;
-    "pp()": FunctionFragment;
     "toHex(bytes32)": FunctionFragment;
   };
 
-  getFunction(nameOrSignatureOrTopic: "nn" | "pp" | "toHex"): FunctionFragment;
+  getFunction(nameOrSignatureOrTopic: "toHex"): FunctionFragment;
 
-  encodeFunctionData(functionFragment: "nn", values?: undefined): string;
-  encodeFunctionData(functionFragment: "pp", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "toHex",
     values: [PromiseOrValue<BytesLike>]
   ): string;
 
-  decodeFunctionResult(functionFragment: "nn", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "pp", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "toHex", data: BytesLike): Result;
 
   events: {};
@@ -70,19 +64,11 @@ export interface BananaVerificationModule extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    nn(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    pp(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     toHex(
       data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[string]>;
   };
-
-  nn(overrides?: CallOverrides): Promise<BigNumber>;
-
-  pp(overrides?: CallOverrides): Promise<BigNumber>;
 
   toHex(
     data: PromiseOrValue<BytesLike>,
@@ -90,10 +76,6 @@ export interface BananaVerificationModule extends BaseContract {
   ): Promise<string>;
 
   callStatic: {
-    nn(overrides?: CallOverrides): Promise<BigNumber>;
-
-    pp(overrides?: CallOverrides): Promise<BigNumber>;
-
     toHex(
       data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -103,10 +85,6 @@ export interface BananaVerificationModule extends BaseContract {
   filters: {};
 
   estimateGas: {
-    nn(overrides?: CallOverrides): Promise<BigNumber>;
-
-    pp(overrides?: CallOverrides): Promise<BigNumber>;
-
     toHex(
       data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -114,10 +92,6 @@ export interface BananaVerificationModule extends BaseContract {
   };
 
   populateTransaction: {
-    nn(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    pp(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     toHex(
       data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
