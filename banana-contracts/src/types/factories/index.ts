@@ -4,6 +4,7 @@
 export { BananaAccount__factory } from "./BananaAccount__factory";
 export { BananaAccountProxy__factory } from "./BananaAccountProxy__factory";
 export { BananaAccountProxyFactory__factory } from "./BananaAccountProxyFactory__factory";
+export { BananaVerificationModule__factory } from "./BananaVerificationModule__factory";
 export { BaseAccount__factory } from "./BaseAccount__factory";
 export { BaseGuard__factory } from "./BaseGuard__factory";
 export { BasePaymaster__factory } from "./BasePaymaster__factory";
@@ -46,6 +47,7 @@ export { SenderCreator__factory } from "./SenderCreator__factory";
 export { SignMessageLib__factory } from "./SignMessageLib__factory";
 export { SimulateTxAccessor__factory } from "./SimulateTxAccessor__factory";
 export { StakeManager__factory } from "./StakeManager__factory";
+export { Staking__factory } from "./Staking__factory";
 export { StorageAccessible__factory } from "./StorageAccessible__factory";
 export { TokenCallbackHandler__factory } from "./TokenCallbackHandler__factory";
 export { ViewStorageAccessible__factory } from "./ViewStorageAccessible__factory";
