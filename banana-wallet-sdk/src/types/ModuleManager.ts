@@ -110,14 +110,20 @@ export interface ModuleManagerInterface extends utils.Interface {
   events: {
     "DisabledModule(address)": EventFragment;
     "EnabledModule(address)": EventFragment;
+    "ExecutionFailure(address,uint256,bytes,uint8,uint256)": EventFragment;
     "ExecutionFromModuleFailure(address)": EventFragment;
     "ExecutionFromModuleSuccess(address)": EventFragment;
+    "ExecutionSuccess(address,uint256,bytes,uint8,uint256)": EventFragment;
+    "ModuleTransaction(address,address,uint256,bytes,uint8)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "DisabledModule"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "EnabledModule"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ExecutionFailure"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ExecutionFromModuleFailure"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ExecutionFromModuleSuccess"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ExecutionSuccess"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ModuleTransaction"): EventFragment;
 }
 
 export interface DisabledModuleEventObject {
@@ -136,6 +142,21 @@ export interface EnabledModuleEventObject {
 export type EnabledModuleEvent = TypedEvent<[string], EnabledModuleEventObject>;
 
 export type EnabledModuleEventFilter = TypedEventFilter<EnabledModuleEvent>;
+
+export interface ExecutionFailureEventObject {
+  to: string;
+  value: BigNumber;
+  data: string;
+  operation: number;
+  txGas: BigNumber;
+}
+export type ExecutionFailureEvent = TypedEvent<
+  [string, BigNumber, string, number, BigNumber],
+  ExecutionFailureEventObject
+>;
+
+export type ExecutionFailureEventFilter =
+  TypedEventFilter<ExecutionFailureEvent>;
 
 export interface ExecutionFromModuleFailureEventObject {
   module: string;
@@ -158,6 +179,36 @@ export type ExecutionFromModuleSuccessEvent = TypedEvent<
 
 export type ExecutionFromModuleSuccessEventFilter =
   TypedEventFilter<ExecutionFromModuleSuccessEvent>;
+
+export interface ExecutionSuccessEventObject {
+  to: string;
+  value: BigNumber;
+  data: string;
+  operation: number;
+  txGas: BigNumber;
+}
+export type ExecutionSuccessEvent = TypedEvent<
+  [string, BigNumber, string, number, BigNumber],
+  ExecutionSuccessEventObject
+>;
+
+export type ExecutionSuccessEventFilter =
+  TypedEventFilter<ExecutionSuccessEvent>;
+
+export interface ModuleTransactionEventObject {
+  module: string;
+  to: string;
+  value: BigNumber;
+  data: string;
+  operation: number;
+}
+export type ModuleTransactionEvent = TypedEvent<
+  [string, string, BigNumber, string, number],
+  ModuleTransactionEventObject
+>;
+
+export type ModuleTransactionEventFilter =
+  TypedEventFilter<ModuleTransactionEvent>;
 
 export interface ModuleManager extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -310,6 +361,21 @@ export interface ModuleManager extends BaseContract {
     "EnabledModule(address)"(module?: null): EnabledModuleEventFilter;
     EnabledModule(module?: null): EnabledModuleEventFilter;
 
+    "ExecutionFailure(address,uint256,bytes,uint8,uint256)"(
+      to?: PromiseOrValue<string> | null,
+      value?: PromiseOrValue<BigNumberish> | null,
+      data?: PromiseOrValue<BytesLike> | null,
+      operation?: null,
+      txGas?: null
+    ): ExecutionFailureEventFilter;
+    ExecutionFailure(
+      to?: PromiseOrValue<string> | null,
+      value?: PromiseOrValue<BigNumberish> | null,
+      data?: PromiseOrValue<BytesLike> | null,
+      operation?: null,
+      txGas?: null
+    ): ExecutionFailureEventFilter;
+
     "ExecutionFromModuleFailure(address)"(
       module?: PromiseOrValue<string> | null
     ): ExecutionFromModuleFailureEventFilter;
@@ -323,6 +389,36 @@ export interface ModuleManager extends BaseContract {
     ExecutionFromModuleSuccess(
       module?: PromiseOrValue<string> | null
     ): ExecutionFromModuleSuccessEventFilter;
+
+    "ExecutionSuccess(address,uint256,bytes,uint8,uint256)"(
+      to?: PromiseOrValue<string> | null,
+      value?: PromiseOrValue<BigNumberish> | null,
+      data?: PromiseOrValue<BytesLike> | null,
+      operation?: null,
+      txGas?: null
+    ): ExecutionSuccessEventFilter;
+    ExecutionSuccess(
+      to?: PromiseOrValue<string> | null,
+      value?: PromiseOrValue<BigNumberish> | null,
+      data?: PromiseOrValue<BytesLike> | null,
+      operation?: null,
+      txGas?: null
+    ): ExecutionSuccessEventFilter;
+
+    "ModuleTransaction(address,address,uint256,bytes,uint8)"(
+      module?: null,
+      to?: null,
+      value?: null,
+      data?: null,
+      operation?: null
+    ): ModuleTransactionEventFilter;
+    ModuleTransaction(
+      module?: null,
+      to?: null,
+      value?: null,
+      data?: null,
+      operation?: null
+    ): ModuleTransactionEventFilter;
   };
 
   estimateGas: {

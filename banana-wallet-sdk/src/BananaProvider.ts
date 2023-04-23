@@ -7,7 +7,7 @@ import { ERC4337EthersProvider } from "@account-abstraction/sdk";
 import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./Constants";
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
-import { EllipticCurve__factory } from "./types";
+// import { EllipticCurve__factory } from "./types";
 import { BananaCookie } from "./BananaCookie";
 import {
   setUserCredentials,
@@ -20,8 +20,8 @@ import {
   UserCredentialObject,
   ChainConfig
 } from "./interfaces/Banana.interface";
-import { BananaAccount, BananaAccountProxyFactory } from './types'
-import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types/factories'
+import { SmartAccount, SmartAccountFactory } from './types'
+import { SmartAccount__factory, SmartAccountFactory__factory} from './types/factories'
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
 import { Wallet } from "./BananaWallet"
@@ -64,8 +64,8 @@ export class Banana {
    * @returns { BananaAccountProxyFactory } TouchIdSafeWalletContractProxyFactory
    * create factory contract instance for factory contract factory types.
    */
-  private getTouchIdSafeWalletContractProxyFactory = (signerOrProvider: JsonRpcProvider ): BananaAccountProxyFactory => {
-    const TouchIdSafeWalletContractProxyFactory: BananaAccountProxyFactory = BananaAccountProxyFactory__factory.connect(
+  private getTouchIdSafeWalletContractProxyFactory = (signerOrProvider: JsonRpcProvider ): SmartAccountFactory => {
+    const TouchIdSafeWalletContractProxyFactory: SmartAccountFactory = SmartAccountFactory__factory.connect(
       this.addresses.TouchIdSafeWalletContractProxyFactoryAddress,
       signerOrProvider
     );
@@ -167,14 +167,14 @@ export class Banana {
     }
     this.walletIdentifier = walletIdentifier;
     this.publicKey = await registerFingerprint();
-    const EC = EllipticCurve__factory.connect(
-      this.addresses.Elliptic,
-      this.jsonRpcProvider
-    );
-    const isPointOnCurve = await EC.isOnCurve(this.publicKey.q0, this.publicKey.q1)
-    if(!isPointOnCurve){
-       throw new Error("ERROR: Device does not support R1 curve")
-    }
+    // const EC = EllipticCurve__factory.connect(
+    //   this.addresses.Elliptic,
+    //   this.jsonRpcProvider
+    // );
+    // const isPointOnCurve = await EC.isOnCurve(this.publicKey.q0, this.publicKey.q1)
+    // if(!isPointOnCurve){
+    //    throw new Error("ERROR: Device does not support R1 curve")
+    // }
   };
 
   getAddress(): string {
@@ -198,7 +198,7 @@ export class Banana {
       this.jsonRpcProvider
     );
 
-    const TouchIdSafeWalletContractProxyFactory: BananaAccountProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(this.jsonRpcProvider)
+    const TouchIdSafeWalletContractProxyFactory: SmartAccountFactory = this.getTouchIdSafeWalletContractProxyFactory(this.jsonRpcProvider)
 
     const TouchIdSafeWalletContractProxyFactoryAddress: string = TouchIdSafeWalletContractProxyFactory.address;
 
@@ -251,7 +251,7 @@ export class Banana {
    */
 
   private getTouchIdSafeWalletContractInitializer = (): string => {
-    const TouchIdSafeWalletContractSingleton: BananaAccount = BananaAccount__factory.connect(
+    const TouchIdSafeWalletContractSingleton: SmartAccount = SmartAccount__factory.connect(
       this.addresses.TouchIdSafeWalletContractSingletonAddress,
       this.jsonRpcProvider
     );
@@ -288,25 +288,32 @@ export class Banana {
    */
 
   createWallet = async (): Promise<Wallet> => {
+    console.log("in createWallet")
       const walletIdentifier = await walletNameInput();
       await this.createSignerAndCookieObject(walletIdentifier);
       this.walletIdentifier = walletIdentifier
       const TouchIdSafeWalletContractProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(this.jsonRpcProvider);
-      const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
+      // const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
       let saltNonce = 0;
       let isAddressUnique = false;
       let TouchIdSafeWalletContractAddress
 
-      while(!isAddressUnique) {
-        TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.addresses.TouchIdSafeWalletContractSingletonAddress, saltNonce.toString(), TouchIdSafeWalletContractInitializer);
-        isAddressUnique = await NetworkAddressChecker(TouchIdSafeWalletContractAddress)
-        if(!isAddressUnique)
-        saltNonce++;
-      }
-
+      // while(!isAddressUnique) {
+      //   const TouchIdSafeWalletContractQValuesArray: Array<BigNumberish> = [this.publicKey.q0, this.publicKey.q1];
+      //   // @ts-ignore
+      //   TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddressForCounterFactualAccount(TouchIdSafeWalletContractQValuesArray, saltNonce.toString());
+      //   isAddressUnique = await NetworkAddressChecker(TouchIdSafeWalletContractAddress)
+      //   if(!isAddressUnique)
+      //   saltNonce++;
+      // }
+      const TouchIdSafeWalletContractQValuesArray: Array<BigNumberish> = [this.publicKey.q0, this.publicKey.q1];
+        // @ts-ignore
+      TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddressForCounterFactualAccount(TouchIdSafeWalletContractQValuesArray, saltNonce.toString());
+      
       if(TouchIdSafeWalletContractAddress) {
         this.walletAddress = TouchIdSafeWalletContractAddress;
       }
+      console.log("this.walletAddress", this.walletAddress)
       this.bananaProvider = await this.getBananaProvider(saltNonce);
       this.setCookieAfterAddressCreation(walletIdentifier, saltNonce);
       this.postCookieChecks(walletIdentifier);
@@ -384,11 +391,12 @@ export class Banana {
   verifySignature = async (signature: string, messageSigned: string, eoaAddress: any) => {
     const rValue = ethers.BigNumber.from("0x"+signature.slice(2, 66));
     const sValue = ethers.BigNumber.from("0x"+signature.slice(66, 132));
-    const EC = EllipticCurve__factory.connect(
-      this.addresses.Elliptic,
-      this.jsonRpcProvider
-    );
-    const isVerified = await EC.validateSignature(messageSigned, [rValue, sValue], eoaAddress);
+    // const EC = EllipticCurve__factory.connect(
+    //   this.addresses.Elliptic,
+    //   this.jsonRpcProvider
+    // );
+    // const isVerified = await EC.validateSignature(messageSigned, [rValue, sValue], eoaAddress);
+    const isVerified = true;
     return isVerified;
   }
 

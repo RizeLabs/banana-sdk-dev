@@ -4,10 +4,11 @@ import { arrayify, hexConcat } from 'ethers/lib/utils'
 import { Signer } from '@ethersproject/abstract-signer'
 import { BaseApiParams } from '@account-abstraction/sdk/dist/src/BaseAccountAPI'
 import { SimpleAccountAPI } from '@account-abstraction/sdk'
-import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types/factories'
+import { SimpleAccount__factory, SimpleAccountFactory__factory, SmartAccount__factory, SmartAccountErrors__factory, SmartAccountFactory__factory} from './types/factories'
 import { ethers } from 'ethers'
 import { BananaSigner } from './BananaSigner'
-import { BananaAccount } from './types'
+import { SimpleAccount, SimpleAccountFactory, SmartAccountFactory } from './types'
+// import { SimpleAccountFactory__factory } from '@account-abstraction/contracts'
 
 /**
  * constructor params, added no top of base params:
@@ -58,33 +59,26 @@ export class MyWalletApi extends SimpleAccountAPI {
     return await this.owner.signMessage(arrayify(requestId))
   }
 
-  async _getAccountContract (): Promise<BananaAccount> {
+  async _getAccountContract (): Promise<SimpleAccount> {
     if (this.accountContract == null) {
-      this.accountContract = BananaAccount__factory.connect(await this.getAccountAddress(), this.provider)
+      console.log('deploying new wallet contract')
+      this.accountContract = SmartAccount__factory.connect(await this.getAccountAddress(), this.provider)
     }
     return this.accountContract
   }
 
   getTouchIdSafeWalletContractInitializer = (): string => {
-    const TouchIdSafeWalletContractSingleton: BananaAccount = BananaAccount__factory.connect(
+    const TouchIdSafeWalletContractSingleton: SimpleAccount = SimpleAccount__factory.connect(
       this.singletonTouchIdSafeAddress,
       this.provider
     );
     const TouchIdSafeWalletContractQValuesArray: Array<string> = [this.qValues[0], this.qValues[1]];
     //@ts-ignore
-    const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
+    const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('init',
     [
-      [this.ownerAddress], // owners 
-      1,                                              // thresold will remain fix 
-      "0x0000000000000000000000000000000000000000",   // to address 
-      "0x",                                           // modules setup calldata
-      this.fallBackHandleraddress,   // fallback handler
-      "0x0000000000000000000000000000000000000000",   // payment token
-      0,                                              // payment 
-      "0x0000000000000000000000000000000000000000",   // payment receiver
-      this.entryPointAddress,   // entrypoint
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray,          // q values 
+      this.fallBackHandleraddress,   // fallback handler
     ]);
 
     return TouchIdSafeWalletContractInitializer
@@ -102,14 +96,16 @@ export class MyWalletApi extends SimpleAccountAPI {
   async getAccountInitCode (): Promise<string> {
     if (this.factory == null) {
       if (this.factoryAddress != null && this.factoryAddress !== '') {
-        this.factory = BananaAccountProxyFactory__factory.connect(this.factoryAddress, this.provider)
+        this.factory = SmartAccountFactory__factory.connect(this.factoryAddress, this.provider)
       } else {
         throw new Error('no factory to get initCode')
       }
     }
+    const TouchIdSafeWalletContractQValuesArray: Array<string> = [this.qValues[0], this.qValues[1]];
     return hexConcat([
       this.factory.address,
-      this.factory.interface.encodeFunctionData('createProxyWithNonce', [this.singletonTouchIdSafeAddress, this.getTouchIdSafeWalletContractInitializer(), this.saltNonce.toString()])
+      // this.factory.interface.encodeFunctionData('createProxyWithNonce', [this.singletonTouchIdSafeAddress, this.getTouchIdSafeWalletContractInitializer(), this.saltNonce.toString()])
+      this.factory.interface.encodeFunctionData('deployCounterFactualAccount', [TouchIdSafeWalletContractQValuesArray, this.saltNonce.toString()])
     ])
   }
 
@@ -131,12 +127,11 @@ export class MyWalletApi extends SimpleAccountAPI {
     const accountContract = await this._getAccountContract()
     const delegateCall = ethers.BigNumber.from("0")
     return accountContract.interface.encodeFunctionData(
-      'execTransactionFromEntrypoint',
+      'executeCall',
       [
         target,
         value,
-        data,
-        delegateCall
+        data
       ])
   }
 
@@ -145,12 +140,18 @@ export class MyWalletApi extends SimpleAccountAPI {
   }
 
   async getAccountAddress (): Promise<string> {
-    const TouchIdSafeWalletContractProxyFactory: BananaAccountProxyFactory = BananaAccountProxyFactory__factory.connect(
+    const TouchIdSafeWalletContractProxyFactory: SmartAccountFactory = SmartAccountFactory__factory.connect(
       this.factoryAddress,
       this.provider
     );
-    const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
-    const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.singletonTouchIdSafeAddress, this.saltNonce.toString(), TouchIdSafeWalletContractInitializer);
+    // console.log('this._qValues[0]', this._qValues[0])
+    console.log('this.qValues', this.qValues)
+    const TouchIdSafeWalletContractQValuesArray: Array<BigNumberish> = [this.qValues[0], this.qValues[1]];
+        // @ts-ignore
+    const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddressForCounterFactualAccount(TouchIdSafeWalletContractQValuesArray, this.saltNonce.toString());
+    // const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.singletonTouchIdSafeAddress, this.saltNonce.toString(), TouchIdSafeWalletContractInitializer);
+
+    console.log("Address gen; ", TouchIdSafeWalletContractAddress);
     return TouchIdSafeWalletContractAddress
   }
 }

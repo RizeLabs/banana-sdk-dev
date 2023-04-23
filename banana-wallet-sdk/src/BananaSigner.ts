@@ -19,6 +19,7 @@ import {
 } from "@account-abstraction/sdk";
 import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
 import { Banana4337Provider } from "./Banana4337Provider";
+import { EntryPoint__factory } from "@account-abstraction/contracts";
 
 export class BananaSigner extends ERC4337EthersSigner {
   jsonRpcProvider: JsonRpcProvider;
@@ -74,15 +75,38 @@ export class BananaSigner extends ERC4337EthersSigner {
       );
 
       if (userBalance.lt(minBalanceRequired)) {
+        console.log("Insufficient balance in Wallet");
         throw new Error("ERROR: Insufficient balance in Wallet");
       }
 
       userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
       userOperation.verificationGasLimit = 1.5e6;
+
+      // let ep = EntryPoint__factory.connect("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", this.originalSigner);
+      // console.log("EP handleOps")
+      // userOperation.sender = await userOperation.sender;
+      // userOperation.nonce = await userOperation.nonce
+
+      // console.log("UserOperation ", userOperation);
+      // let callData = ep.interface.encodeFunctionData("handleOps", [[userOperation], "0x3e60B11022238Af208D4FAEe9192dAEE46D225a6"]);
+
+      // console.log("Final call data ", callData);
+      const ep = EntryPoint__factory.connect("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", this.provider as any);
       const message = await this.smartAccountAPI.getUserOpHash(userOperation);
+
+      console.log("Hash generated ", message);
+
+      userOperation.sender = await userOperation.sender;
+      userOperation.nonce = await userOperation.nonce
+      userOperation.signature = "0x";
+
+      console.log("useroperation ", userOperation);
+      const newMessage = await ep.getUserOpHash(userOperation);
+      console.log(" new message ", newMessage);
+
       const { newUserOp, process } = await this.signUserOp(
         userOperation as any,
-        message,
+        newMessage,
         this.encodedId
       );
       if (process === "success") {
@@ -95,6 +119,18 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation
       );
     try {
+
+      const ep = EntryPoint__factory.connect("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", this.originalSigner);
+     
+      console.log("EP handleOps")
+      userOperation.sender = await userOperation.sender;
+      userOperation.nonce = await userOperation.nonce
+
+      console.log("UserOperation ", userOperation);
+      let callData = ep.interface.encodeFunctionData("handleOps", [[userOperation], "0x3e60B11022238Af208D4FAEe9192dAEE46D225a6"]);
+
+      console.log("Final call data ", callData);
+
       await this.httpRpcClient.sendUserOpToBundler(userOperation);
     } catch (error: any) {
       // console.error('sendUserOpToBundler failed', error)
