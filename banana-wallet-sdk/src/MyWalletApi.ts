@@ -23,7 +23,7 @@ export interface MyWalletApiParams extends BaseApiParams {
   _singletonTouchIdSafeAddress: string
   _ownerAddress: string
   _fallBackHandler: string
-  _saltNonce: number
+  _saltNonce: string
 }
 
 /**
@@ -39,7 +39,7 @@ export class MyWalletApi extends SimpleAccountAPI {
   singletonTouchIdSafeAddress: string
   ownerAddress: string
   fallBackHandleraddress: string
-  saltNonce: number
+  saltNonce: string
   constructor(params: MyWalletApiParams) {
     super(params)
     this.qValues = params._qValues
@@ -109,7 +109,7 @@ export class MyWalletApi extends SimpleAccountAPI {
     }
     return hexConcat([
       this.factory.address,
-      this.factory.interface.encodeFunctionData('createProxyWithNonce', [this.singletonTouchIdSafeAddress, this.getTouchIdSafeWalletContractInitializer(), this.saltNonce.toString()])
+      this.factory.interface.encodeFunctionData('createProxyWithNonce', [this.singletonTouchIdSafeAddress, this.getTouchIdSafeWalletContractInitializer(), this.saltNonce])
     ])
   }
 
@@ -150,7 +150,7 @@ export class MyWalletApi extends SimpleAccountAPI {
       this.provider
     );
     const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
-    const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.singletonTouchIdSafeAddress, this.saltNonce.toString(), TouchIdSafeWalletContractInitializer);
+    const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.singletonTouchIdSafeAddress, this.saltNonce, TouchIdSafeWalletContractInitializer);
     return TouchIdSafeWalletContractAddress
   }
 }
