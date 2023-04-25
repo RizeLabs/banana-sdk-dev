@@ -18,7 +18,7 @@ export interface UserCredentialObject {
     initcode: boolean;
     encodedId: string;
     username: string
-    saltNonce: number
+    saltNonce: string
 }
 
 export interface CookieObject {

@@ -86,7 +86,7 @@ export class Banana {
       initcode: false,
       encodedId: this.publicKey.encodedId,
       username: walletIdentifier,
-      saltNonce: saltNonce //! Need to make changes to the mapper code for this additional property
+      saltNonce: saltNonce.toString() //! Need to make changes to the mapper code for this additional property
     };
     // saving cookie correspond to user Identifier in cookie
     this.cookie.setCookie(
@@ -188,7 +188,7 @@ export class Banana {
    * @returns { ERC4337EthersProvider } bananaProvider
    * create ERC4337Provider instance of user's smart contract wallet. Used as BananaProvider.
    */
-  getBananaProvider = async (saltNonce: number): Promise<Banana4337Provider> => {
+  getBananaProvider = async (): Promise<Banana4337Provider> => {
     if (this.bananaProvider) return this.bananaProvider;
 
     let network: Network = await this.jsonRpcProvider.getNetwork();
@@ -215,7 +215,7 @@ export class Banana {
       _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress,
       _ownerAddress: this.getAddress(),
       _fallBackHandler: this.addresses.fallBackHandlerAddress,
-      _saltNonce: saltNonce
+      _saltNonce: this.cookieObject.saltNonce
     });
 
     this.accountApi = smartWalletAPI;
@@ -299,7 +299,9 @@ export class Banana {
 
       while(!isAddressUnique) {
         TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.addresses.TouchIdSafeWalletContractSingletonAddress, saltNonce.toString(), TouchIdSafeWalletContractInitializer);
-        isAddressUnique = await NetworkAddressChecker(TouchIdSafeWalletContractAddress)
+        isAddressUnique = true;
+        //! No need to check address for now 
+        // await NetworkAddressChecker(TouchIdSafeWalletContractAddress)
         if(!isAddressUnique)
         saltNonce++;
       }
@@ -307,8 +309,8 @@ export class Banana {
       if(TouchIdSafeWalletContractAddress) {
         this.walletAddress = TouchIdSafeWalletContractAddress;
       }
-      this.bananaProvider = await this.getBananaProvider(saltNonce);
       this.setCookieAfterAddressCreation(walletIdentifier, saltNonce);
+      this.bananaProvider = await this.getBananaProvider();
       this.postCookieChecks(walletIdentifier);
       //! for now our wallet is chainSpecific
       return new Wallet(this.walletAddress, this.bananaProvider, this.network);
@@ -325,7 +327,7 @@ export class Banana {
 
   connectWallet = async (walletIdentifier: string) => {
     await this.createSignerAndCookieObject(walletIdentifier)
-    this.bananaProvider = await this.getBananaProvider(this.cookieObject.saltNonce);
+    this.bananaProvider = await this.getBananaProvider();
     this.walletAddress = this.cookieObject.walletAddress;
     this.postCookieChecks(walletIdentifier);
     return new Wallet(this.walletAddress, this.bananaProvider, this.network);
