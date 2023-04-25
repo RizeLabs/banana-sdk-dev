@@ -1,6 +1,6 @@
 {
   "name": "@rize-labs/banana-wallet-sdk",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "Smart contract wallet sdk package by Banana Wallet",
   "main": "dist/index.js",
   "scripts": {
