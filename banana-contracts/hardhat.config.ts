@@ -58,6 +58,15 @@ export default {
     url: 'https://rpc.ankr.com/gnosis',
     accounts: ["a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74"],
     chainId: 100,
+  },
+  shibuyaTestnet: {
+    url: "https://evm.shibuya.astar.network",
+    chainId: 81,
+    accounts: ['4da13661e1deb6598ccc0f0963d86c1f5e1cfb748ccd66753fd7fa1339c92616'],
+  },
+  chiadoTestnet: {
+    url: 'https://gnosis-chiado.blastapi.io/c7d24355-9759-4d7f-ac6c-632993c089e6',
+    accounts: ['ed096a60e1af7c04519965c9e1fe105b2cd287afd49e4f1d77744f91ab5eb36e']
   }
   },
   etherscan: {

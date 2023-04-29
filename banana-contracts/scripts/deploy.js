@@ -140,9 +140,9 @@ async function main() {
 	// const stDeployer = await st.deploy();
 	// console.log('staking :', stDeployer.address);
 
-	const BananaAccount = await ethers.getContractFactory('BananaAccount');
-	const BananaAccountDeployer = await BananaAccount.deploy();
-	console.log('Banana Account:', BananaAccountDeployer.address);
+	// const BananaAccount = await ethers.getContractFactory('BananaAccount');
+	// const BananaAccountDeployer = await BananaAccount.deploy();
+	// console.log('Banana Account:', BananaAccountDeployer.address);
 	// 0x106DD6EdaF8Db8a3ACFa215c8C6ADf0730175CaF
 
 	// 	const BananaAccount = await ethers.getContractFactory('BananaTest');
@@ -163,9 +163,9 @@ async function main() {
 	// await txn.wait()
 	// console.log(txn);
 
-	// const EntryPoint = await ethers.getContractFactory('EntryPoint');
-	// const entryPoint = await EntryPoint.deploy();
-	// console.log('entryPoint :', entryPoint.address);
+	const EntryPoint = await ethers.getContractFactory('EntryPoint');
+	const entryPoint = await EntryPoint.deploy();
+	console.log('entryPoint :', entryPoint.address);
 }
 
 main();

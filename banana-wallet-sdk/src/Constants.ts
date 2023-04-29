@@ -7,12 +7,14 @@ export const OPTIMISM_TESTNET_RPC = 'https://opt-goerli.g.alchemy.com/v2/Q37EPFz
 export const MUMBAI_RPC = 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4';
 export const ARBITRUM_TESTNET_RPC = 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw';
 export const GOERLI_RPC = 'https://eth-goerli.g.alchemy.com/v2/IaVkSX3wU98rK7vpVyFgIryaaHfYpoST';
+export const CHIADO_TESTNET_RPC = 'https://gnosis-chiado.blastapi.io/c7d24355-9759-4d7f-ac6c-632993c089e6';
 
 export enum Chains {
     goerli = 5,
     mumbai = 80001,
     optimismTestnet = 420,
-    arbitrumTestnet = 421613
+    arbitrumTestnet = 421613,
+    chiadoTestnet = 10200,
 }
 
 export function getClientConfigInfo(chain: Chains): ClientConfig {
@@ -25,7 +27,8 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
         case Chains.mumbai:
             return {
                 "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
-                "bundlerUrl": "https://node.stackup.sh/v1/rpc/d976cb6c36d878479eb87494ad0301126fa87c2886325161fb3d455b484a9451" // mumbai bundler 
+                "bundlerUrl": 'http://localhost:4337/rpc'
+                // "bundlerUrl": "https://node.stackup.sh/v1/rpc/d976cb6c36d878479eb87494ad0301126fa87c2886325161fb3d455b484a9451" // mumbai bundler 
             };
         case Chains.optimismTestnet:
             return {
@@ -37,6 +40,11 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
                 "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
                 "bundlerUrl": "http://localhost:80/rpc" // arbitrum bundler 
             };
+        case Chains.chiadoTestnet:
+            return {
+                "entryPointAddress": "0x4C143c5f78AA181410CFDF7B9aBa424DD738a89F",
+                "bundlerUrl": "http://localhost:80/rpc" // arbitrum bundler 
+            }
      }
 }
 
@@ -70,8 +78,24 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
             "TouchIdSafeWalletContractSingletonAddress": "0x6001E203c53Df75A1b0bc44A9438e84628B95c12",
             "fallBackHandlerAddress": "0x6eAeD0C3429808DE0a6C177AC63aC46c594b283f"
         };
+        case Chains.chiadoTestnet:
+        return {
+            "Elliptic": "0x200E1d8BC6d3F6ddB5a26bbbC5b839f2D5213407",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0xb4Eb7011ec66c47eE9629bC51B7DAEadB0f6c584",
+            "TouchIdSafeWalletContractSingletonAddress": "0xD957539B0fA14feEeeD447F40cc2686D16d97688",
+            "fallBackHandlerAddress": "0xB88902418706f095E831E80bA766c151d3E1848D"
+        }
     }
 }
+
+
+// chiado addresses
+// owner add 0x48701dF467Ba0efC8D8f34B2686Dc3b0A0b1cab5
+// BananaTouchIdAccountProxy Factory : 0xb4Eb7011ec66c47eE9629bC51B7DAEadB0f6c584
+// Banana Account: 0xD957539B0fA14feEeeD447F40cc2686D16d97688
+// Token callback handler : 0xB88902418706f095E831E80bA766c151d3E1848D
+// elliptic: 0x200E1d8BC6d3F6ddB5a26bbbC5b839f2D5213407
+// staking: 0x6d3089cc6F2599314E66844ae74d3eE840502Dc0
 
 // enabling multi network infra for arbitrum, mumbai, optimism
 export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
@@ -91,6 +115,10 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
         case Chains.arbitrumTestnet:
         return {
             jsonRpcUrl: ARBITRUM_TESTNET_RPC
+        }
+        case Chains.chiadoTestnet:
+        return {
+            jsonRpcUrl: CHIADO_TESTNET_RPC
         }
     }
 }

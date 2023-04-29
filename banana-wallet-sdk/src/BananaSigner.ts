@@ -90,6 +90,7 @@ export class BananaSigner extends ERC4337EthersSigner {
         processStatus = false;
       }
     }
+    console.log('Signed UserOp ', userOperation);
     const transactionResponse =
       await this.erc4337provider.constructUserOpTransactionResponse(
         userOperation
