@@ -1,12 +1,18 @@
 import { ClientConfig } from "@account-abstraction/sdk";
 import { ChainConfig, ChainSpecificConfig } from "./interfaces/Banana.interface";
 
-export const BANANA_APP = 'https://bananawallet.xyz';
-export const BANANA_SERVER = 'https://banana-server.xyz'
+export const BANANA_APP_URL = 'http://localhost:3000';
+export const BANANA_SERVER = 'http://localhost:80'
 export const OPTIMISM_TESTNET_RPC = 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas';
 export const MUMBAI_RPC = 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4';
 export const ARBITRUM_TESTNET_RPC = 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw';
 export const GOERLI_RPC = 'https://eth-goerli.g.alchemy.com/v2/IaVkSX3wU98rK7vpVyFgIryaaHfYpoST';
+export enum Methods {
+    POST = 'POST',
+    GET = 'GET',
+    PUT = 'PUT',
+    DELETE = 'DELETE',
+}
 
 export enum Chains {
     goerli = 5,
