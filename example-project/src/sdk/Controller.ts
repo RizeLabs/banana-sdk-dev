@@ -6,7 +6,7 @@ import { SERVER_URL, ADD_WALLETCRED_ROUTE, GET_WALLETCRED_ROUTE, CHECK_INITCODE_
 // const serverUrl = 'https://banana-mapper.onrender.com'
 
 Axios.defaults.baseURL = '';
-const getUserCredentials = async (walletIdentifier: string) => {
+const getWalletMetaData = async (walletIdentifier: string) => {
     try {
         console.log("Wallet Identifier: ", walletIdentifier)
         const identifier = constructUniqueIdentifier(walletIdentifier, window.location.hostname);
@@ -29,7 +29,7 @@ const getUserCredentials = async (walletIdentifier: string) => {
     }
 }
 
-const setUserCredentials = async (userIdentifier: string, userCredentialObject: UserCredentialObject) => {
+const setWalletMetaData = async (userIdentifier: string, userCredentialObject: UserCredentialObject) => {
     try {
         console.log("Wallet identifier: ", userIdentifier);
         console.log("Wallet MetaData ", userCredentialObject);
@@ -101,4 +101,4 @@ const checkIsWalletNameExist = async (walletName: string) => {
     }
 }
 
-export { getUserCredentials, setUserCredentials, checkInitCodeStatus, checkIsWalletNameExist };
+export { getWalletMetaData, setWalletMetaData, checkInitCodeStatus, checkIsWalletNameExist };
