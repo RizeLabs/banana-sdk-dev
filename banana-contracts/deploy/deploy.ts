@@ -163,9 +163,9 @@ async function main() {
 	// await txn.wait()
 	// console.log(txn);
 
-	// const EntryPoint = await ethers.getContractFactory('EntryPoint');
-	// const entryPoint = await EntryPoint.deploy();
-	// console.log('entryPoint :', entryPoint.address);
+	const EntryPoint = await ethers.getContractFactory('EntryPoint');
+	const entryPoint = await EntryPoint.deploy();
+	console.log('entryPoint :', entryPoint.address);
 
 
 
@@ -184,13 +184,13 @@ async function main() {
 	// const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
 	// console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);
 
-    const ec = await ethers.getContractFactory('EllipticCurve');
-	const ec_deployed = await ec.deploy();
-	console.log('Elliptic :', ec_deployed.address);
+    // const ec = await ethers.getContractFactory('EllipticCurve');
+	// const ec_deployed = await ec.deploy();
+	// console.log('Elliptic :', ec_deployed.address);
 
-	const st = await ethers.getContractFactory('Staking');
-	const stDeployer = await st.deploy();
-	console.log('staking :', stDeployer.address);
+	// const st = await ethers.getContractFactory('Staking');
+	// const stDeployer = await st.deploy();
+	// console.log('staking :', stDeployer.address);
 
 // 	owner add 0x6584A3bccbcA566efac25A7c10Ec32EcbC5d10B1
 // BananaTouchIdAccountProxy Factory : 0xaa6bBbA9Cde638e58b4F01b4f98D73011FaB2b23
