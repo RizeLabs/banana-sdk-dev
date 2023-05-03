@@ -9,7 +9,7 @@ import { Chains } from '@rize-labs/banana-wallet-sdk/src/Constants'
 export const GetAccount = async() => {
   // const jsonRpcProviderUrl = "https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas";
   // const bananaInstance = new Banana(Chains.chiadoTestnet);
-  const bananaInstance = new Banana(Chains.mumbai);
+  const bananaInstance = new Banana(Chains.shibuyaTestnet);
   const walletName = await bananaInstance.getWalletName();
   if(walletName) {
   // getting address for the walletName.

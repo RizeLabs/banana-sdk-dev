@@ -39,7 +39,10 @@ const Staking = () => {
   // const stakeAddress = '0x6d3089cc6F2599314E66844ae74d3eE840502Dc0'
 
   // polygo staking 
-  const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
+  // const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
+
+  // astar staking
+  const stakeAddress = '0x12cB6cdd140A01044ED575828EbE8F9DdBa5fb6A'
 
   // arbitrum testnet staking 
   // const stakeAddress = '0x19eEc1aE90bdC20C1c52DeD3273eEb78A08696A5'
