@@ -205,6 +205,14 @@ async function main() {
 // Elliptic : 0xDf6fFfB5Ec52A73F7C96e2818dBD46B7d4009b94
 // owner add 0x6584A3bccbcA566efac25A7c10Ec32EcbC5d10B1
 
+	//gnosis chain addresses
+	// Entrypoint: 0x4C143c5f78AA181410CFDF7B9aBa424DD738a89F
+	// proxy factory: 0x50E499307bE4EDc700c7B61AaDfE2dbC0FB00e1e
+	// Banana Account: 0x19eEc1aE90bdC20C1c52DeD3273eEb78A08696A5
+	// Token call back handler: 0x6075D9f2B9bF149fF2539fA5F1bcc8F3ed47F7A6
+	// elliptic: 0xC29fDf5544312E23d9cDa9fB67388d040Fdbf434
+	// staking: 0x6Ae137041100033Bdf907d48051576398D70137c
+
 }
 
 main();
