@@ -1,9 +1,8 @@
-import { BigNumberish, BytesLike, ethers } from "ethers";
-import { EntryPoint__factory, UserOperationStruct, EntryPoint } from "@account-abstraction/contracts";
+import { ethers } from "ethers";
+import { EntryPoint__factory, EntryPoint } from "@account-abstraction/contracts";
 import { MyPaymasterApi } from "./MyPayMasterApi";
 import { MyWalletApi } from "./MyWalletApi";
 import { HttpRpcClient } from "@account-abstraction/sdk/dist/src/HttpRpcClient";
-import { ERC4337EthersProvider } from "@account-abstraction/sdk";
 import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./Constants";
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";

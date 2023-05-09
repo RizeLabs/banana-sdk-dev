@@ -24,8 +24,8 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
             };
         case Chains.mumbai:
             return {
-                "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
-                "bundlerUrl": "https://node.stackup.sh/v1/rpc/d976cb6c36d878479eb87494ad0301126fa87c2886325161fb3d455b484a9451" // mumbai bundler 
+                "entryPointAddress": "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+                "bundlerUrl": "https://api.stackup.sh/v1/node/4bdce488aaada61f31c31315a18106eda076b12836a9ab44158fbf7a5c6cbea9" // mumbai bundler 
             };
         case Chains.optimismTestnet:
             return {
