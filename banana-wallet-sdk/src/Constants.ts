@@ -8,6 +8,7 @@ export const MUMBAI_RPC = 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylS
 export const ARBITRUM_TESTNET_RPC = 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw';
 export const GOERLI_RPC = 'https://eth-goerli.g.alchemy.com/v2/IaVkSX3wU98rK7vpVyFgIryaaHfYpoST';
 export const GNOSIS_RPC = 'https://rpc.gnosischain.com/'
+export const CHIADO_TESTNET_RPC = 'https://rpc.chiado.gnosis.gateway.fm'
 
 export enum Chains {
     goerli = 5,
@@ -91,9 +92,22 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
             "TouchIdSafeWalletContractSingletonAddress": "0x19eEc1aE90bdC20C1c52DeD3273eEb78A08696A5",
             "fallBackHandlerAddress": "0x6075D9f2B9bF149fF2539fA5F1bcc8F3ed47F7A6"
         }
+        case Chains.chiadoTestnet:
+        return {
+            "Elliptic": "0x200E1d8BC6d3F6ddB5a26bbbC5b839f2D5213407",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0xb4Eb7011ec66c47eE9629bC51B7DAEadB0f6c584",
+            "TouchIdSafeWalletContractSingletonAddress": "0xD957539B0fA14feEeeD447F40cc2686D16d97688",
+            "fallBackHandlerAddress": "0xB88902418706f095E831E80bA766c151d3E1848D"
+        }
     }
 }
 
+// owner add 0x48701dF467Ba0efC8D8f34B2686Dc3b0A0b1cab5
+// BananaTouchIdAccountProxy Factory : 0xb4Eb7011ec66c47eE9629bC51B7DAEadB0f6c584
+// Banana Account: 0xD957539B0fA14feEeeD447F40cc2686D16d97688
+// Token callback handler : 0xB88902418706f095E831E80bA766c151d3E1848D
+// elliptic: 0x200E1d8BC6d3F6ddB5a26bbbC5b839f2D5213407
+// staking: 0x6d3089cc6F2599314E66844ae74d3eE840502Dc0
 // enabling multi network infra for arbitrum, mumbai, optimism
 export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
     switch (chain) {
@@ -116,6 +130,10 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
         case Chains.gnosis:
         return {
             jsonRpcUrl: GNOSIS_RPC
+        }
+        case Chains.chiadoTestnet:
+        return {
+            jsonRpcUrl: CHIADO_TESTNET_RPC
         }
     }
 }
