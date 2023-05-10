@@ -149,19 +149,19 @@ async function main() {
 	// const BananaAccountDeployer = await BananaAccount.deploy();
 	// console.log('Banana Test:', BananaAccountDeployer.address);
 
-	// const PUBLIC_KEY_EXPOSED = '0x6584A3bccbcA566efac25A7c10Ec32EcbC5d10B1'
-	// const PRIVATE_KEY_EXPOSED = 'b46aa29588eb4320a0901dfdbb4473de08c6c916a4bd99cbfd7d7209f3f3d310';
-	// const receiver = '0x8f4aD8f518144Cb6ACA65C17F5Ee2B43F8D66A79';
-	// const fundTxn = {
-    //     from: PUBLIC_KEY_EXPOSED,
-    //     to: receiver,
-    //     value: ethers.utils.parseEther("0.01"),
-    //     gasLimit: 210000
-    //   }
-	// const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas'));
-	// const txn = await wallet.sendTransaction(fundTxn);
-	// await txn.wait()
-	// console.log(txn);
+	const PUBLIC_KEY_EXPOSED = '0xE6C9E76028cFf978E139a7a5B3E289bca75110cc'
+	const PRIVATE_KEY_EXPOSED = '27818a7268e6b5b09559a2df7b42c998277c3df6c2a80eb533cf4853c0bfb704';
+	const receiver = '0xBaa8C8C57c1118cA48b2ef47Bc474326eC3b5192';
+	const fundTxn = {
+        from: PUBLIC_KEY_EXPOSED,
+        to: receiver,
+        value: ethers.utils.parseEther("0.01"),
+        gasLimit: 210000
+      }
+	const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas'));
+	const txn = await wallet.sendTransaction(fundTxn);
+	await txn.wait()
+	console.log(txn);
 
 	// const EntryPoint = await ethers.getContractFactory('EntryPoint');
 	// const entryPoint = await EntryPoint.deploy();
@@ -184,13 +184,23 @@ async function main() {
 	// const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
 	// console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);
 
-    // const ec = await ethers.getContractFactory('EllipticCurveLibrary');
+    // const ec = await ethers.getContractFactory('EllipticCurve');
 	// const ec_deployed = await ec.deploy();
 	// console.log('Elliptic :', ec_deployed.address);
 
 	// const st = await ethers.getContractFactory('Staking');
 	// const stDeployer = await st.deploy();
 	// console.log('staking :', stDeployer.address);
+
+// normalized for mumbai + opt + goerli 
+// owner add 0xB730423Bb7B354b1Ff0a2E8fd17ff57555C951a7
+// BananaTouchIdAccountProxy Factory : 0xF1Fae5392dce474fc1c2D98c645f438d6c760E78
+// Banana Account: 0x33FF9B2A40810fA6B0cA5824fd2C189953ffD5D9
+// Token callback handler : 0x414Ce649934a1b3cAE1903411e325E4159C46474
+// Elliptic : 0xEA4d16E741E76E7a93b8f46650537855149efc48
+// staking : 0x8505F94693Dbd0756c733056924de3f71a020f2E
+
+
 
 // 	owner add 0x6584A3bccbcA566efac25A7c10Ec32EcbC5d10B1
 // BananaTouchIdAccountProxy Factory : 0xaa6bBbA9Cde638e58b4F01b4f98D73011FaB2b23
