@@ -14,13 +14,15 @@ import { SignerContext } from '../../context/signerProvider'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { FaRegCopy } from 'react-icons/fa'
 import toast, { Toaster } from "react-hot-toast";
+import chain from '../../utils/chain'
 
 const Navbar = () => {
 
   const [scwAddress, setSCWAddress] = useState("");
   const [load, setLoad] = useState(false);
 
-  let nullBanana = new Banana(Chains.optimismTestnet);
+  // let nullBanana = new Banana(Chains.chiadoTestnet);
+  let nullBanana = new Banana(chain);
     // 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas');
 
 //  let nullBanana = new Banana(Chains.mumbai , 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4');
