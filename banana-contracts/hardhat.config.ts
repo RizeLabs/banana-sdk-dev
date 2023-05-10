@@ -35,29 +35,33 @@ export default {
   // },
   goerli: {
     url: `https://eth-goerli.g.alchemy.com/v2/IaVkSX3wU98rK7vpVyFgIryaaHfYpoST`,
-    accounts: ["8fa514a2cb0ac1ae7700d97cddb04addb57344b5bedbf7c5d0417841061607ba"]
+    accounts: ["77b838ecdcebf23e06ad223a1295746d3e055584c5690d0b899513c8ab7cf644"]
   },
   optimismTestnet: {
     url: `https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas`,
-    accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : ["8fa514a2cb0ac1ae7700d97cddb04addb57344b5bedbf7c5d0417841061607ba"]
+    accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : ["77b838ecdcebf23e06ad223a1295746d3e055584c5690d0b899513c8ab7cf644"]
   },
   mumbai: {
     url: 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4',
-    accounts: ["8fa514a2cb0ac1ae7700d97cddb04addb57344b5bedbf7c5d0417841061607ba"]
+    accounts: ["77b838ecdcebf23e06ad223a1295746d3e055584c5690d0b899513c8ab7cf644"]
   },
   shardeum: {
     url: 'https://sphinx.shardeum.org/',
-    accounts: ["a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74"],
+    accounts: ["77b838ecdcebf23e06ad223a1295746d3e055584c5690d0b899513c8ab7cf644"],
     chainId: 8082,
   },
   arbitrumTestnet: {
     url: 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw',
-    accounts: ["ed096a60e1af7c04519965c9e1fe105b2cd287afd49e4f1d77744f91ab5eb36e"] // change it before multi network deployment
+    accounts: ["77b838ecdcebf23e06ad223a1295746d3e055584c5690d0b899513c8ab7cf644"] // change it before multi network deployment
   },
   gnosis: {
-    url: 'https://rpc.ankr.com/gnosis',
-    accounts: ["a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74"],
+    url: 'https://gnosis-mainnet.blastapi.io/1d3ec055-c764-4685-86b5-1025719f35f6',
+    accounts: ["77b838ecdcebf23e06ad223a1295746d3e055584c5690d0b899513c8ab7cf644"],
     chainId: 100,
+  },
+  chiadoTestnet: {
+    url: 'https://gnosis-chiado.blastapi.io/1d3ec055-c764-4685-86b5-1025719f35f6',
+    accounts: ['77b838ecdcebf23e06ad223a1295746d3e055584c5690d0b899513c8ab7cf644']
   }
   },
   etherscan: {

@@ -1,5 +1,5 @@
-import { BigNumberish, BytesLike, ethers } from "ethers";
-import { EntryPoint__factory, UserOperationStruct, EntryPoint } from "@account-abstraction/contracts";
+import { ethers } from "ethers";
+import { EntryPoint__factory, EntryPoint } from "@account-abstraction/contracts";
 import { MyPaymasterApi } from "./MyPayMasterApi";
 import { MyWalletApi } from "./MyWalletApi";
 import { HttpRpcClient } from "@account-abstraction/sdk/dist/src/HttpRpcClient";
@@ -26,6 +26,7 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
 import { Wallet } from "./BananaWallet"
 import { Banana4337Provider } from "./Banana4337Provider";
+//! Omiting this check for now
 import { NetworkAddressChecker } from "./utils/addressChecker";
 import { walletNameInput } from "./utils/walletNameInput";
 
