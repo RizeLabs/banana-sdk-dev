@@ -98,16 +98,17 @@ export class BananaSigner extends ERC4337EthersSigner {
     //     processStatus = false;
     //   }
     // }
+    console.log('this is final userop ', userOperation);
     const transactionResponse =
       await this.erc4337provider.constructUserOpTransactionResponse(
         userOperation
       );
-    // try {
-    //   // await this.httpRpcClient.sendUserOpToBundler(userOperation);
-    // } catch (error: any) {
-    //   // console.error('sendUserOpToBundler failed', error)
-    //   throw this.unwrapError(error);
-    // }
+    try {
+      await this.httpRpcClient.sendUserOpToBundler(userOperation);
+    } catch (error: any) {
+      console.error('sendUserOpToBundler failed', error)
+      throw this.unwrapError(error);
+    }
     // TODO: handle errors - transaction that is "rejected" by bundler is _not likely_ to ever resolve its "wait()"
     return transactionResponse;
   }
