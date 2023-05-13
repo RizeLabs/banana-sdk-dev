@@ -1,6 +1,6 @@
 import { v4 } from "uuid";
 import { BANANA_APP_URL } from "./Constants";
-import { getUsernameFromSessionId, getMessageSignConfirmation } from "./Controller";
+import { getUsernameFromSessionId, getMessageSignConfirmation, getTransactionSignConfirmation } from "./Controller";
 import { bytes } from "./utils/solidity-types";
 import { CookieObject, UserCredentialObject } from "./interfaces/Banana.interface";
 import { BananaCookie } from "./BananaCookie";
@@ -62,8 +62,10 @@ export class BananaTransporter implements BananaTransprtProvider {
     window.open(finalUrl, "_blank");
 
     return new Promise((resolve, reject) => {
+      console.log('promise execution started');
       const intervalId = setInterval(async () => {
         const signature = await getMessageSignConfirmation(sessionId);
+        console.log('got the sgiantue ')
         //@ts-ignore
         if (signature) {
           console.log("clearing the interval id ", intervalId);
@@ -101,24 +103,57 @@ export class BananaTransporter implements BananaTransprtProvider {
     } catch (err) {
         console.log('issue in opening ', err);
     }
-    return Promise.resolve("ok");
-  }
-}
-
-
-const openNewTab = (url: string) => {
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('target', '_blank');
-    link.setAttribute('rel', 'noopener noreferrer');
-  
-    // Simulate click on the link
-    const clickEvent = new MouseEvent('click', {
-      view: window,
-      bubbles: true,
-      cancelable: true
+    return new Promise((resolve, reject) => {
+      console.log('promise execution started');
+      const intervalId = setInterval(async () => {
+        const signature = await getTransactionSignConfirmation(sessionId);
+        console.log('got the sgiantue ')
+        //@ts-ignore
+        if (signature) {
+          console.log("clearing the interval id ", intervalId);
+          clearInterval(intervalId);
+          resolve(signature);
+        }
+      }, 1000);
     });
-    console.log(url);
-    console.log('dispatch click event');
-    link.dispatchEvent(clickEvent);
   }
+
+  // getMessage() {
+  //   // window.addEventListener('message', function(event) {
+  //   //   if (event.data === 'buttonClicked') {
+  //   //     console.log('Button clicked in b.xyz');
+  //   //   }
+  //   // });
+
+  //   const finalUrl = buildUrl(BANANA_APP_URL, {
+  //     path: ['sample']
+  //   });
+
+  //   console.log(' this is final url ', finalUrl);
+  //   window.open(finalUrl);
+
+  //   return new Promise((resolve, reject) => {
+  //     window.addEventListener('message', function(event) {
+  //       console.log(' listnere is getting called ');
+  //       console.log(' this is the evnet catched ', event);
+  //     if (event.data === 'button-clicked') {
+  //       console.log('Button clicked in b.xyz');
+  //       resolve(event.data);
+  //     }
+  //   });
+  //     // console.log('promise execution started');
+  //     // const intervalId = setInterval(async () => {
+  //       // const signature = await getMessageSignConfirmation(sessionId);
+  //       // console.log('got the sgiantue ')
+  //       //@ts-ignore
+  //       // if (signature) {
+  //       //   console.log("clearing the interval id ", intervalId);
+  //       //   clearInterval(intervalId);
+  //       //   resolve(signature);
+  //       // }
+  //     // }, 1000);
+  //   });
+  // }
+
+
+}

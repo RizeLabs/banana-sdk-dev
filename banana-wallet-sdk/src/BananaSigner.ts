@@ -87,7 +87,15 @@ export class BananaSigner extends ERC4337EthersSigner {
 
       const message = await this.smartAccountAPI.getUserOpHash(userOperation);
       console.log((parseInt(minGasRequired._hex)/10 ** 18).toString())
-      this.bananaTransporterInstance.getUserOpSignature(tx, (parseInt(minGasRequired._hex)).toString(), message);
+      let signatureObtained: string;
+      try {
+        signatureObtained = await this.bananaTransporterInstance.getUserOpSignature(tx, (parseInt(minGasRequired._hex)).toString(), message);
+        userOperation.signature = JSON.parse(signatureObtained);
+        console.log("signature finally !!", signatureObtained);
+        console.log(" parsing signatuat ", JSON.parse(signatureObtained));
+      } catch (err) {
+        return Promise.reject(err);
+      }
     //   const { newUserOp, process } = await this.signUserOp(
     //     userOperation as any,
     //     message,
