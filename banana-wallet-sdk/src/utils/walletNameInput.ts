@@ -15,7 +15,6 @@ export const walletNameInput = async (): Promise<string> => {
       const username = await getUsernameFromSessionId(sessionId);
       //@ts-ignore
       if (username) {
-        console.log('clearing the interval id ', intervalId);
         clearInterval(intervalId);
         resolve(username);
       }

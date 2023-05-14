@@ -59,23 +59,23 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         case Chains.goerli: //mi
         return {
             "Elliptic": "0xEA4d16E741E76E7a93b8f46650537855149efc48",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0xF1Fae5392dce474fc1c2D98c645f438d6c760E78",
-            "TouchIdSafeWalletContractSingletonAddress": "0x33FF9B2A40810fA6B0cA5824fd2C189953ffD5D9",
-            "fallBackHandlerAddress": "0x414Ce649934a1b3cAE1903411e325E4159C46474"
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0xC69a1bfF74074BF4117CC39Be954a3d410a74Bec",
+            "TouchIdSafeWalletContractSingletonAddress": "0x154Ccd13f501eE7Cad227c8eb888BBab96ffE78F",
+            "fallBackHandlerAddress": "0x82Ee69Db954d9648fF8191bB831B9f679E5bAcb0"
         };
         case Chains.optimismTestnet: // mi
         return {
             "Elliptic": "0xEA4d16E741E76E7a93b8f46650537855149efc48",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0xF1Fae5392dce474fc1c2D98c645f438d6c760E78",
-            "TouchIdSafeWalletContractSingletonAddress": "0x33FF9B2A40810fA6B0cA5824fd2C189953ffD5D9",
-            "fallBackHandlerAddress": "0x414Ce649934a1b3cAE1903411e325E4159C46474"
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0xC69a1bfF74074BF4117CC39Be954a3d410a74Bec",
+            "TouchIdSafeWalletContractSingletonAddress": "0x154Ccd13f501eE7Cad227c8eb888BBab96ffE78F",
+            "fallBackHandlerAddress": "0x82Ee69Db954d9648fF8191bB831B9f679E5bAcb0"
         };
         case Chains.mumbai: // mi
         return {
             "Elliptic": "0xEA4d16E741E76E7a93b8f46650537855149efc48",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0xF1Fae5392dce474fc1c2D98c645f438d6c760E78",
-            "TouchIdSafeWalletContractSingletonAddress": "0x33FF9B2A40810fA6B0cA5824fd2C189953ffD5D9",
-            "fallBackHandlerAddress": "0x414Ce649934a1b3cAE1903411e325E4159C46474"
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0xC69a1bfF74074BF4117CC39Be954a3d410a74Bec",
+            "TouchIdSafeWalletContractSingletonAddress": "0x154Ccd13f501eE7Cad227c8eb888BBab96ffE78F",
+            "fallBackHandlerAddress": "0x82Ee69Db954d9648fF8191bB831B9f679E5bAcb0"
         };
         case Chains.arbitrumTestnet: 
         return {
@@ -87,15 +87,15 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         case Chains.gnosis:
         return {
             "Elliptic": "0xC29fDf5544312E23d9cDa9fB67388d040Fdbf434",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0x50E499307bE4EDc700c7B61AaDfE2dbC0FB00e1e",
-            "TouchIdSafeWalletContractSingletonAddress": "0x19eEc1aE90bdC20C1c52DeD3273eEb78A08696A5",
-            "fallBackHandlerAddress": "0x6075D9f2B9bF149fF2539fA5F1bcc8F3ed47F7A6"
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0xEA4d16E741E76E7a93b8f46650537855149efc48",
+            "TouchIdSafeWalletContractSingletonAddress": "0x8505F94693Dbd0756c733056924de3f71a020f2E",
+            "fallBackHandlerAddress": "0x72892C35B8E1256F323DE365ADbB71E7C7948CDF"
         };
         case Chains.chiadoTestnet:
         return {
             "Elliptic": "0x200E1d8BC6d3F6ddB5a26bbbC5b839f2D5213407",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0xb4Eb7011ec66c47eE9629bC51B7DAEadB0f6c584",
-            "TouchIdSafeWalletContractSingletonAddress": "0xD957539B0fA14feEeeD447F40cc2686D16d97688",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x3AB5cB0d32665363559F2B8aff9Cbe9bC2193780",
+            "TouchIdSafeWalletContractSingletonAddress": "0xF1Fae5392dce474fc1c2D98c645f438d6c760E78",
             "fallBackHandlerAddress": "0xB88902418706f095E831E80bA766c151d3E1848D"
         };
     }
