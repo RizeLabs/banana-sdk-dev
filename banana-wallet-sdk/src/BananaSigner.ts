@@ -65,7 +65,7 @@ export class BananaSigner extends ERC4337EthersSigner {
         return this.signUserOp(params[0], params[1], params[2]);
       case "eth_sendUserOp":
         return this.sendTransaction(params[0]);
-        default:
+      default:
         return this.jsonRpcProvider.send(method, params);
     }
     // const res = await this.jsonRpcProvider.send("eth_blockNumber", []);
