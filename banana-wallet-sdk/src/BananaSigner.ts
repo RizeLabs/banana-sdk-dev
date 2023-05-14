@@ -49,6 +49,13 @@ export class BananaSigner extends ERC4337EthersSigner {
     this.getAddress();
   }
 
+  async send(): Promise<any> {
+    const res = await this.jsonRpcProvider.send("eth_blockNumber", []);
+    console.log("res inside send ", res);
+    return "0x";
+    // throw new Error("Method not implemented.");
+  }
+
   // need to do some changes in it
   async sendTransaction(
     transaction: Deferrable<TransactionRequest>
