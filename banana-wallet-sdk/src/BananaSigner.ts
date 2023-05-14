@@ -42,7 +42,6 @@ export class BananaSigner extends ERC4337EthersSigner {
       httpRpcClient,
       smartAccountAPI
     );
-    console.log("Provider ", provider);
     this.jsonRpcProvider = provider;
     this.publicKey = publicKey;
     this.encodedId = publicKey.encodedId;

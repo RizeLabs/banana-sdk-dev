@@ -104,7 +104,6 @@ export class Banana {
     );
     if(!setCredentialsStatus.success)
     throw new Error("Error: db update failure");
-    console.log("Cookie set status: ", setCredentialsStatus);
   }
 
   /**
@@ -256,9 +255,7 @@ export class Banana {
       this.addresses.TouchIdSafeWalletContractSingletonAddress,
       this.jsonRpcProvider
     );
-    console.log("TouchIdSafeWalletContractSingleton", TouchIdSafeWalletContractSingleton)
     const TouchIdSafeWalletContractQValuesArray: Array<string> = [this.publicKey.q0, this.publicKey.q1];
-    console.log("TouchIdSafeWalletContractQValuesArray", TouchIdSafeWalletContractQValuesArray)
     //@ts-ignore
     const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
     [
@@ -275,7 +272,6 @@ export class Banana {
       TouchIdSafeWalletContractQValuesArray,          // q values 
     ]);
 
-    console.log("TouchIdSafeWalletContractInitializer", TouchIdSafeWalletContractInitializer)
     return TouchIdSafeWalletContractInitializer
   };
 
