@@ -49,10 +49,28 @@ export class BananaSigner extends ERC4337EthersSigner {
     this.getAddress();
   }
 
-  async send(): Promise<any> {
-    const res = await this.jsonRpcProvider.send("eth_blockNumber", []);
-    console.log("res inside send ", res);
-    return "0x";
+
+  async send(method: string, params: any[]): Promise<any> {
+
+    switch (method) {
+      case "eth_accounts":
+        return this.getAddress();
+      case "eth_signMessage":
+        return this.signMessage(params[0]);
+      case "eth_signTransaction":
+        return this.signUserOp(params[0], params[1], params[2]);
+      case "eth_sendTransaction":
+        return this.sendTransaction(params[0]);
+      case "eth_signUserOp":
+        return this.signUserOp(params[0], params[1], params[2]);
+      case "eth_sendUserOp":
+        return this.sendTransaction(params[0]);
+        default:
+        return this.jsonRpcProvider.send(method, params);
+    }
+    // const res = await this.jsonRpcProvider.send("eth_blockNumber", []);
+    // console.log("res inside send ", res);
+    // return "0x";
     // throw new Error("Method not implemented.");
   }
 
@@ -111,7 +129,7 @@ export class BananaSigner extends ERC4337EthersSigner {
     return transactionResponse;
   }
 
-  async signBananaMessage(message: Bytes | string) {
+  async signMessage(message: string | Uint8Array): Promise<string>{
     const messageHash = ethers.utils.keccak256(
       ethers.utils.solidityPack(["string"], [message])
     );
@@ -147,10 +165,8 @@ export class BananaSigner extends ERC4337EthersSigner {
      * the `message` is signed using secp256r1 instead of secp256k1, hence to verify
      * signedMessage we cannot use ecrecover!
      */
-    return {
-      messageSigned: signedMessage.toHexString(),
-      signature: finalSignature,
-    };
+    return ("messageSigned:"+ signedMessage.toHexString() + "signature:"+ finalSignature).toString();
+
   }
 
   async signUserOp(userOp: UserOperation, reqId: string, encodedId: string) {
