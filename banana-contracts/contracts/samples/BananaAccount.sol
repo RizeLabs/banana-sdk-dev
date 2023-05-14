@@ -79,9 +79,7 @@ contract BananaAccount is Safe {
     external  returns (uint256 validationData) {
         _requireFromEntryPoint();
         validationData = _validateSignature(userOp, userOpHash);
-        if (userOp.initCode.length == 0) {
-            _validateAndUpdateNonce(userOp);
-        }
+        require(userOp.nonce < type(uint64).max, "account: nonsequential nonce");
         _payPrefund(missingAccountFunds);
     }
 
@@ -90,13 +88,6 @@ contract BananaAccount is Safe {
     */
     function _requireFromEntryPoint() internal virtual view {
         require(msg.sender == entryPoint, "account: not from EntryPoint");
-    }
-
-    /// implement template method of BaseAccount
-    function _validateAndUpdateNonce(
-        UserOperation calldata userOp
-    ) internal {
-        require(nonce++ == userOp.nonce, "account: invalid nonce");
     }
 
     function _getRSValues(bytes calldata signature)

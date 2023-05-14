@@ -8,6 +8,7 @@ import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './typ
 import { ethers } from 'ethers'
 import { BananaSigner } from './BananaSigner'
 import { BananaAccount } from './types'
+import { EntryPoint, EntryPoint__factory } from '@account-abstraction/contracts'
 
 /**
  * constructor params, added no top of base params:
@@ -115,10 +116,20 @@ export class MyWalletApi extends SimpleAccountAPI {
 
   async getNonce (): Promise<BigNumber> {
     if (await this.checkAccountPhantom()) {
+      console.log('this condition hit ');
       return BigNumber.from(0)
     }
+    const entryPoint: EntryPoint = EntryPoint__factory.connect(
+      this.entryPointAddress,
+      this.provider
+    );
+
     const accountContract = await this._getAccountContract()
-    return await accountContract.nonce()
+    // return await accountContract.nonce()
+
+    console.log('nonce from ep ', await entryPoint.getNonce(this.getAccountAddress(), 0))
+    console.log('nonce from safe account ', await accountContract.nonce())
+    return await entryPoint.getNonce(this.getAccountAddress(), 0);
   }
 
   /**
