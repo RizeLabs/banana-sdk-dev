@@ -72,8 +72,6 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation?.sender
       );
 
-      console.log('user balance ', userBalance)
-      console.log('min balance ', minBalanceRequired);
       if (userBalance.lt(minBalanceRequired)) {
         throw new Error("ERROR: Insufficient balance in Wallet");
       }
