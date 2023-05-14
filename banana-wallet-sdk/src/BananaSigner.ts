@@ -26,7 +26,7 @@ export class BananaSigner extends ERC4337EthersSigner {
   publicKey: PublicKey;
   address!: string;
   encodedId: string;
-  bananaTransporterInstance: BananaTransporter
+  bananaTransporterInstance: BananaTransporter;
 
   constructor(
     readonly config: ClientConfig,
@@ -64,49 +64,43 @@ export class BananaSigner extends ERC4337EthersSigner {
       value: tx.value,
       gasLimit: tx.gasLimit,
     });
-    let processStatus = true;
-    // while (processStatus) {
-      userOperation.verificationGasLimit = 1.5e6;
-      userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
+    userOperation.verificationGasLimit = 1.5e6;
+    userOperation.preVerificationGas = ethers.BigNumber.from(
+      await userOperation.preVerificationGas
+    ).add(5000);
 
-      let minGasRequired = ethers.BigNumber.from(userOperation?.callGasLimit)
-        .add(ethers.BigNumber.from(userOperation?.verificationGasLimit))
-        .add(ethers.BigNumber.from(userOperation?.callGasLimit)).add(ethers.BigNumber.from(userOperation?.preVerificationGas));
-      let currentGasPrice = await this.jsonRpcProvider.getGasPrice();
-      let minBalanceRequired = minGasRequired.mul(currentGasPrice);
-      //@ts-ignore
-      let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(
-        userOperation?.sender
-      );
+    let minGasRequired = ethers.BigNumber.from(userOperation?.callGasLimit)
+      .add(ethers.BigNumber.from(userOperation?.verificationGasLimit))
+      .add(ethers.BigNumber.from(userOperation?.callGasLimit))
+      .add(ethers.BigNumber.from(userOperation?.preVerificationGas));
+    let currentGasPrice = await this.jsonRpcProvider.getGasPrice();
+    let minBalanceRequired = minGasRequired.mul(currentGasPrice);
+    //@ts-ignore
+    let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(
+      userOperation?.sender
+    );
 
-      console.log(userBalance)
-      console.log(minBalanceRequired);
-      // if (userBalance.lt(minBalanceRequired)) {
-      //   throw new Error("ERROR: Insufficient balance in Wallet");
-      // }
+    if (userBalance.lt(minBalanceRequired)) {
+      throw new Error("ERROR: Insufficient balance in Wallet");
+    }
 
-      const message = await this.smartAccountAPI.getUserOpHash(userOperation);
-      console.log((parseInt(minGasRequired._hex)/10 ** 18).toString())
-      let signatureObtained: string;
-      try {
-        signatureObtained = await this.bananaTransporterInstance.getUserOpSignature(tx, (parseInt(minGasRequired._hex)).toString(), message);
-        userOperation.signature = JSON.parse(signatureObtained);
-        console.log("signature finally !!", signatureObtained);
-        console.log(" parsing signatuat ", JSON.parse(signatureObtained));
-      } catch (err) {
-        return Promise.reject(err);
-      }
-    //   const { newUserOp, process } = await this.signUserOp(
-    //     userOperation as any,
-    //     message,
-    //     this.encodedId
-    //   );
-    //   if (process === "success") {
-    //     userOperation = newUserOp;
-    //     processStatus = false;
-    //   }
-    // }
-    console.log('this is final userop ', userOperation);
+    const message = await this.smartAccountAPI.getUserOpHash(userOperation);
+    console.log((parseInt(minGasRequired._hex) / 10 ** 18).toString());
+    console.log(' this is userOp formed ', userOperation);
+    let signatureObtained: string;
+    try {
+      signatureObtained =
+        await this.bananaTransporterInstance.getUserOpSignature(
+          tx,
+          parseInt(minGasRequired._hex).toString(),
+          message
+        );
+      userOperation.signature = JSON.parse(signatureObtained);
+      console.log("signature finally !!", signatureObtained);
+      console.log(" parsing signatuat ", JSON.parse(signatureObtained));
+    } catch (err) {
+      return Promise.reject(err);
+    }
     const transactionResponse =
       await this.erc4337provider.constructUserOpTransactionResponse(
         userOperation
@@ -114,7 +108,7 @@ export class BananaSigner extends ERC4337EthersSigner {
     try {
       await this.httpRpcClient.sendUserOpToBundler(userOperation);
     } catch (error: any) {
-      console.error('sendUserOpToBundler failed', error)
+      console.error("sendUserOpToBundler failed", error);
       throw this.unwrapError(error);
     }
     // TODO: handle errors - transaction that is "rejected" by bundler is _not likely_ to ever resolve its "wait()"
@@ -122,14 +116,14 @@ export class BananaSigner extends ERC4337EthersSigner {
   }
 
   async signBananaMessage(message: Bytes | string) {
-
     const messageHash = ethers.utils.keccak256(
       ethers.utils.solidityPack(["string"], [message])
     );
 
     let signatureObtained: string;
     try {
-      signatureObtained = await this.bananaTransporterInstance.getMessageSignature(messageHash);
+      signatureObtained =
+        await this.bananaTransporterInstance.getMessageSignature(messageHash);
       console.log("signature finally !!", signatureObtained);
     } catch (err) {
       return Promise.reject(err);

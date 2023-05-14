@@ -26,6 +26,7 @@ export class BananaTransporter implements BananaTransprtProvider {
         path: ['connect', sessionId],
         queryParams: {
             dapp: window.location.hostname,
+            isMobile: 'false',
         }
     });
     window.open(finalUrl, "_blank");
@@ -53,7 +54,8 @@ export class BananaTransporter implements BananaTransprtProvider {
         path: ['sign', sessionId],
         queryParams: {
             message: message,
-            walletName: walletName
+            walletName: walletName,
+            isMobile: 'false'
         }
     });
 
@@ -89,7 +91,8 @@ export class BananaTransporter implements BananaTransprtProvider {
             value: txn.value?.toString(),
             gas: minBalance,
             userOpHash: userOpHash,
-            walletname: walletName
+            walletname: walletName,
+            isMobile: 'false'
         }
     });
 
@@ -117,43 +120,4 @@ export class BananaTransporter implements BananaTransprtProvider {
       }, 1000);
     });
   }
-
-  // getMessage() {
-  //   // window.addEventListener('message', function(event) {
-  //   //   if (event.data === 'buttonClicked') {
-  //   //     console.log('Button clicked in b.xyz');
-  //   //   }
-  //   // });
-
-  //   const finalUrl = buildUrl(BANANA_APP_URL, {
-  //     path: ['sample']
-  //   });
-
-  //   console.log(' this is final url ', finalUrl);
-  //   window.open(finalUrl);
-
-  //   return new Promise((resolve, reject) => {
-  //     window.addEventListener('message', function(event) {
-  //       console.log(' listnere is getting called ');
-  //       console.log(' this is the evnet catched ', event);
-  //     if (event.data === 'button-clicked') {
-  //       console.log('Button clicked in b.xyz');
-  //       resolve(event.data);
-  //     }
-  //   });
-  //     // console.log('promise execution started');
-  //     // const intervalId = setInterval(async () => {
-  //       // const signature = await getMessageSignConfirmation(sessionId);
-  //       // console.log('got the sgiantue ')
-  //       //@ts-ignore
-  //       // if (signature) {
-  //       //   console.log("clearing the interval id ", intervalId);
-  //       //   clearInterval(intervalId);
-  //       //   resolve(signature);
-  //       // }
-  //     // }, 1000);
-  //   });
-  // }
-
-
 }
