@@ -63,7 +63,7 @@ export class BananaSigner extends ERC4337EthersSigner {
         return this.sendTransaction(params[0]);
       case "eth_signUserOp":
         return this.signUserOp(params[0], params[1], params[2]);
-      case "eth_sendUserOp":
+      case "eth_sendUserOperation":
         return this.sendTransaction(params[0]);
       default:
         return this.jsonRpcProvider.send(method, params);
@@ -165,7 +165,7 @@ export class BananaSigner extends ERC4337EthersSigner {
      * the `message` is signed using secp256r1 instead of secp256k1, hence to verify
      * signedMessage we cannot use ecrecover!
      */
-    return ("messageSigned:"+ signedMessage.toHexString() + "signature:"+ finalSignature).toString();
+    return (finalSignature + signedMessage.toHexString()).toString();
 
   }
 
