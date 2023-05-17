@@ -36,7 +36,6 @@ export class BananaTransporter implements BananaTransprtProvider {
         const username = await getUsernameFromSessionId(sessionId);
         //@ts-ignore
         if (username) {
-          console.log("clearing the interval id ", intervalId);
           clearInterval(intervalId);
           resolve(username);
         }
@@ -46,9 +45,7 @@ export class BananaTransporter implements BananaTransprtProvider {
 
   getMessageSignature(message: string): Promise<string> {
     const sessionId = v4();
-    console.log(" This is called ");
     const walletName = this.cookieInstance.getCookie('bananaUser');
-    console.log("Wallet name ", walletName);
     
     const finalUrl = buildUrl(BANANA_APP_URL, {
         path: ['sign', sessionId],
@@ -59,18 +56,13 @@ export class BananaTransporter implements BananaTransprtProvider {
         }
     });
 
-    console.log("Final url ", finalUrl);
-    // opening banana page
     window.open(finalUrl, "_blank");
 
     return new Promise((resolve, reject) => {
-      console.log('promise execution started');
       const intervalId = setInterval(async () => {
         const signature = await getMessageSignConfirmation(sessionId);
-        console.log('got the sgiantue ')
         //@ts-ignore
         if (signature) {
-          console.log("clearing the interval id ", intervalId);
           clearInterval(intervalId);
           resolve(signature);
         }
@@ -96,24 +88,16 @@ export class BananaTransporter implements BananaTransprtProvider {
         }
     });
 
-    //! make sure to send the token as well like accordingly we need to convert it to usd
-    console.log(" This final Url ", finalUrl);
-    // openNewTab(finalUrl);
-
     try {
-        console.log('opening window ');
         window.open(finalUrl, "_blank");
     } catch (err) {
         console.log('issue in opening ', err);
     }
     return new Promise((resolve, reject) => {
-      console.log('promise execution started');
       const intervalId = setInterval(async () => {
         const signature = await getTransactionSignConfirmation(sessionId);
-        console.log('got the sgiantue ')
         //@ts-ignore
         if (signature) {
-          console.log("clearing the interval id ", intervalId);
           clearInterval(intervalId);
           resolve(signature);
         }
