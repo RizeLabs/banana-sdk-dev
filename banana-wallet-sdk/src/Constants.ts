@@ -9,6 +9,7 @@ export const ARBITRUM_TESTNET_RPC = 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue
 export const GOERLI_RPC = 'https://eth-goerli.g.alchemy.com/v2/IaVkSX3wU98rK7vpVyFgIryaaHfYpoST';
 export const GNOSIS_RPC = 'https://rpc.gnosischain.com/';
 export const CHIADO_TESTNET_RPC = 'https://rpc.chiado.gnosis.gateway.fm';
+export const SHIBUYA_TESTNET_RPC = 'https://evm.shibuya.astar.network';
 
 export enum Chains {
     goerli = 5,
@@ -17,6 +18,7 @@ export enum Chains {
     arbitrumTestnet = 421613,
     gnosis = 100,
     chiadoTestnet = 10200,
+    shibuyaTesnet = 81,
 }
 
 export function getClientConfigInfo(chain: Chains): ClientConfig {
@@ -50,6 +52,11 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
             return {
                 "entryPointAddress": "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
                 "bundlerUrl": "https://api.pimlico.io/v1/chiado-testnet/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445"
+            }
+        case Chains.shibuyaTesnet:
+            return {
+                "entryPointAddress": "0xCBd3e6f218324fE98497A071f8ADf508BC685d7b",
+                "bundlerUrl": "http://localhost:3000/rpc"
             }
      }
 }
@@ -98,6 +105,13 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
             "TouchIdSafeWalletContractSingletonAddress": "0xF1Fae5392dce474fc1c2D98c645f438d6c760E78",
             "fallBackHandlerAddress": "0xB88902418706f095E831E80bA766c151d3E1848D"
         };
+        case Chains.shibuyaTesnet:
+        return {
+            "Elliptic": "0x3f0dD0521518cd0c6833eD2622aDe9a813f7E56e",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x02Da54e40c004fF59a904E98EDF4e1Ad9bb2aC82",
+            "TouchIdSafeWalletContractSingletonAddress": "0xe33fCA6E9A75529407224c593783aF778b80DC2a",
+            "fallBackHandlerAddress": "0xC99154BA90386DCD0C5aF6CC8cc271e5aAF57176"
+        };
     }
 }
 
@@ -127,6 +141,10 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
         case Chains.chiadoTestnet:
         return {
             jsonRpcUrl: CHIADO_TESTNET_RPC
+        }
+        case Chains.shibuyaTesnet:
+        return {
+            jsonRpcUrl: SHIBUYA_TESTNET_RPC
         }
     }
 }
