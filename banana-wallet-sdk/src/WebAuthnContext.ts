@@ -82,8 +82,9 @@ export const registerFingerprint = async () => {
           )
         )
       ),
-      
-      rawId: JSON.stringify( //@ts-ignore
+
+      rawId: JSON.stringify(
+        //@ts-ignore
         Array.from(new Uint8Array(publicKeyCredential?.rawId))
       ),
     },
@@ -113,7 +114,7 @@ export const verifyFingerprint = async (
       challenge: Uint8Array.from(reqId, (c) => c.charCodeAt(0)).buffer,
       // Set the required authentication factors
       userVerification: "required",
-    }, 
+    },
   });
   if (credential === null) {
     // alert('Failed to get credential')
@@ -144,5 +145,65 @@ export const verifyFingerprint = async (
   return {
     newUserOp: userOp,
     process: signature.data.message.processStatus,
+  };
+};
+
+export const signMessageViaPassKeys = async (
+  message: string,
+  encodedId: string
+) => {
+  const decodedId = base64url.decode(encodedId);
+  const credential = await navigator.credentials.get({
+    publicKey: {
+      // Set the WebAuthn credential to use for the assertion
+      allowCredentials: [
+        {
+          id: decodedId,
+          type: "public-key",
+        },
+      ],
+      challenge: Uint8Array.from(message, (c) => c.charCodeAt(0)).buffer,
+      // Set the required authentication factors
+      userVerification: "required",
+    },
+  });
+  if (credential === null) {
+    // alert('Failed to get credential')
+    return Promise.reject(new Error("Failed to get credential"));
+  }
+  //@ts-ignore
+  const response = credential.response;
+
+  const clientDataJSON = Buffer.from(response.clientDataJSON);
+
+  let signatureValid = false;
+  let signature;
+  while(!signatureValid) {
+    signature = await Axios({
+      url: VERIFICATION_LAMBDA_URL,
+      method: "post",
+      params: {
+        authDataRaw: JSON.stringify(
+          Array.from(new Uint8Array(response.authenticatorData))
+        ),
+        cData: JSON.stringify(
+          Array.from(new Uint8Array(response.clientDataJSON))
+        ),
+        signature: JSON.stringify(Array.from(new Uint8Array(response.signature))),
+      },
+    });
+
+    if(signature.data.message.processStatus === "success") {
+      signatureValid = true;
+    }
+  }
+
+  const value = clientDataJSON.toString("hex").slice(72, 248);
+  const clientDataJsonRequestId = ethers.utils.keccak256("0x" + value);
+
+  //@ts-ignore
+  const finalSignature = signature.data.message.finalSignature + clientDataJsonRequestId.slice(2);
+  return {
+    signature: finalSignature
   };
 };
