@@ -19,6 +19,7 @@ import {
 } from "@account-abstraction/sdk";
 import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
 import { Banana4337Provider } from "./Banana4337Provider";
+import { getGasFee } from "./utils/GetGasFee";
 
 export class BananaSigner extends ERC4337EthersSigner {
   jsonRpcProvider: JsonRpcProvider;
@@ -54,11 +55,18 @@ export class BananaSigner extends ERC4337EthersSigner {
   ): Promise<TransactionResponse> {
     const tx: TransactionRequest = await this.populateTransaction(transaction);
     await this.verifyAllNecessaryFields(tx);
+    // const { maxFeePerGas, maxPriorityFeePerGas } = await getGasFee(new ethers.providers.JsonRpcProvider('https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4'));
+    const { maxFeePerGas, maxPriorityFeePerGas } = await getGasFee(this.jsonRpcProvider);
+    console.log(' max fee per gas ', maxFeePerGas)
+    console.log(' max priority fee per gas '
+    , maxPriorityFeePerGas);
     let userOperation = await this.smartAccountAPI.createUnsignedUserOp({
       target: tx.to ?? "",
       data: tx.data?.toString() ?? "",
       value: tx.value,
       gasLimit: tx.gasLimit,
+      maxFeePerGas,
+      maxPriorityFeePerGas
     });
     let processStatus = true;
     while (processStatus) {
@@ -71,13 +79,15 @@ export class BananaSigner extends ERC4337EthersSigner {
       let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(
         userOperation?.sender
       );
-
+      console.log(' has ', userBalance)
+      console.log('require ', minBalanceRequired)
       if (userBalance.lt(minBalanceRequired)) {
         throw new Error("ERROR: Insufficient balance in Wallet");
       }
 
       userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
       userOperation.verificationGasLimit = 1.5e6;
+      userOperation.callGasLimit = 10e6;
       const message = await this.smartAccountAPI.getUserOpHash(userOperation);
       const { newUserOp, process } = await this.signUserOp(
         userOperation as any,

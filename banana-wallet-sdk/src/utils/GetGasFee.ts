@@ -7,16 +7,22 @@ interface Gas {
 }
 
 export async function getGasFee(provider: JsonRpcProvider): Promise<Gas> {
-  const [fee, block] = await Promise.all([
-    provider.send("eth_maxPriorityFeePerGas", []),
-    provider.getBlock("latest"),
-  ]);
-  const tip = ethers.BigNumber.from(fee);
-  const buffer = tip.div(100).mul(13);
-  const maxPriorityFeePerGas = tip.add(buffer);
-  const maxFeePerGas = block.baseFeePerGas
-    ? block.baseFeePerGas.mul(2).add(maxPriorityFeePerGas)
-    : maxPriorityFeePerGas;
+  // const [fee, block] = await Promise.all([
+  //   provider.send("eth_maxPriorityFeePerGas", []),
+  //   provider.getBlock("latest"),
+  //   provider.getGasPrice()
+  // ]);
+  // const tip = ethers.BigNumber.from(fee);
+  // const buffer = tip.div(100).mul(13);
+  // const maxPriorityFeePerGas = tip.add(buffer);
+  // console.log("base fees ", block.baseFeePerGas)
+  // const maxFeePerGas = block.baseFeePerGas
+  //   ? block.baseFeePerGas.mul(2).add(maxPriorityFeePerGas)
+  //   : maxPriorityFeePerGas;
 
-  return { maxFeePerGas, maxPriorityFeePerGas };
+  // return { maxFeePerGas, maxPriorityFeePerGas  }
+
+  const price = await provider.getGasPrice()
+
+  return { maxFeePerGas: price._hex, maxPriorityFeePerGas: price._hex };
 }

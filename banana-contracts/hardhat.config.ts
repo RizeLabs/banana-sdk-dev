@@ -62,6 +62,14 @@ export default {
   chiadoTestnet: {
     url: 'https://gnosis-chiado.blastapi.io/1d3ec055-c764-4685-86b5-1025719f35f6',
     accounts: ['77b838ecdcebf23e06ad223a1295746d3e055584c5690d0b899513c8ab7cf644']
+  },
+  zkevm: {
+    url: 'https://rpc.public.zkevm-test.net',
+    accounts: ["ecf0fbe435b1d11c6c1caf0a76cd12ac751eaac5e877b301a6c399e98a583813"]
+  },
+  mantleTestnet: {
+    url: 'https://rpc.testnet.mantle.xyz',
+    accounts: ['ecf0fbe435b1d11c6c1caf0a76cd12ac751eaac5e877b301a6c399e98a583813']
   }
   },
   etherscan: {

@@ -9,6 +9,8 @@ export const ARBITRUM_TESTNET_RPC = 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue
 export const GOERLI_RPC = 'https://eth-goerli.g.alchemy.com/v2/IaVkSX3wU98rK7vpVyFgIryaaHfYpoST';
 export const GNOSIS_RPC = 'https://rpc.gnosischain.com/';
 export const CHIADO_TESTNET_RPC = 'https://rpc.chiado.gnosis.gateway.fm';
+export const ZKEVM_TESTNET_RPC = 'https://polygonzkevm-testnet.g.alchemy.com/v2/wEkYECwDd4ycMW5qmAcg6P48fJM0dmgr'
+export const MANTLE_TESTNET_RPC = 'https://rpc.testnet.mantle.xyz'
 
 export enum Chains {
     goerli = 5,
@@ -17,6 +19,8 @@ export enum Chains {
     arbitrumTestnet = 421613,
     gnosis = 100,
     chiadoTestnet = 10200,
+    polygonZkevmTestnet = 1442,
+    mantleTestnet = 5001,
 }
 
 export function getClientConfigInfo(chain: Chains): ClientConfig {
@@ -29,7 +33,7 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
         case Chains.mumbai:
             return {
                 "entryPointAddress": "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-                "bundlerUrl": "https://api.stackup.sh/v1/node/4bdce488aaada61f31c31315a18106eda076b12836a9ab44158fbf7a5c6cbea9"
+                "bundlerUrl": "http://0.0.0.0:14337/80001/"
             };
         case Chains.optimismTestnet:
             return {
@@ -50,6 +54,16 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
             return {
                 "entryPointAddress": "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
                 "bundlerUrl": "https://api.pimlico.io/v1/chiado-testnet/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445"
+            }
+        case Chains.polygonZkevmTestnet:
+            return {
+                "entryPointAddress": "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+                "bundlerUrl": "http://localhost:3000/rpc"
+            }
+        case Chains.mantleTestnet:  
+            return {
+                "entryPointAddress": "0x8E43cAe055c8AaDe80B87a1a944646E1187a45A9",
+                "bundlerUrl": "http://0.0.0.0:14337/5001/"
             }
      }
 }
@@ -98,6 +112,20 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
             "TouchIdSafeWalletContractSingletonAddress": "0xF1Fae5392dce474fc1c2D98c645f438d6c760E78",
             "fallBackHandlerAddress": "0xB88902418706f095E831E80bA766c151d3E1848D"
         };
+        case Chains.polygonZkevmTestnet: 
+        return {
+            "Elliptic": "0x824Eae34D5bB73FE97969dc80f01c5baf0D3f8D6",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x3c18aEb27EDDB0349366C4448AA19f725d1BC1F8",
+            "TouchIdSafeWalletContractSingletonAddress": "0xFa5aA09b01A97891dda68A27C42538514f50611d",
+            "fallBackHandlerAddress": "0x9C0A83154846725446EF3907DaAb41951d2635A1"
+        }
+        case Chains.mantleTestnet:
+        return {
+            "Elliptic": "0xFd9878446Cd1D7A4EF4c923B6b9acE98dAcE3a06",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x9EEbC5345A1796D06F493968d52f79949E904905",
+            "TouchIdSafeWalletContractSingletonAddress": "0x94a083BAA1b160C64f32ad5496226FAf7Ef2140e",
+            "fallBackHandlerAddress": "0x7E04a54255779229C2155E2c121EEE4CD02A6A14"
+        }
     }
 }
 
@@ -127,6 +155,14 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
         case Chains.chiadoTestnet:
         return {
             jsonRpcUrl: CHIADO_TESTNET_RPC
+        }
+        case Chains.polygonZkevmTestnet:
+        return {
+            jsonRpcUrl: ZKEVM_TESTNET_RPC
+        }
+        case Chains.mantleTestnet:
+        return {
+            jsonRpcUrl: MANTLE_TESTNET_RPC
         }
     }
 }
