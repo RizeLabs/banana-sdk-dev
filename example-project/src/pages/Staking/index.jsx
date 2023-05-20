@@ -36,7 +36,7 @@ const Staking = () => {
   // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
 
   // polygo staking 
-  const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
+  // const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
 
   // arbitrum testnet staking 
   // const stakeAddress = '0x19eEc1aE90bdC20C1c52DeD3273eEb78A08696A5'
@@ -46,6 +46,14 @@ const Staking = () => {
 
   //chiado
   // const stakeAddress = '0x18f6cc0B39d22Ba4fE860abE2dF445096078f94d'
+
+  // zkevm
+  const stakeAddress = '0x6db93dE0F3d89bB39a30560C2088a878862E6726';
+  
+
+  // mantle testet
+  // const stakeAddress = '0xC731C32AD4aE5b83593424f0ba2a9bA9173474b8'
+
 
 
   const signMessage = async () => {
@@ -95,7 +103,7 @@ const Staking = () => {
       // console.log("AA Provider",aaProvider)
       // let aaSigner = aaProvider.getSigner();
       const tx = {
-        gasLimit: '0x55555',
+        gasLimit: '0xF4240',
         to: stakeAddress,
         value: ethers.utils.parseEther(amount),
         data: new ethers.utils.Interface(StakingArtifact.abi).encodeFunctionData('stake', [])
