@@ -10,6 +10,7 @@ import { publicProvider } from "wagmi/providers/public";
 import Staking from "./pages/Staking";
 // import Swaping from "./pages/Swaping";
 import SignerProvider from "./context/signerProvider";
+import { PasskeyTest } from './pages/PasskeyTest'
 import React from "react";
 
 const { chains, provider } = configureChains(
@@ -42,6 +43,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/staking" element={<Staking />} />
+              <Route path='/passkey' element={<PasskeyTest />} />
               {/* <Route path="/swap" element={<Swaping />} /> */}
             </Routes>
           </Router>

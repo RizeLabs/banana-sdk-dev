@@ -47,6 +47,7 @@ module.exports = function override(config, env) {
     os: require.resolve("os-browserify"),
     path: require.resolve("path-browserify"),
     constants: require.resolve("constants-browserify"), 
+    querystring: require.resolve('querystring-es3'),
     fs: false
     // fs: require.resolve("fs-extra"),
   }
