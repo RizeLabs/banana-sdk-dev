@@ -6,7 +6,9 @@ import {
   VERIFICATION_LAMBDA_URL,
 } from "./constants/routes";
 import { ethers } from "ethers";
-import { IWebAuthnRegistrationResponse, ISignatureResponse } from "./types/WebAuthnTypes";
+import { IWebAuthnRegistrationResponse, ISignatureResponse, IWebAuthnSignatureRequest } from "./types/WebAuthnTypes";
+import { EllipticCurve__factory } from "./typechain/factories/EllipticCurve__factory";
+import { JSON_RPC_PROVIDER, ELLIPTIC_CURVE_ADDRESS } from "./constants/index";
 
 export const register = async (): Promise<IWebAuthnRegistrationResponse> => {
   const uuid = uuidv4();
@@ -80,10 +82,45 @@ export const register = async (): Promise<IWebAuthnRegistrationResponse> => {
   };
 };
 
-export const signMessageViaPassKeys = async (
+export const checkAuth = async (
   message: string,
-  encodedId: string
-): Promise<ISignatureResponse> => {
+  encodedId: string,
+  eoaAddress: [string, string]
+): Promise<boolean> => {
+  const { signature, messageSigned } = await signMessageViaPassKeys({message, encodedId, isMessageSignedNeeded: true});
+
+  const resp = await verifySignature(
+    messageSigned as string,
+    signature,
+    eoaAddress
+  );
+
+  return resp;
+};
+
+const verifySignature = async (
+  messageSigned: string,
+  signature: string,
+  eoaAddress: [string, string]
+): Promise<boolean> => {
+  
+  const rValue = ethers.BigNumber.from("0x" + signature.slice(2, 66));
+  const sValue = ethers.BigNumber.from("0x" + signature.slice(66, 132));
+  const ellipticCurve = EllipticCurve__factory.connect(
+    ELLIPTIC_CURVE_ADDRESS,
+    new ethers.providers.JsonRpcProvider(JSON_RPC_PROVIDER)
+  );
+  
+  const isVerified = await ellipticCurve.validateSignature(messageSigned, [rValue, sValue], eoaAddress);
+  return isVerified;
+};
+
+
+export const signMessageViaPassKeys = async ({
+  message,
+  encodedId,
+  isMessageSignedNeeded
+}: IWebAuthnSignatureRequest): Promise<ISignatureResponse> => {
   const decodedId = base64url.decode(encodedId);
   const credential = await navigator.credentials.get({
     publicKey: {
@@ -135,8 +172,30 @@ export const signMessageViaPassKeys = async (
   const clientDataJsonRequestId = ethers.utils.keccak256("0x" + value);
 
   //@ts-ignore
-  const finalSignature = signature.data.message.finalSignature + clientDataJsonRequestId.slice(2);
+  const finalSignatureWithMessage = signature.data.message.finalSignature + clientDataJsonRequestId.slice(2);
+
+  const abi = ethers.utils.defaultAbiCoder;
+  const decoded = abi.decode(
+    ["uint256", "uint256", "uint256"],
+    finalSignatureWithMessage
+  );
+  const signedMessage = decoded[2];
+
+  if(isMessageSignedNeeded) {
+    
+    const rHex = decoded[0].toHexString();
+    const sHex = decoded[1].toHexString();
+    const finalSignature = rHex + sHex.slice(2);
+
+    return {
+      //! signature
+      signature: finalSignature,
+      messageSigned: signedMessage
+    }
+  }
+
   return {
-    signature: finalSignature,
+    //! signature + message
+    signature: finalSignatureWithMessage,
   };
 };

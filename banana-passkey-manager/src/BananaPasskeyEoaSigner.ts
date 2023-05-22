@@ -9,6 +9,8 @@ import { ethers } from "ethers";
 import { IWebAuthnRegistrationResponse } from "./types/WebAuthnTypes";
 import { getPasskeyMeta, isUserNameUnqiue } from "./BananaController";
 import { _TypedDataEncoder } from "ethers/lib/utils";
+import { checkAuth } from "./WebAuthn";
+import { generateRandomString } from "./utils/randomMessageGenerator";
 
 const logger = new Logger("abstract-signer/5.7.0");
 
@@ -17,19 +19,22 @@ export class BananaPasskeyEoaSigner extends Signer implements TypedDataSigner {
     {} as IWebAuthnRegistrationResponse;
   readonly provider: Provider;
 
-  //! username from bico popup
+  //! username from popup
   async init(username: string) {
     const isUserNameUnique = await isUserNameUnqiue(username);
     let webAuthnConnectionResponse: IWebAuthnRegistrationResponse;
+    let isUserAuthorized = true;
 
     if (!isUserNameUnique) {
       webAuthnConnectionResponse = await getPasskeyMeta(username);
+      isUserAuthorized = await checkAuth(generateRandomString(30), webAuthnConnectionResponse.encodedId, [webAuthnConnectionResponse.q0, webAuthnConnectionResponse.q1]);
     } else {
       webAuthnConnectionResponse = await register();
     }
 
-    console.log("resp ", webAuthnConnectionResponse);
-    console.log(this.#publicKey);
+    if(!isUserAuthorized) {
+      throw new Error('You are not authorized to use this wallet');
+    }
 
     this.#publicKey.q0 = webAuthnConnectionResponse.q0;
     this.#publicKey.q1 = webAuthnConnectionResponse.q1;
@@ -84,16 +89,15 @@ export class BananaPasskeyEoaSigner extends Signer implements TypedDataSigner {
     if (!this.#publicKey.encodedId) {
       return Promise.reject(new Error("encoded ID not provided"));
     }
-    console.log(typeof message);
 
-    if(ethers.utils.isBytes(message)) {
+    if (ethers.utils.isBytes(message)) {
       message = ethers.utils.hexlify(message).toString();
     }
 
-    const { signature } = await signMessageViaPassKeys(
-      message as string,
-      this.#publicKey.encodedId
-    );
+    const { signature } = await signMessageViaPassKeys({
+      message: message,
+      encodedId: this.#publicKey.encodedId,
+    });
     return signature;
   }
 
@@ -107,7 +111,6 @@ export class BananaPasskeyEoaSigner extends Signer implements TypedDataSigner {
       types,
       value,
       async (name: string): Promise<any> => {
-
         // look into it later
         // assert(
         //   this.provider != null,
@@ -128,14 +131,13 @@ export class BananaPasskeyEoaSigner extends Signer implements TypedDataSigner {
       }
     );
 
-    const { signature } = await signMessageViaPassKeys(
-      _TypedDataEncoder.hash(
-        populated.domain,
-        types,
-        populated.value
-      ) as string,
-      this.#publicKey.encodedId
+    const hash = _TypedDataEncoder.hash(
+      populated.domain,
+      types,
+      populated.value
     );
+
+    const { signature } = await signMessageViaPassKeys({ message: hash, encodedId: this.#publicKey.encodedId });
     return signature;
   }
 }

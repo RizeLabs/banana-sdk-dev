@@ -9,6 +9,7 @@ export const getPasskeyMeta = async (walletIdentifier: string): Promise<IWebAuth
       walletIdentifier,
       window.location.hostname
     );
+    
     const walletCredentials = await Axios({
       url: BANANA_SERVER + GET_WALLETCRED_ROUTE,
       method: "get",
