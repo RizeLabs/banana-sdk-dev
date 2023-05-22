@@ -48,8 +48,10 @@ const Staking = () => {
   // const stakeAddress = '0x18f6cc0B39d22Ba4fE860abE2dF445096078f94d'
 
   // zkevm
-  const stakeAddress = '0x6db93dE0F3d89bB39a30560C2088a878862E6726';
-  
+  // const stakeAddress = '0x6db93dE0F3d89bB39a30560C2088a878862E6726';
+
+  // localhost
+  const stakeAddress = '0x51C65cd0Cdb1A8A8b79dfc2eE965B1bA0bb8fc89'
 
   // mantle testet
   // const stakeAddress = '0xC731C32AD4aE5b83593424f0ba2a9bA9173474b8'

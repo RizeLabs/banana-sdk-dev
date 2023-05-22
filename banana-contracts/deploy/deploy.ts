@@ -149,16 +149,16 @@ async function main() {
 	// const BananaAccountDeployer = await BananaAccount.deploy();
 	// console.log('Banana Test:', BananaAccountDeployer.address);
 
-	// const PUBLIC_KEY_EXPOSED = '0xE6C9E76028cFf978E139a7a5B3E289bca75110cc'
-	// const PRIVATE_KEY_EXPOSED = '27818a7268e6b5b09559a2df7b42c998277c3df6c2a80eb533cf4853c0bfb704';
-	// const receiver = '0xBaa8C8C57c1118cA48b2ef47Bc474326eC3b5192';
+	// const PUBLIC_KEY_EXPOSED = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
+	// const PRIVATE_KEY_EXPOSED = 'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
+	// const receiver = '0xF4Af6caA305a31Fea43f6a3C14866B3620f44126';
 	// const fundTxn = {
     //     from: PUBLIC_KEY_EXPOSED,
     //     to: receiver,
-    //     value: ethers.utils.parseEther("0.01"),
+    //     value: ethers.utils.parseEther("1"),
     //     gasLimit: 210000
     //   }
-	// const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas'));
+	// const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545'));
 	// const txn = await wallet.sendTransaction(fundTxn);
 	// await txn.wait()
 	// console.log(txn);

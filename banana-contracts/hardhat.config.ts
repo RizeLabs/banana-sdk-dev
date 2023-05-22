@@ -27,6 +27,9 @@ export default {
   networks: {
     hardhat: {
       allowUnlimitedContractSize: true,
+      forking: {
+        url: "https://polygonzkevm-testnet.g.alchemy.com/v2/wEkYECwDd4ycMW5qmAcg6P48fJM0dmgr",
+      },
     },
   //   mumbai: {
   //     url: process.env.MUMBAI_URL || '',
@@ -70,7 +73,7 @@ export default {
   mantleTestnet: {
     url: 'https://rpc.testnet.mantle.xyz',
     accounts: ['ecf0fbe435b1d11c6c1caf0a76cd12ac751eaac5e877b301a6c399e98a583813']
-  }
+  },
   },
   etherscan: {
     // apiKey: "YJ546HGGQFGMEE4B22QNGB58QKZ97G8YSP"

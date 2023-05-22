@@ -11,6 +11,7 @@ export const GNOSIS_RPC = 'https://rpc.gnosischain.com/';
 export const CHIADO_TESTNET_RPC = 'https://rpc.chiado.gnosis.gateway.fm';
 export const ZKEVM_TESTNET_RPC = 'https://polygonzkevm-testnet.g.alchemy.com/v2/wEkYECwDd4ycMW5qmAcg6P48fJM0dmgr'
 export const MANTLE_TESTNET_RPC = 'https://rpc.testnet.mantle.xyz'
+export const LOCALNODE = "http://127.0.0.1:8545"
 
 export enum Chains {
     goerli = 5,
@@ -21,6 +22,7 @@ export enum Chains {
     chiadoTestnet = 10200,
     polygonZkevmTestnet = 1442,
     mantleTestnet = 5001,
+    localhost = 8545,
 }
 
 export function getClientConfigInfo(chain: Chains): ClientConfig {
@@ -64,6 +66,11 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
             return {
                 "entryPointAddress": "0x8E43cAe055c8AaDe80B87a1a944646E1187a45A9",
                 "bundlerUrl": "http://0.0.0.0:14337/5001/"
+            }
+        case Chains.localhost:
+            return {
+                "entryPointAddress": "0x8fC8CFB7f7362E44E472c690A6e025B80E406458",
+                "bundlerUrl": "http://localhost:3000/rpc"
             }
      }
 }
@@ -126,6 +133,13 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
             "TouchIdSafeWalletContractSingletonAddress": "0x94a083BAA1b160C64f32ad5496226FAf7Ef2140e",
             "fallBackHandlerAddress": "0x7E04a54255779229C2155E2c121EEE4CD02A6A14"
         }
+        case Chains.localhost:
+        return {
+            "Elliptic": "0x87006e75a5B6bE9D1bbF61AC8Cd84f05D9140589",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x7B4f352Cd40114f12e82fC675b5BA8C7582FC513",
+            "TouchIdSafeWalletContractSingletonAddress": "0xcE0066b1008237625dDDBE4a751827de037E53D2",
+            "fallBackHandlerAddress": "0x82EdA215Fa92B45a3a76837C65Ab862b6C7564a8"
+        }
     }
 }
 
@@ -163,6 +177,10 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
         case Chains.mantleTestnet:
         return {
             jsonRpcUrl: MANTLE_TESTNET_RPC
+        }
+        case Chains.localhost:
+        return {
+            jsonRpcUrl: LOCALNODE
         }
     }
 }
