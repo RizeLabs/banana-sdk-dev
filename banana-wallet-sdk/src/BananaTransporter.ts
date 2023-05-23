@@ -51,7 +51,7 @@ export class BananaTransporter implements BananaTransprtProvider {
         path: ['sign', sessionId],
         queryParams: {
             message: message,
-            walletName: walletName,
+            walletname: walletName,
             isMobile: 'false'
         }
     });

@@ -20,6 +20,7 @@ import {
 import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
 import { Banana4337Provider } from "./Banana4337Provider";
 import { BananaTransporter } from "./BananaTransporter";
+import { CANCEL_ACTION } from "./Constants";
 
 export class BananaSigner extends ERC4337EthersSigner {
   jsonRpcProvider: JsonRpcProvider;
@@ -95,9 +96,12 @@ export class BananaSigner extends ERC4337EthersSigner {
           parseInt(minGasRequired._hex).toString(),
           message
         );
+
+      if(JSON.parse(signatureObtained) === CANCEL_ACTION) {
+        return {} as TransactionResponse;
+      }
+
       userOperation.signature = JSON.parse(signatureObtained);
-      console.log("signature finally !!", signatureObtained);
-      console.log(" parsing signatuat ", JSON.parse(signatureObtained));
     } catch (err) {
       return Promise.reject(err);
     }
@@ -124,12 +128,17 @@ export class BananaSigner extends ERC4337EthersSigner {
     try {
       signatureObtained =
         await this.bananaTransporterInstance.getMessageSignature(messageHash);
-      console.log("signature finally !!", signatureObtained);
     } catch (err) {
       return Promise.reject(err);
     }
 
-    const signatureAndMessage = signatureObtained;
+    if(JSON.parse(signatureObtained) === CANCEL_ACTION) {
+      return {};
+    }
+
+    const signatureAndMessage = JSON.parse(signatureObtained);
+
+    console.log('signature and mssage ', signatureAndMessage);
     const abi = ethers.utils.defaultAbiCoder;
     const decoded = abi.decode(
       ["uint256", "uint256", "uint256"],

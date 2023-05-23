@@ -10,14 +10,17 @@ export const OPTIMISM_TESTNET_RPC = 'https://opt-goerli.g.alchemy.com/v2/Q37EPFz
 export const MUMBAI_RPC = 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4';
 export const ARBITRUM_TESTNET_RPC = 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw';
 export const GOERLI_RPC = 'https://eth-goerli.g.alchemy.com/v2/IaVkSX3wU98rK7vpVyFgIryaaHfYpoST';
+export const GNOSIS_RPC = 'https://rpc.gnosischain.com/';
+export const CHIADO_TESTNET_RPC = 'https://rpc.chiado.gnosis.gateway.fm';
+
 export enum Methods {
     POST = 'POST',
     GET = 'GET',
     PUT = 'PUT',
     DELETE = 'DELETE',
 }
-export const GNOSIS_RPC = 'https://rpc.gnosischain.com/';
-export const CHIADO_TESTNET_RPC = 'https://rpc.chiado.gnosis.gateway.fm';
+
+export const CANCEL_ACTION = 'cancell';
 
 export enum Chains {
     goerli = 5,
