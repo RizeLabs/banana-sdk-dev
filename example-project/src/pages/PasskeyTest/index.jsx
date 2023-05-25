@@ -64,7 +64,6 @@ export const PasskeyTest = () => {
         //     to: stakeAddress,
         //     data: txn.data
         //   }
-
         const trxResponse = await smartAccount.sendTransaction({ transaction: tx })
         console.log('response ', trxResponse)
 
