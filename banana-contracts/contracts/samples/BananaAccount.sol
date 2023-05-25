@@ -25,8 +25,7 @@ contract BananaAccount is Safe {
     //q values for the elliptic curve representing the public key of the user
     uint256[2] qValues;
 
-    //mapping of used messages to prevent replay attacks
-    mapping(bytes32 => bool) public usedMessages;
+    mapping (bytes32 => uint256[2]) public encodedIdToQValues;
     
     /// @dev Setup function sets initial storage of contract.
     /// @param _owners List of Safe owners.
@@ -49,10 +48,12 @@ contract BananaAccount is Safe {
         uint256 payment,
         address payable paymentReceiver,
         address _entryPoint,
+        bytes32 encodedId,
         uint256[2] memory _qValues
     ) external {
         entryPoint = _entryPoint;
-        qValues = _qValues;
+        // qValues = _qValues;
+        encodedIdToQValues[encodedId] = _qValues;
 
         _executeAndRevert(
             address(this),
@@ -234,9 +235,9 @@ contract BananaAccount is Safe {
         bytes32 userOpHash
     ) internal virtual returns (uint256 validationData) {
 
-         (uint r, uint s, bytes32 message, bytes32 clientDataJsonHash) = abi.decode(
+         (uint r, uint s, bytes32 message, bytes32 clientDataJsonHash, bytes32 encodedId) = abi.decode(
             userOp.signature,
-            (uint, uint, bytes32, bytes32)
+            (uint, uint, bytes32, bytes32, bytes32)
         );
 
         string memory userOpHashHex = lower(toHex(userOpHash));
@@ -248,7 +249,7 @@ contract BananaAccount is Safe {
         bool success = Secp256r1.Verify(
             uint(message),
             [r, s],
-            qValues
+            encodedIdToQValues[encodedId]
         );
         // bytes32 hash = userOpHash.toEthSignedMessageHash();
         if (!success) return SIG_VALIDATION_FAILED;
