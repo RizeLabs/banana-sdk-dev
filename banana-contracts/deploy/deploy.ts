@@ -149,19 +149,19 @@ async function main() {
 	// const BananaAccountDeployer = await BananaAccount.deploy();
 	// console.log('Banana Test:', BananaAccountDeployer.address);
 
-	const PUBLIC_KEY_EXPOSED = '0xE6C9E76028cFf978E139a7a5B3E289bca75110cc'
-	const PRIVATE_KEY_EXPOSED = '27818a7268e6b5b09559a2df7b42c998277c3df6c2a80eb533cf4853c0bfb704';
-	const receiver = '0xBaa8C8C57c1118cA48b2ef47Bc474326eC3b5192';
-	const fundTxn = {
-        from: PUBLIC_KEY_EXPOSED,
-        to: receiver,
-        value: ethers.utils.parseEther("0.01"),
-        gasLimit: 210000
-      }
-	const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas'));
-	const txn = await wallet.sendTransaction(fundTxn);
-	await txn.wait()
-	console.log(txn);
+	// const PUBLIC_KEY_EXPOSED = '0xE6C9E76028cFf978E139a7a5B3E289bca75110cc'
+	// const PRIVATE_KEY_EXPOSED = '27818a7268e6b5b09559a2df7b42c998277c3df6c2a80eb533cf4853c0bfb704';
+	// const receiver = '0xBaa8C8C57c1118cA48b2ef47Bc474326eC3b5192';
+	// const fundTxn = {
+    //     from: PUBLIC_KEY_EXPOSED,
+    //     to: receiver,
+    //     value: ethers.utils.parseEther("0.01"),
+    //     gasLimit: 210000
+    //   }
+	// const wallet = new ethers.Wallet(PRIVATE_KEY_EXPOSED, new ethers.providers.JsonRpcProvider('https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas'));
+	// const txn = await wallet.sendTransaction(fundTxn);
+	// await txn.wait()
+	// console.log(txn);
 
 	// const EntryPoint = await ethers.getContractFactory('EntryPoint');
 	// const entryPoint = await EntryPoint.deploy();
@@ -176,9 +176,9 @@ async function main() {
 	// const bananaTouchIdAccountProxyFactory = await BananaAccountProxyFactory.deploy();
 	// console.log('BananaTouchIdAccountProxy Factory :', bananaTouchIdAccountProxyFactory.address);
 
-	// const BananaAccount = await ethers.getContractFactory('BananaAccount');
-	// const BananaAccountDeployer = await BananaAccount.deploy();
-	// console.log('Banana Account:', BananaAccountDeployer.address);
+	const BananaAccount = await ethers.getContractFactory('BananaAccount');
+	const BananaAccountDeployer = await BananaAccount.deploy();
+	console.log('Banana Account:', BananaAccountDeployer.address);
 
 	// const TokenCallBackHandlerDeployer = await ethers.getContractFactory('TokenCallbackHandler');
 	// const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();

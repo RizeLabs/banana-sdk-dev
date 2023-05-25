@@ -22,9 +22,7 @@ contract BananaAccount is Safe {
     //EIP4337 trusted entrypoint
     address public entryPoint;
 
-    //q values for the elliptic curve representing the public key of the user
-    uint256[2] qValues;
-
+    //maintaing mapping of encodedId to qValues
     mapping (bytes32 => uint256[2]) public encodedIdToQValues;
     
     /// @dev Setup function sets initial storage of contract.
@@ -52,7 +50,6 @@ contract BananaAccount is Safe {
         uint256[2] memory _qValues
     ) external {
         entryPoint = _entryPoint;
-        // qValues = _qValues;
         encodedIdToQValues[encodedId] = _qValues;
 
         _executeAndRevert(
@@ -307,4 +304,8 @@ contract BananaAccount is Safe {
     function replaceEntrypoint(address newEntrypoint) public authorized {
         entryPoint = newEntrypoint;
     }
+
+    function addNewDevice(uint256[2] memory _qValues, bytes32 encodedId) public authorized {
+        encodedIdToQValues[encodedId] = _qValues;
+    } 
 }

@@ -72,7 +72,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         return {
             "Elliptic": "0xEA4d16E741E76E7a93b8f46650537855149efc48",
             "TouchIdSafeWalletContractProxyFactoryAddress": "0xF1Fae5392dce474fc1c2D98c645f438d6c760E78",
-            "TouchIdSafeWalletContractSingletonAddress": "0x33FF9B2A40810fA6B0cA5824fd2C189953ffD5D9",
+            "TouchIdSafeWalletContractSingletonAddress": "0x419F6f678114152ffe40E52908209601C43a0546",
             "fallBackHandlerAddress": "0x414Ce649934a1b3cAE1903411e325E4159C46474"
         };
         case Chains.optimismTestnet: // mi
