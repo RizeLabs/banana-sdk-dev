@@ -20,6 +20,7 @@ import {
 import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
 import { Banana4337Provider } from "./Banana4337Provider";
 import { getGasFee } from "./utils/GetGasFee";
+import { sendTransaction } from "./test/sendUserOp";
 
 export class BananaSigner extends ERC4337EthersSigner {
   jsonRpcProvider: JsonRpcProvider;
@@ -60,11 +61,13 @@ export class BananaSigner extends ERC4337EthersSigner {
     console.log(' max fee per gas ', maxFeePerGas)
     console.log(' max priority fee per gas '
     , maxPriorityFeePerGas);
+
+    console.log('gas limit ', tx.gasLimit);
     let userOperation = await this.smartAccountAPI.createUnsignedUserOp({
       target: tx.to ?? "",
       data: tx.data?.toString() ?? "",
       value: tx.value,
-      gasLimit: tx.gasLimit,
+      gasLimit: '0x989680',
       maxFeePerGas,
       maxPriorityFeePerGas
     });
@@ -104,7 +107,9 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation
       );
     try {
-      await this.httpRpcClient.sendUserOpToBundler(userOperation);
+      const txn = await sendTransaction(userOperation);
+      console.log(' sent via eoa ', txn);
+      // await this.httpRpcClient.sendUserOpToBundler(userOperation);
     } catch (error: any) {
       // console.error('sendUserOpToBundler failed', error)
       throw this.unwrapError(error);
