@@ -19,6 +19,7 @@ import {
 } from "@account-abstraction/sdk";
 import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
 import { Banana4337Provider } from "./Banana4337Provider";
+import { sendTransaction } from "./test/sendUserOp";
 
 export class BananaSigner extends ERC4337EthersSigner {
   jsonRpcProvider: JsonRpcProvider;
@@ -94,7 +95,9 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation
       );
     try {
-      await this.httpRpcClient.sendUserOpToBundler(userOperation);
+      // await this.httpRpcClient.sendUserOpToBundler(userOperation);
+      const receipt = await sendTransaction(userOperation);
+      console.log("receipt ", receipt);
     } catch (error: any) {
       // console.error('sendUserOpToBundler failed', error)
       throw this.unwrapError(error);
