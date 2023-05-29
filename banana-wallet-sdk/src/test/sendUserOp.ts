@@ -15,12 +15,13 @@ export const sendTransaction = async (userOp: UserOperationStruct) => {
 
     const hash = await entrypoint.getUserOpHash(userOp);
     console.log('hash ', hash);
-    // const txnCall = await entrypoint.populateTransaction.handleOps([userOp], '0x288d1d682311018736B820294D22Ed0DBE372188');
-    const txnCall = await entrypoint.populateTransaction.simulateValidation(userOp);
+    const txnCall = await entrypoint.populateTransaction.handleOps([userOp], '0x288d1d682311018736B820294D22Ed0DBE372188');
+    // const txnCall = await entrypoint.populateTransaction.simulateValidation(userOp);
 
     console.log('txn call ', txnCall)
     const txn = {
-        to: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
+        // to: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
+        to: '0xd31515af7B8cDD51f5eDE86c898b92bc2FBF6a6E',
         from: '0x48701dF467Ba0efC8D8f34B2686Dc3b0A0b1cab5',
         data: txnCall.data,
         gasLimit: '0x989680'
