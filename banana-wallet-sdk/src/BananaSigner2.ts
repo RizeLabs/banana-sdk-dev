@@ -6,8 +6,10 @@ import {
   JsonRpcProvider,
   TransactionResponse,
 } from "@ethersproject/providers";
+
 import { ethers } from "ethers";
 import { Deferrable } from "@ethersproject/properties";
+
 import { Bytes } from "@ethersproject/bytes";
 import { verifyFingerprint } from "./WebAuthnContext";
 import { PublicKey } from "./interfaces/Banana.interface";
@@ -17,58 +19,82 @@ import {
   ERC4337EthersSigner,
   HttpRpcClient,
 } from "@account-abstraction/sdk";
+// import  properties_1 from "@ethersproject/properties";
 import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
 import { Banana4337Provider } from "./Banana4337Provider";
-import { EntryPoint__factory } from "@account-abstraction/contracts";
-import { BVM } from "./Constants";
 
-export class BananaSigner extends ERC4337EthersSigner {
-  jsonRpcProvider: JsonRpcProvider;
-  publicKey: PublicKey;
-  address!: string;
-  encodedId: string;
+export class BananaSigner2 extends Signer {
+    jsonRpcProvider: JsonRpcProvider;
+    publicKey: PublicKey;
+    address!: string;
+    encodedId: string;
+    
+    constructor(
+        readonly config: ClientConfig, 
+        readonly originalSigner: Signer, 
+        readonly erc4337provider: Banana4337Provider, 
+        readonly httpRpcClient: HttpRpcClient, 
+        readonly smartAccountAPI: BaseAccountAPI,
+        provider: JsonRpcProvider,
+        publicKey: PublicKey
+    ) {
+        super();
+        this.config = config;
+        this.originalSigner = originalSigner;
+        this.erc4337provider = erc4337provider;
+        this.httpRpcClient = httpRpcClient;
+        this.smartAccountAPI = smartAccountAPI;
+        this.jsonRpcProvider = provider;
+        this.publicKey = publicKey;
+        this.encodedId = publicKey.encodedId;
+        this.getAddress();
+    }
 
-  constructor(
-    readonly config: ClientConfig,
-    readonly originalSigner: Signer,
-    readonly erc4337provider: Banana4337Provider,
-    readonly httpRpcClient: HttpRpcClient,
-    readonly smartAccountAPI: BaseAccountAPI,
-    provider: JsonRpcProvider,
-    publicKey: PublicKey
-  ) {
-    super(
-      config,
-      originalSigner,
-      erc4337provider,
-      httpRpcClient,
-      smartAccountAPI
-    );
-    console.log("Provider ", provider);
-    this.jsonRpcProvider = provider;
-    this.publicKey = publicKey;
-    this.encodedId = publicKey.encodedId;
-    this.getAddress();
-  }
+    async getAddress() {
+        if (this.address == null) {
+            this.address = await this.erc4337provider.getSenderAccountAddress();
+        }
+        return this.address;
+    }
 
-  // need to do some changes in it
+    connect(provider) {
+        throw new Error('changing providers is not supported');
+    }
+
+    async send(method: string, params: any[]): Promise<any> {
+
+        switch (method) {
+          case "eth_accounts":
+            return this.sendTransaction(params[0]);
+          case "eth_signMessage":
+            return this.signMessage(params[0]);
+          case "eth_signTransaction":
+            return this.signTransaction(params[0]);
+
+          default:
+            return this.jsonRpcProvider.send(method, params);
+        }
+        // const res = await this.jsonRpcProvider.send("eth_blockNumber", []);
+        // console.log("res inside send ", res);
+        // return "0x";
+        // throw new Error("Method not implemented.");
+      }
+
+    // need to do some changes in it
   async sendTransaction(
     transaction: Deferrable<TransactionRequest>
   ): Promise<TransactionResponse> {
-    console.log("Transaction ", transaction);
     const tx: TransactionRequest = await this.populateTransaction(transaction);
+    // TODO: verify all necessary fields are present
     await this.verifyAllNecessaryFields(tx);
-    console.log("tx ", tx);
     let userOperation = await this.smartAccountAPI.createUnsignedUserOp({
       target: tx.to ?? "",
       data: tx.data?.toString() ?? "",
       value: tx.value,
       gasLimit: tx.gasLimit,
     });
-    console.log("userOperation ", userOperation);
     let processStatus = true;
     while (processStatus) {
-      console.log("processStatus ", processStatus);
       let minGasRequired = ethers.BigNumber.from(userOperation?.callGasLimit)
         .add(ethers.BigNumber.from(userOperation?.verificationGasLimit))
         .add(ethers.BigNumber.from(userOperation?.callGasLimit));
@@ -80,50 +106,19 @@ export class BananaSigner extends ERC4337EthersSigner {
       );
 
       if (userBalance.lt(minBalanceRequired)) {
-        console.log("Insufficient balance in Wallet");
         throw new Error("ERROR: Insufficient balance in Wallet");
       }
 
       userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
       userOperation.verificationGasLimit = 1.5e6;
-
-      // let ep = EntryPoint__factory.connect("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", this.originalSigner);
-      // console.log("EP handleOps")
-      // userOperation.sender = await userOperation.sender;
-      // userOperation.nonce = await userOperation.nonce
-
-      // console.log("UserOperation ", userOperation);
-      // let callData = ep.interface.encodeFunctionData("handleOps", [[userOperation], "0x3e60B11022238Af208D4FAEe9192dAEE46D225a6"]);
-
-      // console.log("Final call data ", callData);
-      const ep = EntryPoint__factory.connect("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", this.provider as any);
       const message = await this.smartAccountAPI.getUserOpHash(userOperation);
-
-      console.log("Hash generated ", message);
-
-      userOperation.sender = await userOperation.sender;
-      userOperation.nonce = await userOperation.nonce
-      userOperation.signature = "0x";
-
-      console.log("useroperation ", userOperation);
-      const newMessage = await ep.getUserOpHash(userOperation);
-      console.log(" new message ", newMessage);
-
       const { newUserOp, process } = await this.signUserOp(
         userOperation as any,
-        newMessage,
+        message,
         this.encodedId
       );
       if (process === "success") {
         userOperation = newUserOp;
-        let signatureWithModuleAddress = ethers.utils.defaultAbiCoder.encode(
-          ["bytes", "address"], 
-          [userOperation.signature, BVM]
-        );
-        console.log("before sig", userOperation.signature)
-        console.log("Signature with module address ", signatureWithModuleAddress);
-        console.log("sig + add", ethers.utils.defaultAbiCoder.decode(["bytes", "address"], signatureWithModuleAddress))
-        userOperation.signature = signatureWithModuleAddress;
         processStatus = false;
       }
     }
@@ -132,28 +127,6 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation
       );
     try {
-
-      const ep = EntryPoint__factory.connect("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", this.originalSigner);
-     
-      console.log("EP handleOps")
-      userOperation.sender = await userOperation.sender;
-      userOperation.nonce = await userOperation.nonce
-
-      console.log("UserOperation ", userOperation);
-      let callData = ep.interface.encodeFunctionData("handleOps", [[userOperation], "0x3e60B11022238Af208D4FAEe9192dAEE46D225a6"]);
-
-      const signer = new ethers.Wallet("a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74", this.jsonRpcProvider);
-
-      const tx = await signer.sendTransaction({
-        to: ep.address,
-        data: callData,
-        value: "0x0"
-      })
-
-      console.log("tx ", tx);
- 
-      console.log("Final call data ", callData);
-
       await this.httpRpcClient.sendUserOpToBundler(userOperation);
     } catch (error: any) {
       // console.error('sendUserOpToBundler failed', error)
@@ -163,7 +136,29 @@ export class BananaSigner extends ERC4337EthersSigner {
     return transactionResponse;
   }
 
-  async signBananaMessage(message: Bytes | string) {
+  unwrapError(errorIn: any) {
+    var _a;
+    if (errorIn.body != null) {
+        const errorBody = JSON.parse(errorIn.body);
+        let paymasterInfo = '';
+        let failedOpMessage = (_a = errorBody === null || errorBody === void 0 ? void 0 : errorBody.error) === null || _a === void 0 ? void 0 : _a.message;
+        if ((failedOpMessage === null || failedOpMessage === void 0 ? void 0 : failedOpMessage.includes('FailedOp')) === true) {
+            // TODO: better error extraction methods will be needed
+            const matched = failedOpMessage.match(/FailedOp\((.*)\)/);
+            if (matched != null) {
+                const split = matched[1].split(',');
+                paymasterInfo = `(paymaster address: ${split[1]})`;
+                failedOpMessage = split[2];
+            }
+        }
+        const error = new Error(`The bundler has failed to include UserOperation in a batch: ${failedOpMessage} ${paymasterInfo})`);
+        error.stack = errorIn.stack;
+        return error;
+    }
+    return errorIn;
+}
+
+  async signMessage(message: string | Uint8Array): Promise<string> {
     const messageHash = ethers.utils.keccak256(
       ethers.utils.solidityPack(["string"], [message])
     );
@@ -199,10 +194,8 @@ export class BananaSigner extends ERC4337EthersSigner {
      * the `message` is signed using secp256r1 instead of secp256k1, hence to verify
      * signedMessage we cannot use ecrecover!
      */
-    return {
-      messageSigned: signedMessage.toHexString(),
-      signature: finalSignature,
-    };
+    // return (2).toString();
+    return ("messageSigned:"+ signedMessage.toHexString() + "signature:"+ finalSignature).toString();
   }
 
   async signUserOp(userOp: UserOperation, reqId: string, encodedId: string) {
@@ -213,4 +206,19 @@ export class BananaSigner extends ERC4337EthersSigner {
     );
     return signedUserOp;
   }
+
+  async verifyAllNecessaryFields(transactionRequest: any) {
+    if (transactionRequest.to == null) {
+        throw new Error('Missing call target');
+    }
+    if (transactionRequest.data == null && transactionRequest.value == null) {
+        // TBD: banning no-op UserOps seems to make sense on provider level
+        throw new Error('Missing call data or value');
+    }
+}
+
+async signUserOperation(userOperation: any) {
+    const message = await this.smartAccountAPI.getUserOpHash(userOperation);
+    return await this.originalSigner.signMessage(message);
+}
 }

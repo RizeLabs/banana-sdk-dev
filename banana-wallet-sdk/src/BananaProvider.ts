@@ -4,7 +4,7 @@ import { MyPaymasterApi } from "./MyPayMasterApi";
 import { MyWalletApi } from "./MyWalletApi";
 import { HttpRpcClient } from "@account-abstraction/sdk/dist/src/HttpRpcClient";
 import { ERC4337EthersProvider } from "@account-abstraction/sdk";
-import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./Constants";
+import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig, BVM  } from "./Constants";
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
 // import { EllipticCurve__factory } from "./types";
@@ -20,14 +20,16 @@ import {
   UserCredentialObject,
   ChainConfig
 } from "./interfaces/Banana.interface";
-import { SmartAccount, SmartAccountFactory } from './types'
-import { SmartAccount__factory, SmartAccountFactory__factory} from './types/factories'
+import { BananaVerificationModule__factory, SmartAccount, SmartAccountFactory } from './types/typechain'
+import { SmartAccount__factory } from './types/typechain/factories/SmartAccount__factory'
+import { SmartAccountFactory__factory} from './types/typechain/factories/SmartAccountFactory__factory'
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
 import { Wallet } from "./BananaWallet"
 import { Banana4337Provider } from "./Banana4337Provider";
 import { NetworkAddressChecker } from "./utils/addressChecker";
 import { walletNameInput } from "./utils/walletNameInput";
+
 
 export class Banana {
   Provider: ClientConfig;
@@ -306,9 +308,18 @@ export class Banana {
       //   if(!isAddressUnique)
       //   saltNonce++;
       // }
+      const bvm =  BananaVerificationModule__factory.connect(BVM, this.jsonRpcProvider)
+
+      
       const TouchIdSafeWalletContractQValuesArray: Array<BigNumberish> = [this.publicKey.q0, this.publicKey.q1];
-        // @ts-ignore
-      TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddressForCounterFactualAccount(TouchIdSafeWalletContractQValuesArray, saltNonce.toString());
+      console.log("BananaProvider To")
+      let bvmSetupData = bvm.interface.encodeFunctionData(
+      // @ts-ignore
+        "initForSmartAccount",
+        [TouchIdSafeWalletContractQValuesArray]
+      );
+      // @ts-ignore
+      TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddressForCounterFactualAccount(BVM, bvmSetupData, saltNonce.toString());
       
       if(TouchIdSafeWalletContractAddress) {
         this.walletAddress = TouchIdSafeWalletContractAddress;

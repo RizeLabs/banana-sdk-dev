@@ -7,7 +7,7 @@ export const OPTIMISM_TESTNET_RPC = 'https://opt-goerli.g.alchemy.com/v2/Q37EPFz
 export const MUMBAI_RPC = 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4';
 export const ARBITRUM_TESTNET_RPC = 'https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw';
 export const GOERLI_RPC = 'https://eth-goerli.g.alchemy.com/v2/IaVkSX3wU98rK7vpVyFgIryaaHfYpoST';
-
+export const BVM = "0x7a7A4bdcAE3da3E54592102E5Eb01FEee20a7943"
 export enum Chains {
     goerli = 5,
     mumbai = 80001,
@@ -59,8 +59,8 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         case Chains.mumbai: // mi
         return {
             "Elliptic": "0xDf6fFfB5Ec52A73F7C96e2818dBD46B7d4009b94",
-            "TouchIdSafeWalletContractProxyFactoryAddress": "0xaA7DB96AD985d61aC37E11F3081A7265577912a8",
-            "TouchIdSafeWalletContractSingletonAddress": "0x7CE9C354d03caC69dE3409866fC3C8Df83E5B987",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x52C8427373af952969679CC2F64058E5B4FeeEeB",
+            "TouchIdSafeWalletContractSingletonAddress": "0x7d7677B2CF6e65782d279a33fd71903c06831Bb3",
             "fallBackHandlerAddress": "0x0ed1f75AA9A33ab0756725cE7f841b13Fde47B0C"
         };
         case Chains.arbitrumTestnet: 

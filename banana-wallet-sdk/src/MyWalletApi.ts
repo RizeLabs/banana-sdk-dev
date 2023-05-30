@@ -4,10 +4,13 @@ import { arrayify, hexConcat } from 'ethers/lib/utils'
 import { Signer } from '@ethersproject/abstract-signer'
 import { BaseApiParams } from '@account-abstraction/sdk/dist/src/BaseAccountAPI'
 import { SimpleAccountAPI } from '@account-abstraction/sdk'
-import { SimpleAccount__factory, SimpleAccountFactory__factory, SmartAccount__factory, SmartAccountErrors__factory, SmartAccountFactory__factory} from './types/factories'
+import { SmartAccount__factory } from './types/typechain/factories/SmartAccount__factory'
+import { SmartAccountFactory__factory} from './types/typechain/factories/SmartAccountFactory__factory'
 import { ethers } from 'ethers'
 import { BananaSigner } from './BananaSigner'
-import { SimpleAccount, SimpleAccountFactory, SmartAccountFactory } from './types'
+import { BananaVerificationModule__factory, SmartAccount, SmartAccountFactory } from './types/typechain'
+import { BVM } from './Constants'
+import { BananaVerificationModule__factory } from './types/typechain'
 // import { SimpleAccountFactory__factory } from '@account-abstraction/contracts'
 
 /**
@@ -73,12 +76,22 @@ export class MyWalletApi extends SimpleAccountAPI {
       this.provider
     );
     const TouchIdSafeWalletContractQValuesArray: Array<string> = [this.qValues[0], this.qValues[1]];
+    console.log("My getTouchIdSafeWalletContractInitializer  TouchIdSafeWalletContractQValuesArray", TouchIdSafeWalletContractQValuesArray)
+    
+    const bvm = BananaVerificationModule__factory.connect(BVM, this.jsonRpcProvider)
+    
+    let bvmSetupData = bvm.interface.encodeFunctionData(
+      // @ts-ignore
+        "initForSmartAccount",
+        [TouchIdSafeWalletContractQValuesArray]
+      );
+    console.log("getTouchIdSafeWalletContractInitializer bvmSetupData", bvmSetupData)
     //@ts-ignore
     const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('init',
     [
-      // @ts-ignore
-      TouchIdSafeWalletContractQValuesArray,          // q values 
       this.fallBackHandleraddress,   // fallback handler
+      BVM,
+      bvmSetupData
     ]);
 
     return TouchIdSafeWalletContractInitializer
@@ -102,10 +115,22 @@ export class MyWalletApi extends SimpleAccountAPI {
       }
     }
     const TouchIdSafeWalletContractQValuesArray: Array<string> = [this.qValues[0], this.qValues[1]];
+    console.log("My getTouchIdSafeWalletContractInitializer  TouchIdSafeWalletContractQValuesArray", TouchIdSafeWalletContractQValuesArray)
+    
+    const bvm =  BananaVerificationModule__factory.connect(BVM, this.jsonRpcProvider)
+    
+    let bvmSetupData = bvm.interface.encodeFunctionData(
+      // @ts-ignore
+        "initForSmartAccount",
+        [TouchIdSafeWalletContractQValuesArray]
+      );
+    console.log("getAccountInitCode bvmSetupData", bvmSetupData)
+    
     return hexConcat([
       this.factory.address,
       // this.factory.interface.encodeFunctionData('createProxyWithNonce', [this.singletonTouchIdSafeAddress, this.getTouchIdSafeWalletContractInitializer(), this.saltNonce.toString()])
-      this.factory.interface.encodeFunctionData('deployCounterFactualAccount', [TouchIdSafeWalletContractQValuesArray, this.saltNonce.toString()])
+      this.factory.interface.encodeFunctionData('deployCounterFactualAccount', 
+      [BVM, bvmSetupData, this.saltNonce.toString()])
     ])
   }
 
@@ -147,8 +172,21 @@ export class MyWalletApi extends SimpleAccountAPI {
     // console.log('this._qValues[0]', this._qValues[0])
     console.log('this.qValues', this.qValues)
     const TouchIdSafeWalletContractQValuesArray: Array<BigNumberish> = [this.qValues[0], this.qValues[1]];
-        // @ts-ignore
-    const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddressForCounterFactualAccount(TouchIdSafeWalletContractQValuesArray, this.saltNonce.toString());
+    console.log("My getTouchIdSafeWalletContractInitializer  TouchIdSafeWalletContractQValuesArray", TouchIdSafeWalletContractQValuesArray)
+    
+    // @ts-ignore
+    const bvm = BananaVerificationModule__factory.connect(BVM, this.jsonRpcProvider)
+    let bvmSetupData = bvm.interface.encodeFunctionData(
+      // @ts-ignore
+        "initForSmartAccount",
+        [TouchIdSafeWalletContractQValuesArray]
+      );
+    console.log("bvmSetupData", bvmSetupData)
+    console.log("bvm", bvm)
+
+    const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddressForCounterFactualAccount(BVM, bvmSetupData, 0);
+    
+    // const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddressForCounterFactualAccount(BVM, bvmSTouchIdSafeWalletContractQValuesArray, this.saltNonce.toString());
     // const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.singletonTouchIdSafeAddress, this.saltNonce.toString(), TouchIdSafeWalletContractInitializer);
 
     console.log("Address gen; ", TouchIdSafeWalletContractAddress);
