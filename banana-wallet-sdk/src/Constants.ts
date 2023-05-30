@@ -55,7 +55,7 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
             }
         case Chains.shibuyaTesnet:
             return {
-                "entryPointAddress": "0xCBd3e6f218324fE98497A071f8ADf508BC685d7b",
+                "entryPointAddress": "0xA7cc3550BA16c786ca5Ce2C8bE97b24b5194A41e",
                 "bundlerUrl": "http://localhost:3000/rpc"
             }
      }
