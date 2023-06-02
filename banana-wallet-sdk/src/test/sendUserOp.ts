@@ -1,6 +1,8 @@
 import { ethers } from "ethers"
 import { EntryPoint__factory } from "@account-abstraction/contracts"
 import { UserOperationStruct } from "@account-abstraction/contracts"
+import { Chains } from "../Constants"
+import { getClientConfigInfo } from "../Constants"
 
 export const sendTransaction = async (userOp: UserOperationStruct) => {
 
@@ -21,14 +23,15 @@ export const sendTransaction = async (userOp: UserOperationStruct) => {
     console.log('txn call ', txnCall)
     const txn = {
         // to: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
-        to: '0xd31515af7B8cDD51f5eDE86c898b92bc2FBF6a6E',
+        // to: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
+        to: getClientConfigInfo(Chains.polygonZkevmTestnet).entryPointAddress,
         from: '0x48701dF467Ba0efC8D8f34B2686Dc3b0A0b1cab5',
         data: txnCall.data,
-        gasLimit: '0x989680'
+        gasLimit: '0x2DC6C0'
     }
 
     console.log('txn data ', txn);
-    const txnReceipt = wallet.sendTransaction(txn);
+    const txnReceipt = await wallet.sendTransaction(txn);
 
     console.log('rceipt ', txnReceipt);
     (await txnReceipt).wait();

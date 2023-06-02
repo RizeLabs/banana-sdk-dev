@@ -67,7 +67,7 @@ export class BananaSigner extends ERC4337EthersSigner {
       target: tx.to ?? "",
       data: tx.data?.toString() ?? "",
       value: tx.value,
-      gasLimit: '0x989680',
+      gasLimit: '0xF4240',
       maxFeePerGas,
       maxPriorityFeePerGas
     });
@@ -107,6 +107,7 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation
       );
     try {
+      console.log("final user op before  sending ", userOperation);
       const txn = await sendTransaction(userOperation);
       console.log(' sent via eoa ', txn);
       // await this.httpRpcClient.sendUserOpToBundler(userOperation);
