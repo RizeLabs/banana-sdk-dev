@@ -1,6 +1,7 @@
 import { ethers } from "ethers"
-import { EntryPoint__factory } from "@account-abstraction/contracts"
+// import { EntryPoint__factory } from "@account-abstraction/contracts"
 import { UserOperationStruct } from "@account-abstraction/contracts"
+import { EntryPoint__factory } from "../updatedTypes"
 import { Chains } from "../Constants"
 import { getClientConfigInfo } from "../Constants"
 
@@ -13,7 +14,9 @@ export const sendTransaction = async (userOp: UserOperationStruct) => {
     const wallet = new ethers.Wallet(privateKey, provider)
     console.log('wallet here ', wallet);
 
-    const entrypoint = EntryPoint__factory.connect('0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789', provider);
+    // const entrypoint = EntryPoint__factory.connect('0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789', provider);
+    const entrypoint = EntryPoint__factory.connect('0x3ab7eA73a17B5429598C8F27F9644A94B49FCFCA', provider);
+    // 0x3ab7eA73a17B5429598C8F27F9644A94B49FCFCA
 
     const hash = await entrypoint.getUserOpHash(userOp);
     console.log('hash ', hash);
