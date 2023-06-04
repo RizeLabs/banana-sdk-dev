@@ -75,14 +75,14 @@ export class BananaSigner extends ERC4337EthersSigner {
       .add(ethers.BigNumber.from(userOperation?.callGasLimit))
       .add(ethers.BigNumber.from(userOperation?.preVerificationGas));
     let currentGasPrice = await this.jsonRpcProvider.getGasPrice();
-    let minBalanceRequired = minGasRequired.mul(currentGasPrice);
+    let minBalanceRequiredForGas = minGasRequired.mul(currentGasPrice);
     //@ts-ignore
     let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(
       userOperation?.sender
     );
 
-    if (userBalance.lt(minBalanceRequired)) {
-      throw new Error("ERROR: Insufficient balance in Wallet");
+    if (userBalance.lt(minBalanceRequiredForGas)) {
+      throw new Error("ERROR: Insufficient balance in wallet for gas");
     }
 
     const message = await this.smartAccountAPI.getUserOpHash(userOperation);
@@ -93,7 +93,7 @@ export class BananaSigner extends ERC4337EthersSigner {
       signatureObtained =
         await this.bananaTransporterInstance.getUserOpSignature(
           tx,
-          parseInt(minGasRequired._hex).toString(),
+          parseInt(minBalanceRequiredForGas._hex).toString(),
           message
         );
 
