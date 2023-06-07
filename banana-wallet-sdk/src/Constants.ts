@@ -10,6 +10,10 @@ export const GOERLI_RPC = 'https://eth-goerli.g.alchemy.com/v2/IaVkSX3wU98rK7vpV
 export const GNOSIS_RPC = 'https://rpc.gnosischain.com/';
 export const CHIADO_TESTNET_RPC = 'https://rpc.chiado.gnosis.gateway.fm';
 export const SHIBUYA_TESTNET_RPC = 'https://evm.shibuya.astar.network';
+export const ENTRYPOINT_ADDRESS = '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789';
+export const BUNDLER_EOA_PUBLIC_KEY = '0x48701dF467Ba0efC8D8f34B2686Dc3b0A0b1cab5';
+export const BUNDLER_EOA_PRIVATE_KEY = '0xed096a60e1af7c04519965c9e1fe105b2cd287afd49e4f1d77744f91ab5eb36e';
+export const BENEFICIARY = '0xF9ca16Fb8D6F38d36505961dAd69d2011C4695cF';
 
 export enum Chains {
     goerli = 5,
