@@ -155,6 +155,7 @@ export interface EntryPointInterface extends utils.Interface {
     "balanceOf(address)": FunctionFragment;
     "depositTo(address)": FunctionFragment;
     "deposits(address)": FunctionFragment;
+    "executeOps((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address)": FunctionFragment;
     "getDepositInfo(address)": FunctionFragment;
     "getNonce(address,uint192)": FunctionFragment;
     "getSenderAddress(bytes)": FunctionFragment;
@@ -176,6 +177,7 @@ export interface EntryPointInterface extends utils.Interface {
       | "balanceOf"
       | "depositTo"
       | "deposits"
+      | "executeOps"
       | "getDepositInfo"
       | "getNonce"
       | "getSenderAddress"
@@ -216,6 +218,10 @@ export interface EntryPointInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "deposits",
     values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "executeOps",
+    values: [UserOperationStruct[], PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "getDepositInfo",
@@ -278,6 +284,7 @@ export interface EntryPointInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "depositTo", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "deposits", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "executeOps", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getDepositInfo",
     data: BytesLike
@@ -521,6 +528,12 @@ export interface EntryPoint extends BaseContract {
       }
     >;
 
+    executeOps(
+      ops: UserOperationStruct[],
+      beneficiary: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     getDepositInfo(
       account: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -623,6 +636,12 @@ export interface EntryPoint extends BaseContract {
     }
   >;
 
+  executeOps(
+    ops: UserOperationStruct[],
+    beneficiary: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   getDepositInfo(
     account: PromiseOrValue<string>,
     overrides?: CallOverrides
@@ -720,6 +739,12 @@ export interface EntryPoint extends BaseContract {
         withdrawTime: number;
       }
     >;
+
+    executeOps(
+      ops: UserOperationStruct[],
+      beneficiary: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     getDepositInfo(
       account: PromiseOrValue<string>,
@@ -918,6 +943,12 @@ export interface EntryPoint extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    executeOps(
+      ops: UserOperationStruct[],
+      beneficiary: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     getDepositInfo(
       account: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -1009,6 +1040,12 @@ export interface EntryPoint extends BaseContract {
     deposits(
       arg0: PromiseOrValue<string>,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    executeOps(
+      ops: UserOperationStruct[],
+      beneficiary: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     getDepositInfo(

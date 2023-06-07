@@ -20,7 +20,7 @@ import {
 import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
 import { Banana4337Provider } from "./Banana4337Provider";
 import { getGasFee } from "./utils/GetGasFee";
-import { sendTransaction } from "./test/sendUserOp";
+import { reallySendTransaction, sendTransaction } from "./test/sendUserOp";
 
 export class BananaSigner extends ERC4337EthersSigner {
   jsonRpcProvider: JsonRpcProvider;
@@ -52,6 +52,76 @@ export class BananaSigner extends ERC4337EthersSigner {
 
   // need to do some changes in it
   async sendTransaction(
+    transaction: Deferrable<TransactionRequest>
+  ): Promise<TransactionResponse> {
+    const tx: TransactionRequest = await this.populateTransaction(transaction);
+    await this.verifyAllNecessaryFields(tx);
+    // const { maxFeePerGas, maxPriorityFeePerGas } = await getGasFee(new ethers.providers.JsonRpcProvider('https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4'));
+    const { maxFeePerGas, maxPriorityFeePerGas } = await getGasFee(this.jsonRpcProvider);
+    console.log(' max fee per gas ', maxFeePerGas)
+    console.log(' max priority fee per gas '
+    , maxPriorityFeePerGas);
+
+    console.log('gas limit ', tx.gasLimit);
+    console.log("Contract code ba", await this.jsonRpcProvider.getCode("0xE9156Aeb0c83ea815FFfF78fba7551eE3621509e"))
+    console.log("Baalance of ba ", await this.jsonRpcProvider.getBalance("0xE9156Aeb0c83ea815FFfF78fba7551eE3621509e"))
+    let userOperation = await this.smartAccountAPI.createUnsignedUserOp({
+      target: tx.to ?? "",
+      data: tx.data?.toString() ?? "",
+      value: tx.value,
+      gasLimit: '0xF4240',
+      maxFeePerGas,
+      maxPriorityFeePerGas
+    });
+    let processStatus = true;
+    while (processStatus) {
+      let minGasRequired = ethers.BigNumber.from(userOperation?.callGasLimit)
+        .add(ethers.BigNumber.from(userOperation?.verificationGasLimit))
+        .add(ethers.BigNumber.from(userOperation?.callGasLimit));
+      let currentGasPrice = await this.jsonRpcProvider.getGasPrice();
+      let minBalanceRequired = minGasRequired.mul(currentGasPrice);
+      //@ts-ignore
+      let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(
+        userOperation?.sender
+      );
+      console.log(' has ', userBalance)
+      console.log('require ', minBalanceRequired)
+      // if (userBalance.lt(minBalanceRequired)) {
+      //   throw new Error("ERROR: Insufficient balance in Wallet");
+      // }
+
+      userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
+      userOperation.verificationGasLimit = 1.5e6;
+      userOperation.callGasLimit = 10e6;
+      const message = await this.smartAccountAPI.getUserOpHash(userOperation);
+      const { newUserOp, process } = await this.signUserOp(
+        userOperation as any,
+        message,
+        this.encodedId
+      );
+      if (process === "success") {
+        userOperation = newUserOp;
+        processStatus = false;
+      }
+    }
+    const transactionResponse =
+      await this.erc4337provider.constructUserOpTransactionResponse(
+        userOperation
+      );
+    try {
+      console.log("final user op before  sending ", userOperation);
+      const txn = await sendTransaction(userOperation);
+      console.log(' sent via eoa ', txn);
+      // await this.httpRpcClient.sendUserOpToBundler(userOperation);
+    } catch (error: any) {
+      // console.error('sendUserOpToBundler failed', error)
+      throw this.unwrapError(error);
+    }
+    // TODO: handle errors - transaction that is "rejected" by bundler is _not likely_ to ever resolve its "wait()"
+    return transactionResponse;
+  }
+
+  async reallySendTransaction(
     transaction: Deferrable<TransactionRequest>
   ): Promise<TransactionResponse> {
     const tx: TransactionRequest = await this.populateTransaction(transaction);
@@ -106,9 +176,10 @@ export class BananaSigner extends ERC4337EthersSigner {
       await this.erc4337provider.constructUserOpTransactionResponse(
         userOperation
       );
+    userOperation.initCode = '0x';
     try {
       console.log("final user op before  sending ", userOperation);
-      const txn = await sendTransaction(userOperation);
+      const txn = await reallySendTransaction(userOperation);
       console.log(' sent via eoa ', txn);
       // await this.httpRpcClient.sendUserOpToBundler(userOperation);
     } catch (error: any) {

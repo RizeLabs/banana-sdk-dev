@@ -134,6 +134,11 @@ export class MyWalletApi extends SimpleAccountAPI {
   async encodeExecute (target: string, value: BigNumberish, data: string): Promise<string> {
     const accountContract = await this._getAccountContract()
     const delegateCall = ethers.BigNumber.from("0")
+    console.log("encodeExecute")
+    console.log("target", target)
+    console.log("value", value)
+    console.log("data", data)
+    console.log("delegateCall", delegateCall)
     return accountContract.interface.encodeFunctionData(
       'execTransactionFromEntrypoint',
       [

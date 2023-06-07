@@ -62,7 +62,7 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
                 // "entryPointAddress": "0x74CB3f9FFfFb1E50800af1694AB1d9F8b2D88B11",
                 // "entryPointAddress": "0x309159662e2395293BEDC08c27d2818aD4b1A89d",
                 // "entryPointAddress": "0xA9B2bd6D884F35392704595c0b18869DA436317d", // -- working
-                "entryPointAddress": "0x3ab7eA73a17B5429598C8F27F9644A94B49FCFCA",
+                "entryPointAddress": "0x4A460a27933eCfB79919aBD5ac30E19Ce63D1656",
                 "bundlerUrl": "http://localhost:3000/rpc"
             }
         case Chains.mantleTestnet:  

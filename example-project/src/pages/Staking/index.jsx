@@ -48,7 +48,7 @@ const Staking = () => {
   // const stakeAddress = '0x18f6cc0B39d22Ba4fE860abE2dF445096078f94d'
 
   // zkevm
-  const stakeAddress = '0x6db93dE0F3d89bB39a30560C2088a878862E6726';
+  const stakeAddress = '0xE242317D3db7ebA0136FB65A2F5a43443eDbb8De';
 
   // localhost
   // const stakeAddress = '0x51C65cd0Cdb1A8A8b79dfc2eE965B1bA0bb8fc89'
@@ -65,8 +65,25 @@ const Staking = () => {
     const bananaInstance = signerContext.bananaInstance;
     const signedMesage = await signer.signBananaMessage(sampleMsg);
     console.log("Signed message and status: ", signedMesage);
+    
+
     // const isVerified = await bananaInstance.verifySignature(signedMesage.signature, signedMesage.messageToBeSigned, await bananaInstance.getEOAAddress()); 
     // console.log("Is verified: ", isVerified);
+  }
+
+  const makeTransaction = async () => {
+    if(!signer) await connectAccount();
+    const tx = {
+      gasLimit: '0xF4240',
+      to: stakeAddress,
+      value: ethers.utils.parseEther(amount),
+      data: new ethers.utils.Interface(StakingArtifact.abi).encodeFunctionData('stake', [])
+    } 
+    console.log("data in UI", new ethers.utils.Interface(StakingArtifact.abi).encodeFunctionData('stake', []))
+    console.log("value in UI", ethers.utils.parseEther(amount))
+    const txn = await signer.reallySendTransaction(tx);
+    console.log("transaction ", txn);
+    toast.success("Successfully staked your funds !!");
   }
 
   const resetWallet = async () => {
@@ -87,6 +104,13 @@ const Staking = () => {
     if(result){
       stakeAfterAuth()
     }
+    setShowPopover(false);
+  };
+
+  const reallyHandleConfirm = (result) => {
+    // if(result){
+    //   reallyStakeAfterAuth()
+    // }
     setShowPopover(false);
   };
   
@@ -110,6 +134,8 @@ const Staking = () => {
         value: ethers.utils.parseEther(amount),
         data: new ethers.utils.Interface(StakingArtifact.abi).encodeFunctionData('stake', [])
       }
+      console.log("data in UI", new ethers.utils.Interface(StakingArtifact.abi).encodeFunctionData('stake', []))
+    console.log("value in UI", ethers.utils.parseEther(amount))
     //  const provider = new ethers.providers.JsonRpcProvider(
     //     // this.jsonRpcProviderUrl
     //     "https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4"
@@ -138,6 +164,55 @@ const Staking = () => {
     // }
     setIsLoading(false);
   };
+
+  // const reallyStakeAfterAuth = async () => {
+
+  //   setIsLoading(true);
+  //   if(!signer) await connectAccount();
+  //   //@ts-ignore
+  //   // const bananaInstance = new Banana(Chains.goerli);
+
+  //   // const scwAddress = localStorage.getItem('SCWAddress');
+
+  //   // if (scwAddress) {
+  //     console.log("Here !!");
+  //     // let aaProvider = await bananaInstance.getBananaProvider();
+  //     // console.log("AA Provider",aaProvider)
+  //     // let aaSigner = aaProvider.getSigner();
+  //     const tx = {
+  //       gasLimit: '0xF4240',
+  //       to: stakeAddress,
+  //       value: ethers.utils.parseEther(amount),
+  //       data: new ethers.utils.Interface(StakingArtifact.abi).encodeFunctionData('stake', [])
+  //     }
+  //   //  const provider = new ethers.providers.JsonRpcProvider(
+  //   //     // this.jsonRpcProviderUrl
+  //   //     "https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4"
+  //   //   );
+  //   //   let StakingContract = new ethers.Contract(
+  //   //     stakeAddress,
+  //   //     StakingArtifact.abi,
+  //   //     // aaSigner
+  //   //     provider
+  //   //   );
+  //   //   const stakingCallData = StakingContract.interface.encodeFunctionData(
+  //   //     "stake",
+  //   //     []
+  //   //   );
+
+  //     // const txn = await bananaInstance.execute(stakingCallData, stakeAddress, amount)
+  //     // console.log(" this is txn ", txn);
+  //     const txn = await signer.reallySendTransaction(tx);
+  //     console.log("transaction ", txn);
+  //     // const receipt = await txn.wait();
+  //     // console.log("txn receipt ", receipt)
+
+  //     toast.success("Successfully staked your funds !!");
+  //   // } else {
+  //   //   toast.error("SCW Wallet not connected !!");
+  //   // }
+  //   setIsLoading(false);
+  // };
 
   return (
     <div className="staking">
@@ -192,6 +267,7 @@ const Staking = () => {
                         onConfirm={handleConfirm}
                 />)}
             </div>
+            <button onClick={() => makeTransaction()} > Make Transaction </button>
             <button onClick={() => signMessage()} > sign message </button>
             <button onClick={() => resetWallet()} > Reset Wallet </button>
           </div>
