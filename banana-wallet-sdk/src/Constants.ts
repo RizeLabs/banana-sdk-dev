@@ -22,7 +22,7 @@ export enum Chains {
     arbitrumTestnet = 421613,
     gnosis = 100,
     chiadoTestnet = 10200,
-    shibuyaTesnet = 81,
+    shibuyaTestnet = 81,
 }
 
 export function getClientConfigInfo(chain: Chains): ClientConfig {
@@ -57,7 +57,7 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
                 "entryPointAddress": "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
                 "bundlerUrl": "https://api.pimlico.io/v1/chiado-testnet/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445"
             }
-        case Chains.shibuyaTesnet:
+        case Chains.shibuyaTestnet:
             return {
                 "entryPointAddress": "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
                 "bundlerUrl": SHIBUYA_TESTNET_RPC
@@ -109,7 +109,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
             "TouchIdSafeWalletContractSingletonAddress": "0xF1Fae5392dce474fc1c2D98c645f438d6c760E78",
             "fallBackHandlerAddress": "0xB88902418706f095E831E80bA766c151d3E1848D"
         };
-        case Chains.shibuyaTesnet:
+        case Chains.shibuyaTestnet:
         return {
             "Elliptic": "0x3f0dD0521518cd0c6833eD2622aDe9a813f7E56e",
             "TouchIdSafeWalletContractProxyFactoryAddress": "0x02Da54e40c004fF59a904E98EDF4e1Ad9bb2aC82",
@@ -146,7 +146,7 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
         return {
             jsonRpcUrl: CHIADO_TESTNET_RPC
         }
-        case Chains.shibuyaTesnet:
+        case Chains.shibuyaTestnet:
         return {
             jsonRpcUrl: SHIBUYA_TESTNET_RPC
         }
