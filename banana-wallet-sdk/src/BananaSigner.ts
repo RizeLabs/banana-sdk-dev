@@ -90,14 +90,20 @@ export class BananaSigner extends ERC4337EthersSigner {
         processStatus = false;
       }
     }
-    const transactionResponse =
+    let transactionResponse =
       await this.erc4337provider.constructUserOpTransactionResponse(
         userOperation
       );
     try {
-      //! enable it once we have supported bundler
-      // await this.httpRpcClient.sendUserOpToBundler(userOperation);
-      const receipt = await sendTransaction(userOperation);
+
+      const networkInfo = await this.jsonRpcProvider.getNetwork();
+      if(networkInfo.chainId === 81) {
+        //! sending UserOp directly to ep for shibuya
+        const receipt = await sendTransaction(userOperation);
+        transactionResponse = receipt;
+      } else {
+        await this.httpRpcClient.sendUserOpToBundler(userOperation);
+      }
     } catch (error: any) {
       console.error('sendUserOpToBundler failed', error)
       throw this.unwrapError(error);
