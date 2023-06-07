@@ -172,17 +172,17 @@ async function main() {
 
 
 	/********************************************************************* ******************************** ******************************** ********************************  */
-    const BananaAccountProxyFactory = await ethers.getContractFactory('BananaAccountProxyFactory');
-	const bananaTouchIdAccountProxyFactory = await BananaAccountProxyFactory.deploy();
-	console.log('BananaTouchIdAccountProxy Factory :', bananaTouchIdAccountProxyFactory.address);
+    // const BananaAccountProxyFactory = await ethers.getContractFactory('BananaAccountProxyFactory');
+	// const bananaTouchIdAccountProxyFactory = await BananaAccountProxyFactory.deploy();
+	// console.log('BananaTouchIdAccountProxy Factory :', bananaTouchIdAccountProxyFactory.address);
 
-	const BananaAccount = await ethers.getContractFactory('BananaAccount');
-	const BananaAccountDeployer = await BananaAccount.deploy();
-	console.log('Banana Account:', BananaAccountDeployer.address);
+	// const BananaAccount = await ethers.getContractFactory('BananaAccount');
+	// const BananaAccountDeployer = await BananaAccount.deploy();
+	// console.log('Banana Account:', BananaAccountDeployer.address);
 
-	const TokenCallBackHandlerDeployer = await ethers.getContractFactory('TokenCallbackHandler');
-	const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
-	console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);
+	// const TokenCallBackHandlerDeployer = await ethers.getContractFactory('TokenCallbackHandler');
+	// const tokenCallBackHandlerDeployer = await TokenCallBackHandlerDeployer.deploy();
+	// console.log('Token callback handler :', tokenCallBackHandlerDeployer.address);
 
     // const ec = await ethers.getContractFactory('EllipticCurve');
 	// const ec_deployed = await ec.deploy();

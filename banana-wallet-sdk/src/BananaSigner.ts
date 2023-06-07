@@ -19,6 +19,7 @@ import {
 } from "@account-abstraction/sdk";
 import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
 import { Banana4337Provider } from "./Banana4337Provider";
+import { sendTransaction } from "./test/sendUserOp";
 
 export class BananaSigner extends ERC4337EthersSigner {
   jsonRpcProvider: JsonRpcProvider;
@@ -77,7 +78,7 @@ export class BananaSigner extends ERC4337EthersSigner {
       }
 
       userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
-      userOperation.verificationGasLimit = 1.5e6;
+      userOperation.verificationGasLimit = 3e6;
       const message = await this.smartAccountAPI.getUserOpHash(userOperation);
       const { newUserOp, process } = await this.signUserOp(
         userOperation as any,
@@ -89,14 +90,22 @@ export class BananaSigner extends ERC4337EthersSigner {
         processStatus = false;
       }
     }
-    const transactionResponse =
+    let transactionResponse =
       await this.erc4337provider.constructUserOpTransactionResponse(
         userOperation
       );
     try {
-      await this.httpRpcClient.sendUserOpToBundler(userOperation);
+
+      const networkInfo = await this.jsonRpcProvider.getNetwork();
+      if(networkInfo.chainId === 81) {
+        //! sending UserOp directly to ep for shibuya
+        const receipt = await sendTransaction(userOperation);
+        transactionResponse = receipt;
+      } else {
+        await this.httpRpcClient.sendUserOpToBundler(userOperation);
+      }
     } catch (error: any) {
-      // console.error('sendUserOpToBundler failed', error)
+      console.error('sendUserOpToBundler failed', error)
       throw this.unwrapError(error);
     }
     // TODO: handle errors - transaction that is "rejected" by bundler is _not likely_ to ever resolve its "wait()"
