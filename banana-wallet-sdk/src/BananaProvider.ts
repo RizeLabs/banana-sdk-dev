@@ -47,6 +47,7 @@ export class Banana {
   jsonRpcProviderUrl: string;
   addresses: ChainConfig;
   network: Chains
+  #isUserNameRequested = false
 
   constructor(readonly chain: Chains) {
     this.Provider = getClientConfigInfo(chain);
@@ -182,6 +183,10 @@ export class Banana {
     return ethers.utils.computeAddress(uncompressedPublicKey)
   }
 
+  getUsernameRequestStatus(): boolean {
+    return this.#isUserNameRequested;
+  }
+
   /**
    * @method getBananaProvider
    * @params none
@@ -285,6 +290,7 @@ export class Banana {
    */
 
   createWallet = async (): Promise<Wallet> => {
+      this.#isUserNameRequested = true;
       const walletIdentifier = await walletNameInput();
       await this.createSignerAndCookieObject(walletIdentifier);
       this.walletIdentifier = walletIdentifier
@@ -342,6 +348,7 @@ export class Banana {
       const walletName = this.cookie.getCookie("bananaUser");
       this.cookie.deleteCookie(walletName);
       this.cookie.deleteCookie("bananaUser");
+      this.#isUserNameRequested = false;
       return { success: true }
     } catch (err) {
       return { success: false, error: err }

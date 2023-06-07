@@ -9,6 +9,9 @@ import { ethers } from "ethers";
 import { SignerContext } from '../../context/signerProvider'
 import TransactionPopover from "../../components/Popup/index"
 import { GetAccount } from '../../hooks/web3Hook'
+import ERC20 from '../../abi/ERC20.json'
+import ERC721 from '../../abi/ERC721.json'
+import { BananaAccount__factory } from "@rize-labs/banana-wallet-sdk/src/types";
 
 const Staking = () => {
   const [amount, setAmount] = useState("");
@@ -39,7 +42,8 @@ const Staking = () => {
   // const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
 
   // shibuya 
-  const stakeAddress = '0x12cB6cdd140A01044ED575828EbE8F9DdBa5fb6A'
+  // const stakeAddress = '0x12cB6cdd140A01044ED575828EbE8F9DdBa5fb6A'
+  const stakeAddress = '0x54c1d3De7e3dCf4Ec62195542CA642f128a023Bf';
 
   // arbitrum testnet staking 
   // const stakeAddress = '0x19eEc1aE90bdC20C1c52DeD3273eEb78A08696A5'
@@ -82,6 +86,187 @@ const Staking = () => {
     }
     setShowPopover(false);
   };
+
+  const erc721Transfer = async () => {
+    const bananaERCTokenAddress = '0x177069b755F6ACC4EA7A9777D05f35AfC67A936A';
+    const walletAddress = await walletInstance.getAddress();
+    let bananContract = new ethers.Contract(
+      bananaERCTokenAddress,
+      ERC721,
+      signer
+    );
+
+    const transferFromCallData = bananContract.interface.encodeFunctionData('transferFrom', [
+      walletAddress,
+      "0xA8458B544c551Af2ADE164C427a8A4F13A346F2A",
+      "2"
+    ]);
+
+    const tx1 = {
+      gasLimit: '0x55555',
+      to: bananaERCTokenAddress,
+      value: 0,
+      data: transferFromCallData
+    }
+
+    let txn = await signer.sendTransaction(tx1);
+
+    console.log(txn);
+    toast.success("Successfully Claimed 100 BNT Tokens!!");
+    setIsLoading(false);
+  }
+
+  const mintERC721 = async () => {
+    const bananaERCTokenAddress = '0x177069b755F6ACC4EA7A9777D05f35AfC67A936A';
+    const walletAddress = await walletInstance.getAddress();
+    let bananContract = new ethers.Contract(
+      bananaERCTokenAddress,
+      ERC721,
+      signer
+    );
+
+    const transferCallData = bananContract.interface.encodeFunctionData("safeMint", [
+      walletAddress
+    ]);
+
+    const tx1 = {
+      gasLimit: '0x55555',
+      to: bananaERCTokenAddress,
+      value: 0,
+      data: transferCallData
+    }
+
+    let txn = await signer.sendTransaction(tx1);
+
+    console.log(txn);
+    toast.success("Successfully Claimed 100 BNT Tokens!!");
+    setIsLoading(false);
+  }
+
+  const nativeTransfer = async () => {
+    // const BananaAccount = BananaAccount__factory.connect('0xe33fCA6E9A75529407224c593783aF778b80DC2a',signer);
+
+    // const nativeTransferCall = await BananaAccount.populateTransaction.execTransactionFromEntrypoint(
+    //   '0x48701dF467Ba0efC8D8f34B2686Dc3b0A0b1cab5',
+    //   ethers.utils.parseEther("0.001"),
+    //   "0x",
+    //   ethers.BigNumber.from("0")
+    // );
+
+    // const walletAddress = await walletInstance.getAddress();
+    const tx1 = {
+        gasLimit: '0x55555',
+        to: '0xF9ca16Fb8D6F38d36505961dAd69d2011C4695cF',
+        value: ethers.utils.parseEther("0.01"),
+        data: "0x"
+      };
+
+      let txn = await signer.sendTransaction(tx1);
+
+      console.log(txn);
+      toast.success("Successfully Claimed 100 BNT Tokens!!");
+      setIsLoading(false);
+  };
+
+  const transferErc20 = async () => {
+    const bananaAddress = '0x66af7a792B10B2f6C32bA478890a9a8Ddf98066F';
+
+    const walletAddress = await walletInstance.getAddress();
+    let bananContract = new ethers.Contract(
+      bananaAddress,
+      ERC20,
+      signer
+    );
+
+    const transferCallData = bananContract.interface.encodeFunctionData("transfer", [
+      "0xF9ca16Fb8D6F38d36505961dAd69d2011C4695cF",
+      ethers.utils.parseEther("100")
+    ]);
+
+    try {
+      // const txn = await bananaWalletInstance.execute(
+      //     mintingCallData,
+      //     bananaAddress,
+      //     "0"
+      // );
+      const tx1 = {
+        gasLimit: '0x55555',
+        to: bananaAddress,
+        value: 0,
+        data: transferCallData
+      }
+
+      let txn = await signer.sendTransaction(tx1);
+
+      console.log(txn);
+      toast.success("Successfully Claimed 100 BNT Tokens!!");
+      setIsLoading(false);
+  } catch (err) {
+      toast("Your new wallet is ready! Please refresh");
+      setIsLoading(false);
+      // setFailModalStatus(true);
+      console.log(err);
+  }
+
+  }
+
+  const mintERC20 = async () => {
+      setIsLoading(true);
+      const bananaAddress = '0x66af7a792B10B2f6C32bA478890a9a8Ddf98066F';
+
+      const walletAddress = await walletInstance.getAddress();
+      let bananContract = new ethers.Contract(
+        bananaAddress,
+        ERC20,
+        signer
+      );
+
+      const mintingCallData = bananContract.interface.encodeFunctionData("mint", [
+        walletAddress,
+        ethers.utils.parseEther("1000000")
+      ]);
+
+      try {
+          // const txn = await bananaWalletInstance.execute(
+          //     mintingCallData,
+          //     bananaAddress,
+          //     "0"
+          // );
+          const tx1 = {
+            gasLimit: '0x55555',
+            to: bananaAddress,
+            value: 0,
+            data: mintingCallData
+          }
+  
+          let txn = await signer.sendTransaction(tx1);
+  
+          console.log(txn);
+          toast.success("Successfully Claimed 100 BNT Tokens!!");
+          setIsLoading(false);
+      } catch (err) {
+          toast("Your new wallet is ready! Please refresh");
+          setIsLoading(false);
+          // setFailModalStatus(true);
+          console.log(err);
+      }
+  }
+
+  const getBalance = async () => {
+    // balanceOf
+    const bananaAddress = '0x66af7a792B10B2f6C32bA478890a9a8Ddf98066F';
+
+    const walletAddress = await walletInstance.getAddress();
+    let bananContract = new ethers.Contract(
+      bananaAddress,
+      ERC20,
+      signer
+    );
+    console.log(bananContract);
+    const erc20Balance = await bananContract.balanceOf(walletAddress);
+
+    console.log('erc20 balance ', erc20Balance);
+  }
   
   const stakeAfterAuth = async () => {
 
@@ -178,6 +363,12 @@ const Staking = () => {
             ) : (
               <button onClick={handleStake}>Stake</button>
             )}
+            <button onClick={() => erc721Transfer()}> Transfer 721 </button>
+            <button onClick={() => mintERC721()}> Mint 721 </button>
+            <button onClick={() => mintERC20()}> Mint </button>
+            <button onClick={() => getBalance()}> Balance </button>
+            <button onClick={() => transferErc20()}> Transfer </button>
+            <button onClick={() => nativeTransfer()}> Native Transfer </button>
             <div>
                 {showPopover && ( <TransactionPopover
                         to={stakeAddress}

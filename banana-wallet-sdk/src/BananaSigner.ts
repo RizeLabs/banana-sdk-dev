@@ -78,7 +78,7 @@ export class BananaSigner extends ERC4337EthersSigner {
       }
 
       userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
-      userOperation.verificationGasLimit = 1.5e6;
+      userOperation.verificationGasLimit = 3e6;
       const message = await this.smartAccountAPI.getUserOpHash(userOperation);
       const { newUserOp, process } = await this.signUserOp(
         userOperation as any,
@@ -95,11 +95,11 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation
       );
     try {
+      //! enable it once we have supported bundler
       // await this.httpRpcClient.sendUserOpToBundler(userOperation);
       const receipt = await sendTransaction(userOperation);
-      console.log("receipt ", receipt);
     } catch (error: any) {
-      // console.error('sendUserOpToBundler failed', error)
+      console.error('sendUserOpToBundler failed', error)
       throw this.unwrapError(error);
     }
     // TODO: handle errors - transaction that is "rejected" by bundler is _not likely_ to ever resolve its "wait()"
