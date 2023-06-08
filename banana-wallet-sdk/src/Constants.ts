@@ -12,6 +12,7 @@ export const CHIADO_TESTNET_RPC = 'https://rpc.chiado.gnosis.gateway.fm';
 export const ZKEVM_TESTNET_RPC = 'https://polygonzkevm-testnet.g.alchemy.com/v2/wEkYECwDd4ycMW5qmAcg6P48fJM0dmgr'
 export const MANTLE_TESTNET_RPC = 'https://rpc.testnet.mantle.xyz'
 export const LOCALNODE = "http://127.0.0.1:8545"
+export const ZKEVM_MAINNET_RPC = "https://zkevm-rpc.com"
 
 export enum Chains {
     goerli = 5,
@@ -23,6 +24,7 @@ export enum Chains {
     polygonZkevmTestnet = 1442,
     mantleTestnet = 5001,
     localhost = 8545,
+    zkevmMainnet = 1101
 }
 
 export function getClientConfigInfo(chain: Chains): ClientConfig {
@@ -73,6 +75,11 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
         case Chains.localhost:
             return {
                 "entryPointAddress": "0x8fC8CFB7f7362E44E472c690A6e025B80E406458",
+                "bundlerUrl": "http://localhost:3000/rpc"
+            }
+        case Chains.zkevmMainnet:
+            return {
+                "entryPointAddress": "0xF4C97eddF016e4135dd3325619450bddA12511B7",
                 "bundlerUrl": "http://localhost:3000/rpc"
             }
      }
@@ -143,6 +150,14 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
             "TouchIdSafeWalletContractSingletonAddress": "0xcE0066b1008237625dDDBE4a751827de037E53D2",
             "fallBackHandlerAddress": "0x82EdA215Fa92B45a3a76837C65Ab862b6C7564a8"
         }
+
+        case Chains.zkevmMainnet:
+        return {
+            "Elliptic": "0x87006e75a5B6bE9D1bbF61AC8Cd84f05D9140589",
+            "TouchIdSafeWalletContractProxyFactoryAddress": "0x5575eDe1a2d667299c4B18314583d0D37e87bc7e",
+            "TouchIdSafeWalletContractSingletonAddress": "0xAabac83dCaF48d9aBAe7Af0a7378C2E0E21f805C",
+            "fallBackHandlerAddress": "0xd364E56ba066f10d9f7Ef0471a96543d001a3cF8"
+        }
     }
 }
 
@@ -184,6 +199,10 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
         case Chains.localhost:
         return {
             jsonRpcUrl: LOCALNODE
+        }
+        case Chains.zkevmMainnet:
+        return {
+            jsonRpcUrl: ZKEVM_MAINNET_RPC
         }
     }
 }
