@@ -48,7 +48,10 @@ const Staking = () => {
   // const stakeAddress = '0x18f6cc0B39d22Ba4fE860abE2dF445096078f94d'
 
   // zkevm
-  const stakeAddress = '0xE242317D3db7ebA0136FB65A2F5a43443eDbb8De';
+  // const stakeAddress = '0xE242317D3db7ebA0136FB65A2F5a43443eDbb8De';
+
+  //zkEVMMainnet
+  const stakeAddress = '0x4a91a845719b2045e38991d072e2E651b833cFE9'
 
   // localhost
   // const stakeAddress = '0x51C65cd0Cdb1A8A8b79dfc2eE965B1bA0bb8fc89'
