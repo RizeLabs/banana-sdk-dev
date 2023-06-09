@@ -41,9 +41,12 @@ const Staking = () => {
   // polygo staking 
   // const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
 
+  // polygon mainnet
+  const stakeAddress = '0x8B220bc9529c0bc18265c1B822FcC579eE586bA2';
+
   // shibuya 
   // const stakeAddress = '0x12cB6cdd140A01044ED575828EbE8F9DdBa5fb6A'
-  const stakeAddress = '0x54c1d3De7e3dCf4Ec62195542CA642f128a023Bf';
+  // const stakeAddress = '0x54c1d3De7e3dCf4Ec62195542CA642f128a023Bf';
 
   // arbitrum testnet staking 
   // const stakeAddress = '0x19eEc1aE90bdC20C1c52DeD3273eEb78A08696A5'
