@@ -192,6 +192,10 @@ async function main() {
 	// const stDeployer = await st.deploy();
 	// console.log('staking :', stDeployer.address);
 
+	const st = await ethers.getContractFactory('Sample');
+	const stDeployer = await st.deploy();
+	console.log('staking :', stDeployer.address);
+
 // normalized for mumbai + opt + goerli 
 // owner add 0xB730423Bb7B354b1Ff0a2E8fd17ff57555C951a7
 // BananaTouchIdAccountProxy Factory : 0xF1Fae5392dce474fc1c2D98c645f438d6c760E78
