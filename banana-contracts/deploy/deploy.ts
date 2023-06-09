@@ -132,9 +132,9 @@ async function main() {
 
 
 
-	const ec = await ethers.getContractFactory('EllipticCurve');
-	const ec_deployed = await ec.deploy();
-	console.log('Elliptic :', ec_deployed.address);
+	// const ec = await ethers.getContractFactory('EllipticCurve');
+	// const ec_deployed = await ec.deploy();
+	// console.log('Elliptic :', ec_deployed.address);
 
 	// MAINNET addresses
 	// owner add 0xd04CF373e169db013e5E2Ff5Ce51Cc099881AfD1
@@ -147,9 +147,9 @@ async function main() {
 	// const stDeployer = await st.deploy();
 	// console.log('staking :', stDeployer.address);
 
-	// const BananaAccount = await ethers.getContractFactory('BananaAccount');
-	// const BananaAccountDeployer = await BananaAccount.deploy();
-	// console.log('Banana Account Singleton:', BananaAccountDeployer.address);
+	const BananaAccount = await ethers.getContractFactory('BananaAccount');
+	const BananaAccountDeployer = await BananaAccount.deploy();
+	console.log('Banana Account Singleton:', BananaAccountDeployer.address);
 	// 0xb124f5DB610f2aBC9b3A1b4297f9037b6D84A29A
 
 	// 	const BananaAccount = await ethers.getContractFactory('BananaTest');

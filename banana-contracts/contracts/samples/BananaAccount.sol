@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "../safe-contracts/Safe.sol";
 import "../interfaces/UserOperation.sol";
-import "./EllipticCurve.sol";
+import "./EllipticalCurveLibrary.sol";
 import "../utils/Exec.sol";
 import './Base64.sol';
 
@@ -251,8 +251,8 @@ contract BananaAccount is Safe {
 
         require(keccak256(base64RequestId) == clientDataJsonHash, "Signed userOp doesn't match");
 
-        bool success = EllipticCurve(ellipticCurve).validateSignature(
-            message,
+        bool success = Secp256r1.Verify(
+            uint(message),
             [r, s],
             qValues
         );

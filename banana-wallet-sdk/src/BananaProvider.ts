@@ -467,7 +467,10 @@ export class Banana {
   private constructAndSendUserOp = async (funcCallData: string, destination:string, value: string) => {
     const userOp = await this.contructUserOp(funcCallData, value, destination);
     //@ts-ignore
-    userOp.verificationGasLimit = 3e6;
+    userOp.verificationGasLimit = 1500000;
+    //@ts-ignore
+    userOp.callGasLimit = 40000;
+
     //@ts-ignore
     userOp.preVerificationGas = ethers.BigNumber.from(await userOp.preVerificationGas).add(5000);
     const entryPoint: EntryPoint = EntryPoint__factory.connect(
@@ -475,7 +478,7 @@ export class Banana {
       this.jsonRpcProvider
     );
     //@ts-ignore
-    userOp.nonce = 0x1;
+    // userOp.nonce = 0x1;
     const reqId = await this.accountApi.getUserOpHash(userOp as any);
     console.log("UserOpHash: ", reqId);
     let processStatus = true;

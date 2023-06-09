@@ -27,8 +27,8 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
             }
        case Chains.polygon:
             return {
-                "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
-                "bundlerUrl": "http://localhost:80/rpc" // polygon bundler 
+                "entryPointAddress": "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+                "bundlerUrl": "https://api.stackup.sh/v1/node/ae1b4f72151fb2b79b2e7486f1f84e23af70b434396318d023e50bfdd8a833c3" // polygon bundler 
             }
      }
 }
@@ -60,7 +60,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         return {
             "Elliptic": "0xd223a0D7cD198a5d448DeEdE81c63a3Ad4f244FC", //--
             "TouchIdSafeWalletContractProxyFactoryAddress": "0x9b601f8e34eff4Dffb7CA693626a584071B9588F", //--
-            "TouchIdSafeWalletContractSingletonAddress": "0xb124f5DB610f2aBC9b3A1b4297f9037b6D84A29A", //--
+            "TouchIdSafeWalletContractSingletonAddress": "0xf05f7FD2acdF4d677CC9F156E8AE44EcC72dF817", //--
             "fallBackHandlerAddress": "0x1dE8E294f6051d159095777051788B34609c9729"
         };
     }

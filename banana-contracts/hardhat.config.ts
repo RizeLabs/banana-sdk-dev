@@ -52,7 +52,7 @@ export default {
   },
   polygon: {
     url: 'https://polygon-mainnet.g.alchemy.com/v2/g2j1Tz-ydDeOQl_SSsPzNuoedaIzAzFk',
-    accounts: ["a66cf2b4bad26d3c10c0d6fc748f91f3fda596db7b6bc289c38bb3d3ff711e74"],
+    accounts: ["798074aa326d8743a7bad078a456c8962a0ca36972e136ecbdb664ffa128b2a8"],
   }
   },
   etherscan: {
