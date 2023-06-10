@@ -71,6 +71,7 @@ export class MyWalletApi extends SimpleAccountAPI {
       this.singletonTouchIdSafeAddress,
       this.provider
     );
+    console.log(" this is ep address ", this.entryPointAddress);
     const TouchIdSafeWalletContractQValuesArray: Array<string> = [this.qValues[0], this.qValues[1]];
     //@ts-ignore
     const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
@@ -118,6 +119,7 @@ export class MyWalletApi extends SimpleAccountAPI {
     if (await this.checkAccountPhantom()) {
       return BigNumber.from(0)
     }
+    console.log(" this is ep ", this.entryPointAddress);
     const entryPoint: EntryPoint = EntryPoint__factory.connect(
       this.entryPointAddress,
       this.provider
