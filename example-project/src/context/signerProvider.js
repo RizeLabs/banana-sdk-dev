@@ -1,7 +1,8 @@
 import { useState, createContext } from 'react'
-import { Chains } from '@rize-labs/banana-wallet-sdk/src/Constants';
+// import { Chains } from '@rize-labs/banana-wallet-sdk/src/Constants';
 // import { Banana } from '../sdk/BananaProvider';
-import { Banana } from "@rize-labs/banana-wallet-sdk/src/BananaProvider"
+// import { Banana } from "@rize-labs/banana-wallet-sdk/src/BananaProvider"
+import { Banana } from '@rize-labs/banana-wallet-sdk/src/BananaProvider'; 
 import React from 'react'
 import chain from "../utils/chain";
 export const SignerContext = createContext('signer-context')

@@ -4,12 +4,13 @@ import React from "react";
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 // import { Banana } from "../../sdk/BananaProvider";
-import { Banana } from "@rize-labs/banana-wallet-sdk/src/BananaProvider"
+// import { Banana } from "@rize-labs/banana-wallet-sdk/src/BananaProvider"
+import { Banana } from "@rize-labs/banana-wallet-sdk/src/BananaProvider";
 import { useEffect } from "react";
 import * as buffer from "buffer";
 import { BigNumberish, ethers } from "ethers";
 import { BallTriangle } from "react-loader-spinner";
-import { Chains } from "@rize-labs/banana-wallet-sdk/src/Constants";
+// import { Chains } from "@rize-labs/banana-wallet-sdk/src/Constants";
 import { SignerContext } from '../../context/signerProvider'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { FaRegCopy } from 'react-icons/fa'
