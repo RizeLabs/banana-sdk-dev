@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 import "../safe-contracts/Safe.sol";
 import "../interfaces/UserOperation.sol";
-import "./EllipticalCurveLibrary.sol";
+import "./Secp256r1.sol";
 import "../utils/Exec.sol";
 import './Base64.sol';
 
@@ -236,10 +236,16 @@ contract BananaAccount is Safe {
 
         require(keccak256(base64RequestId) == clientDataJsonHash, "Signed userOp doesn't match");
 
+        PassKeyId memory passKeyId = PassKeyId({
+            pubKeyX: qValues[0],
+            pubKeyY: qValues[1],
+            keyId: "abcd"
+        });
+
         bool success = Secp256r1.Verify(
-            uint(message),
-            [r, s],
-            qValues
+            passKeyId,
+            r, s,
+            uint(message)
         );
         // bytes32 hash = userOpHash.toEthSignedMessageHash();
         if (!success) return SIG_VALIDATION_FAILED;
