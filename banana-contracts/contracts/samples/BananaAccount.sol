@@ -218,6 +218,9 @@ contract BananaAccount is Safe {
         }
         return true;
     }
+    function toBytes(bytes32 _data) public pure returns (bytes memory) {
+    return abi.encodePacked(_data);
+  }
 
     /// implement template method of BaseAccount
     function _validateSignature(
@@ -225,16 +228,23 @@ contract BananaAccount is Safe {
         bytes32 userOpHash
     ) internal virtual returns (uint256 validationData) {
 
-         (uint r, uint s, bytes32 message, bytes32 clientDataJsonHash) = abi.decode(
+         (uint r, uint s, bytes memory authenticatorData, string memory clientDataJSONPre, string memory clientDataJSONPost) = abi.decode(
             userOp.signature,
-            (uint, uint, bytes32, bytes32)
+            (uint, uint, bytes, string, string)
         );
 
-        string memory userOpHashHex = lower(toHex(userOpHash));
+        string memory opHashBase64 = Base64.encode(bytes.concat(userOpHash));
+        string memory clientDataJSON = string.concat(clientDataJSONPre, opHashBase64, clientDataJSONPost);
+        bytes32 clientHash = sha256(bytes(clientDataJSON));
+        bytes32 message = sha256(bytes.concat(authenticatorData, clientHash));
 
-        bytes memory base64RequestId = bytes(Base64.encode(userOpHashHex));
+        // string memory userOpHashHex = lower(toHex(userOpHash));
 
-        require(keccak256(base64RequestId) == clientDataJsonHash, "Signed userOp doesn't match");
+        // bytes memory base64RequestId = bytes(Base64.encode(userOpHashHex));
+
+        // require(keccak256(base64RequestId) == clientDataJsonHash, "Signed userOp doesn't match");
+
+
 
         PassKeyId memory passKeyId = PassKeyId({
             pubKeyX: qValues[0],
