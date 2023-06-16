@@ -51,3 +51,10 @@ export interface ChainSpecificConfig {
 export interface ConnectOptions {
     networkId: string | number
 }
+
+export enum RequestType {
+    POST = 'POST',
+    GET = 'GET',
+    PUT = 'PUT',
+    DELETE = 'DELETE'
+};

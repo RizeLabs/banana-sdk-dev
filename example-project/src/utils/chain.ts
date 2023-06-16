@@ -1,3 +1,3 @@
 import { Chains } from "@rize-labs/banana-wallet-sdk/src/Constants";
 
-export default Chains.shibuyaTestnet;
+export default Chains.astar;
