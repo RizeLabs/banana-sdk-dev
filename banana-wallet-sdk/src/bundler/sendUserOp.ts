@@ -1,11 +1,11 @@
 import { ethers } from "ethers"
 import { EntryPoint__factory, UserOperationStruct } from "@account-abstraction/contracts"
-import { ENTRYPOINT_ADDRESS, SHIBUYA_TESTNET_RPC, BUNDLER_EOA_PUBLIC_KEY, BUNDLER_EOA_PRIVATE_KEY, BENEFICIARY } from "../Constants"
+import { ENTRYPOINT_ADDRESS, BUNDLER_EOA_PUBLIC_KEY, BUNDLER_EOA_PRIVATE_KEY, BENEFICIARY } from "../Constants"
+import { JsonRpcProvider } from "@ethersproject/providers";
 
-export const sendTransaction = async (userOp: UserOperationStruct) => {
+export const sendTransaction = async (userOp: UserOperationStruct, provider: JsonRpcProvider) => {
 
     //! Need to create service to for sending UserOp to ep
-    const provider = new ethers.providers.JsonRpcProvider(SHIBUYA_TESTNET_RPC);
     const wallet = new ethers.Wallet(BUNDLER_EOA_PRIVATE_KEY, provider)
     const entrypoint = EntryPoint__factory.connect(ENTRYPOINT_ADDRESS, provider);
     const txnCall = await entrypoint.populateTransaction.handleOps([userOp], BENEFICIARY);

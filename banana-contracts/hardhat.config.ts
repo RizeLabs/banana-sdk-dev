@@ -66,8 +66,12 @@ export default {
   shibuyaTestnet: {
     url: 'https://evm.shibuya.astar.network',
     accounts: ['4da13661e1deb6598ccc0f0963d86c1f5e1cfb748ccd66753fd7fa1339c92616']
+  },
+  astar: {
+    // url: 'https://astar-mainnet.g.alchemy.com/v2/AeVnumdmpgsZZfta5rnQDeI5CxXOK3Hw',
+    url: 'https://astar.public.blastapi.io',
+    accounts: ["adf160e8af90b3b93ad7a443ab3e976fd310aabe9e14dc3d88b2c006af2c1b91"]
   }
-
   },
   etherscan: {
     // apiKey: "YJ546HGGQFGMEE4B22QNGB58QKZ97G8YSP"

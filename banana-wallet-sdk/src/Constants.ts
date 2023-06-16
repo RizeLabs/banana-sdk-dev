@@ -3,7 +3,6 @@ import {
   ChainConfig,
   ChainSpecificConfig,
 } from "./interfaces/Banana.interface";
-import { Chain } from "./interfaces/Banana.interface";
 
 export const BANANA_APP = "https://bananawallet.xyz";
 export const BANANA_SERVER = "https://banana-server.xyz";
@@ -18,31 +17,13 @@ export const GOERLI_RPC =
 export const GNOSIS_RPC = "https://rpc.gnosischain.com/";
 export const CHIADO_TESTNET_RPC = "https://rpc.chiado.gnosis.gateway.fm";
 export const SHIBUYA_TESTNET_RPC = "https://evm.shibuya.astar.network";
+export const ASTAR_MAINNET_RPC = "https://astar.public.blastapi.io";
 export const ENTRYPOINT_ADDRESS = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
 export const BUNDLER_EOA_PUBLIC_KEY =
   "0x48701dF467Ba0efC8D8f34B2686Dc3b0A0b1cab5";
 export const BUNDLER_EOA_PRIVATE_KEY =
   "0xed096a60e1af7c04519965c9e1fe105b2cd287afd49e4f1d77744f91ab5eb36e";
 export const BENEFICIARY = "0xF9ca16Fb8D6F38d36505961dAd69d2011C4695cF";
-
-export const shibuyaChain = {
-  id: 81,
-  name: "Shibuya",
-  network: "shibuya",
-  nativeCurrency: {
-    decimals: 18,
-    name: "Shibuya",
-    symbol: "SBY",
-  },
-  rpcUrls: {
-    public: { http: ["https://evm.shibuya.astar.network"] },
-    default: { http: ["https://evm.shibuya.astar.network"] },
-  },
-  blockExplorers: {
-    etherscan: { name: "ShibuyaSubscan", url: "https://shibuya.subscan.io" },
-    default: { name: "ShibuyaSubscan", url: "https://shibuya.subscan.io" },
-  },
-} as Chain;
 
 export enum Chains {
   goerli = 5,
@@ -52,6 +33,7 @@ export enum Chains {
   gnosis = 100,
   chiadoTestnet = 10200,
   shibuyaTestnet = 81,
+  astar = 592,
 }
 
 export function getClientConfigInfo(chain: Chains): ClientConfig {
@@ -77,7 +59,7 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
     case Chains.arbitrumTestnet:
       return {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-        bundlerUrl: "http://localhost:80/rpc", // arbitrum bundler
+        bundlerUrl: "https://api.pimlico.io/v1/arbitrum-goerli/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445", // arbitrum bundler
       };
     case Chains.gnosis:
       return {
@@ -95,6 +77,11 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
       return {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
         bundlerUrl: SHIBUYA_TESTNET_RPC,
+      };
+    case Chains.astar:
+      return {
+        entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+        bundlerUrl: ASTAR_MAINNET_RPC
       };
   }
 }
@@ -164,6 +151,15 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
           "0xe33fCA6E9A75529407224c593783aF778b80DC2a",
         fallBackHandlerAddress: "0xC99154BA90386DCD0C5aF6CC8cc271e5aAF57176",
       };
+    case Chains.astar:
+    return {
+        Elliptic: "0x652D29F01fdF8d0c20F78f51bAc9B173B3a76a9B",
+        TouchIdSafeWalletContractProxyFactoryAddress:
+         "0x3A43b93362669087Be639e99B7a5B75d60E0B706",
+        TouchIdSafeWalletContractSingletonAddress:
+         "0x172F0658e4Bc99D97b6DA8880b9D4E1b7A26E407",
+        fallBackHandlerAddress: "0xbF86c32B55657f0DE7cf56aD1B6F1aB9843D0F46",
+    };
   }
 }
 
@@ -198,6 +194,10 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
       return {
         jsonRpcUrl: SHIBUYA_TESTNET_RPC,
       };
+    case Chains.astar:
+      return {
+        jsonRpcUrl: ASTAR_MAINNET_RPC,
+      }
   }
 }
 
