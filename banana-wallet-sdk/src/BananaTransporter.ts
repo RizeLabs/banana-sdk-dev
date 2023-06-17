@@ -8,27 +8,30 @@ import { TransactionRequest } from "@ethersproject/providers";
 import { ethers } from "ethers";
 import buildUrl from "./utils/urlBuilder";
 
-export interface BananaTransprtProvider {
+export interface BananaTransportProvider {
   getWalletName(): Promise<string>;
   getUserOpSignature(txn: TransactionRequest, minBalance: string, userOpHash: string): Promise<string>;
   getMessageSignature(message: string): Promise<string>;
 }
 
-export class BananaTransporter implements BananaTransprtProvider {
+export class BananaTransporter implements BananaTransportProvider {
   cookieInstance: BananaCookie
   constructor() {
     this.cookieInstance = new BananaCookie();
   }
 
   getWalletName(): Promise<string> {
+    console.log(' it hit it ');
     const sessionId = v4();
     const finalUrl = buildUrl(BANANA_APP_URL, {
-        path: ['connect', sessionId],
+        path: ['wallet', sessionId],
         queryParams: {
             dapp: window.location.hostname,
             isMobile: 'false',
         }
     });
+    console.log(" this is final url ", finalUrl);
+
     window.open(finalUrl, "_blank");
 
     return new Promise((resolve, reject) => {
@@ -48,7 +51,7 @@ export class BananaTransporter implements BananaTransprtProvider {
     const walletName = this.cookieInstance.getCookie('bananaUser');
     
     const finalUrl = buildUrl(BANANA_APP_URL, {
-        path: ['sign', sessionId],
+        path: ['wallet', 'sign', sessionId],
         queryParams: {
             message: message,
             walletname: walletName,
@@ -74,9 +77,9 @@ export class BananaTransporter implements BananaTransprtProvider {
     const sessionId = v4();
     const walletName = this.cookieInstance.getCookie('bananaUser');
     const walletMetaData: UserCredentialObject = this.cookieInstance.getCookie(walletName);
-
+    console.log(' this is wallet meta deta ', walletMetaData);
     const finalUrl = buildUrl(BANANA_APP_URL, {
-        path: ['confirm', sessionId],
+        path: ['wallet', 'transact', sessionId],
         queryParams: {
             to: txn.to,
             from: walletMetaData.walletAddress,
