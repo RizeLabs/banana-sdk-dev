@@ -10,8 +10,6 @@ export const OPTIMISM_TESTNET_RPC =
   "https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas";
 export const MUMBAI_RPC =
   "https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4";
-export const ARBITRUM_TESTNET_RPC =
-  "https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw";
 export const GOERLI_RPC =
   "https://eth-goerli.g.alchemy.com/v2/IaVkSX3wU98rK7vpVyFgIryaaHfYpoST";
 export const GNOSIS_RPC = "https://rpc.gnosischain.com/";
@@ -29,7 +27,6 @@ export enum Chains {
   goerli = 5,
   mumbai = 80001,
   optimismTestnet = 420,
-  arbitrumTestnet = 421613,
   gnosis = 100,
   chiadoTestnet = 10200,
   shibuyaTestnet = 81,
@@ -48,18 +45,13 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
       return {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
         bundlerUrl:
-          "https://api.stackup.sh/v1/node/4bdce488aaada61f31c31315a18106eda076b12836a9ab44158fbf7a5c6cbea9",
+          "https://api.pimlico.io/v1/mumbai/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445",
       };
     case Chains.optimismTestnet:
       return {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
         bundlerUrl:
           "https://api.pimlico.io/v1/optimism-goerli/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445", // optimism bundler
-      };
-    case Chains.arbitrumTestnet:
-      return {
-        entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-        bundlerUrl: "https://api.pimlico.io/v1/arbitrum-goerli/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445", // arbitrum bundler
       };
     case Chains.gnosis:
       return {
@@ -115,15 +107,6 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
           "0x154Ccd13f501eE7Cad227c8eb888BBab96ffE78F",
         fallBackHandlerAddress: "0x82Ee69Db954d9648fF8191bB831B9f679E5bAcb0",
       };
-    case Chains.arbitrumTestnet:
-      return {
-        Elliptic: "0xEA4d16E741E76E7a93b8f46650537855149efc48",
-        TouchIdSafeWalletContractProxyFactoryAddress:
-          "0xF1Fae5392dce474fc1c2D98c645f438d6c760E78",
-        TouchIdSafeWalletContractSingletonAddress:
-          "0x33FF9B2A40810fA6B0cA5824fd2C189953ffD5D9",
-        fallBackHandlerAddress: "0x414Ce649934a1b3cAE1903411e325E4159C46474",
-      };
     case Chains.gnosis:
       return {
         Elliptic: "0xC29fDf5544312E23d9cDa9fB67388d040Fdbf434",
@@ -177,10 +160,6 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
     case Chains.mumbai:
       return {
         jsonRpcUrl: MUMBAI_RPC,
-      };
-    case Chains.arbitrumTestnet:
-      return {
-        jsonRpcUrl: ARBITRUM_TESTNET_RPC,
       };
     case Chains.gnosis:
       return {

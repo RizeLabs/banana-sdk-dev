@@ -168,14 +168,6 @@ export class Banana {
     }
     this.walletIdentifier = walletIdentifier;
     this.publicKey = await registerFingerprint();
-    const EC = EllipticCurve__factory.connect(
-      this.addresses.Elliptic,
-      this.jsonRpcProvider
-    );
-    const isPointOnCurve = await EC.isOnCurve(this.publicKey.q0, this.publicKey.q1)
-    if(!isPointOnCurve){
-       throw new Error("ERROR: Device does not support R1 curve")
-    }
   };
 
   getAddress(): string {
