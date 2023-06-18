@@ -29,11 +29,10 @@ import { Banana4337Provider } from "./Banana4337Provider";
 //! Omiting this check for now
 import { NetworkAddressChecker } from "./utils/addressChecker";
 import { walletNameInput } from "./utils/walletNameInput";
+import { BananaTransporter } from "./BananaTransporter";
 
 export class Banana {
   Provider: ClientConfig;
-  SCWContract!: ethers.Contract;
-  TouchIdSafeWalletContract!: ethers.Contract;
   accountApi!: MyWalletApi;
   httpRpcClient!: HttpRpcClient;
   publicKey!: PublicKey;
@@ -47,6 +46,7 @@ export class Banana {
   jsonRpcProviderUrl: string;
   addresses: ChainConfig;
   network: Chains
+  #bananaTransportInstance: BananaTransporter
 
   constructor(readonly chain: Chains) {
     this.Provider = getClientConfigInfo(chain);
@@ -57,6 +57,7 @@ export class Banana {
     );
     this.cookie = new BananaCookie();
     this.network = chain;
+    this.#bananaTransportInstance = new BananaTransporter();
   }
 
   /**
@@ -289,7 +290,7 @@ export class Banana {
    */
 
   createWallet = async (): Promise<Wallet> => {
-      const walletIdentifier = await walletNameInput();
+      const walletIdentifier = await this.#bananaTransportInstance.getWalletName();
       await this.createSignerAndCookieObject(walletIdentifier);
       this.walletIdentifier = walletIdentifier
       const TouchIdSafeWalletContractProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(this.jsonRpcProvider);
