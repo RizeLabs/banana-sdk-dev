@@ -1,9 +1,8 @@
 import { ClientConfig } from "@account-abstraction/sdk";
 import { ChainConfig, ChainSpecificConfig } from "./interfaces/Banana.interface";
 
-// export const BANANA_APP_URL = 'http://localhost:3001';
-export const BANANA_APP_URL = 'https://majestic-rolypoly-996113.netlify.app'
-//! just for testing 
+export const BANANA_APP_URL = 'http://localhost:3001';
+// export const BANANA_APP_URL = 'https://majestic-rolypoly-996113.netlify.app'
 // export const BANANA_APP_URL = 'http://5cb1-180-151-107-169.ngrok-free.app'
 // export const BANANA_SERVER = 'http://localhost:80'
 export const BANANA_SERVER = 'https://new-arch-server.onrender.com'

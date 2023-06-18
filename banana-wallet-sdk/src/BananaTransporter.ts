@@ -1,11 +1,9 @@
 import { v4 } from "uuid";
 import { BANANA_APP_URL } from "./Constants";
 import { getUsernameFromSessionId, getMessageSignConfirmation, getTransactionSignConfirmation } from "./Controller";
-import { bytes } from "./utils/solidity-types";
-import { CookieObject, UserCredentialObject } from "./interfaces/Banana.interface";
+import { UserCredentialObject } from "./interfaces/Banana.interface";
 import { BananaCookie } from "./BananaCookie";
 import { TransactionRequest } from "@ethersproject/providers";
-import { ethers } from "ethers";
 import buildUrl from "./utils/urlBuilder";
 
 export interface BananaTransportProvider {
@@ -20,8 +18,7 @@ export class BananaTransporter implements BananaTransportProvider {
     this.cookieInstance = new BananaCookie();
   }
 
-  getWalletName(): Promise<string> {
-    console.log(' it hit it ');
+  async getWalletName(): Promise<string> {
     const sessionId = v4();
     const finalUrl = buildUrl(BANANA_APP_URL, {
         path: ['wallet', sessionId],
@@ -30,9 +27,13 @@ export class BananaTransporter implements BananaTransportProvider {
             isMobile: 'false',
         }
     });
-    console.log(" this is final url ", finalUrl);
 
-    window.open(finalUrl, "_blank");
+    var walletNamePopUp = window.open('', "_blank");
+    if(walletNamePopUp) {
+      walletNamePopUp!.location.href = finalUrl;
+    } else {
+      alert('Please make sure popup are enabled for providing username');
+    }
 
     return new Promise((resolve, reject) => {
       const intervalId = setInterval(async () => {
@@ -59,7 +60,12 @@ export class BananaTransporter implements BananaTransportProvider {
         }
     });
 
-    window.open(finalUrl, "_blank");
+    var walletNamePopUp = window.open('', "_blank");
+    if(walletNamePopUp) {
+      walletNamePopUp!.location.href = finalUrl;
+    } else {
+      alert('Please enable popups for message and transaction signing');
+    }
 
     return new Promise((resolve, reject) => {
       const intervalId = setInterval(async () => {
@@ -91,11 +97,14 @@ export class BananaTransporter implements BananaTransportProvider {
         }
     });
 
-    try {
-        window.open(finalUrl, "_blank");
-    } catch (err) {
-        console.log('issue in opening ', err);
+    var walletNamePopUp = window.open('', "_blank");
+    if(walletNamePopUp) {
+      walletNamePopUp!.document.write('loading popup for transaction confirmation...');
+      walletNamePopUp!.location.href = finalUrl;
+    } else {
+      alert('Please enable popups for message and transaction signing');
     }
+
     return new Promise((resolve, reject) => {
       const intervalId = setInterval(async () => {
         const signature = await getTransactionSignConfirmation(sessionId);
