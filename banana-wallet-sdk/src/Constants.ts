@@ -1,12 +1,11 @@
 import { ClientConfig } from "@account-abstraction/sdk";
 import { ChainConfig, ChainSpecificConfig } from "./interfaces/Banana.interface";
 
-// export const BANANA_APP_URL = 'http://localhost:3001';
-export const BANANA_APP_URL = 'https://majestic-rolypoly-996113.netlify.app'
-//! just for testing 
+export const BANANA_APP_URL = 'http://localhost:3001';
+// export const BANANA_APP_URL = 'https://majestic-rolypoly-996113.netlify.app'
 // export const BANANA_APP_URL = 'http://5cb1-180-151-107-169.ngrok-free.app'
-// export const BANANA_SERVER = 'http://localhost:80'
-export const BANANA_SERVER = 'https://new-arch-server.onrender.com'
+export const BANANA_SERVER = 'http://localhost:80'
+// export const BANANA_SERVER = 'https://new-arch-server.onrender.com'
 // export const BANANA_SERVER = 'http://388c-180-151-107-169.ngrok-free.app'
 export const OPTIMISM_TESTNET_RPC = 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas';
 export const MUMBAI_RPC = 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4';
