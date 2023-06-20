@@ -108,6 +108,14 @@ export class MyWalletApi extends SimpleAccountAPI {
         throw new Error('no factory to get initCode')
       }
     }
+    console.log(this.singletonTouchIdSafeAddress)
+    console.log(this.getTouchIdSafeWalletContractInitializer())
+    console.log(this.saltNonce);
+    // console.log(hexConcat)
+    console.log(hexConcat([
+      this.factory.address,
+      this.factory.interface.encodeFunctionData('createProxyWithNonce', [this.singletonTouchIdSafeAddress, this.getTouchIdSafeWalletContractInitializer(), this.saltNonce])
+    ]));
     return hexConcat([
       this.factory.address,
       this.factory.interface.encodeFunctionData('createProxyWithNonce', [this.singletonTouchIdSafeAddress, this.getTouchIdSafeWalletContractInitializer(), this.saltNonce])
@@ -155,6 +163,7 @@ export class MyWalletApi extends SimpleAccountAPI {
     );
     const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
     const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.singletonTouchIdSafeAddress, this.saltNonce, TouchIdSafeWalletContractInitializer);
+    console.log('wallet ', TouchIdSafeWalletContractAddress);
     return TouchIdSafeWalletContractAddress
   }
 }

@@ -123,6 +123,7 @@ export const verifyFingerprint = async (
   const response = credential.response;
 
   const clientDataJSON = Buffer.from(response.clientDataJSON);
+  console.log('response ', response);
 
   const signature = await Axios({
     url: VERIFICATION_LAMBDA_URL,
@@ -137,10 +138,53 @@ export const verifyFingerprint = async (
       signature: JSON.stringify(Array.from(new Uint8Array(response.signature))),
     },
   });
+  console.log('final signature ', signature)
   const value = clientDataJSON.toString("hex").slice(72, 248);
   const clientDataJsonRequestId = ethers.utils.keccak256("0x" + value);
   userOp.signature =
     signature.data.message.finalSignature + clientDataJsonRequestId.slice(2);
+    const abi = ethers.utils.defaultAbiCoder;
+    const decoded = abi.decode(
+      ["uint256", "uint256", "uint256"],
+      userOp.signature
+    );
+    console.log("auth data ", ethers.utils.hexlify(new Uint8Array(response.authenticatorData)))
+    //  JSON.stringify(
+      // Array.from(new Uint8Array(response.authenticatorData))
+    // ))
+    console.log(' pre ', ethers.utils.hexlify(ethers.utils.toUtf8Bytes('{"type":"webauthn.get","challenge":"')) )
+    console.log('encoded id ', ethers.utils.hexlify(ethers.utils.toUtf8Bytes(encodedId)))
+  //  signedMessage = decoded[2];
+    const rHex = decoded[0].toHexString();
+    const sHex = decoded[1].toHexString();
+  
+  userOp.signature = rHex + sHex.slice(2) + ethers.utils.hexlify(new Uint8Array(response.authenticatorData)).slice(2) + '{"type":"webauthn.get","challenge":"}' +  '{","origin":"https://webauthn.me","crossOrigin":false}' + ethers.utils.hexlify(ethers.utils.toUtf8Bytes(encodedId)).slice(2);
+  console.log('might be signature ', userOp.signature);
+
+  const decodedSignature = ethers.utils.defaultAbiCoder.decode(
+    // ['bytes32', 'uint256', 'uint256', 'bytes', 'string', 'string'],
+    ['uint', 'uint', 'bytes', 'string', 'string', 'bytes32'],
+    userOp.signature
+  );
+
+  const [r, s, authenticatorData, clientDataJSONPre, clientDataJSONPost, eid] = decodedSignature;
+  console.log(' extr ', [r, s, authenticatorData, clientDataJSONPre, clientDataJSONPost, eid])
+  // Step 2: Encode the userOpHash as base64
+  const opHashBase64 = ethers.utils.base64.encode(ethers.utils.hexlify(ethers.utils.toUtf8Bytes(reqId)));
+  console.log(opHashBase64)
+  // Step 3: Concatenate clientDataJSONPre, opHashBase64, and clientDataJSONPost
+  const cdJSON = `${clientDataJSONPre}${opHashBase64}${clientDataJSONPost}`;
+  console.log(cdJSON)
+  // Step 4: Calculate the clientHash using sha256
+  const clientHash = ethers.utils.sha256(cdJSON);
+  console.log(clientHash)
+  // Step 5: Calculate the sigHash by concatenating authenticatorData and clientHash
+  const sigHash = ethers.utils.solidityKeccak256(
+    ['bytes', 'bytes32'],
+    [authenticatorData, clientHash]
+  );
+  console.log(sigHash)
+
   return {
     newUserOp: userOp,
     process: signature.data.message.processStatus,

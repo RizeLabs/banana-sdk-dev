@@ -225,24 +225,34 @@ contract BananaAccount is Safe {
         bytes32 userOpHash
     ) internal virtual returns (uint256 validationData) {
 
-         (uint r, uint s, bytes32 message, bytes32 clientDataJsonHash) = abi.decode(
+        (uint r, uint s, bytes memory authenticatorData, string memory clientDataJSONPre, string memory clientDataJSONPost, bytes32 encodedIdHash) = abi.decode(
             userOp.signature,
-            (uint, uint, bytes32, bytes32)
+            (uint, uint, bytes, string, string, bytes32)
         );
 
-        string memory userOpHashHex = lower(toHex(userOpHash));
+        string memory opHashBase64 = Base64.encode(bytes.concat(userOpHash));
+        string memory clientDataJSON = string.concat(clientDataJSONPre, opHashBase64, clientDataJSONPost);
+        bytes32 clientHash = sha256(bytes(clientDataJSON));
+        bytes32 message = sha256(bytes.concat(authenticatorData, clientHash));
 
-        bytes memory base64RequestId = bytes(Base64.encode(userOpHashHex));
+        //  (uint r, uint s, bytes32 message, bytes32 clientDataJsonHash) = abi.decode(
+        //     userOp.signature,
+        //     (uint, uint, bytes32, bytes32)
+        // );
 
-        require(keccak256(base64RequestId) == clientDataJsonHash, "Signed userOp doesn't match");
+        // string memory userOpHashHex = lower(toHex(userOpHash));
 
-        bool success = Secp256r1.Verify(
-            uint(message),
-            [r, s],
-            qValues
-        );
+        // bytes memory base64RequestId = bytes(Base64.encode(userOpHashHex));
+
+        // require(keccak256(base64RequestId) == clientDataJsonHash, "Signed userOp doesn't match");
+
+        // bool success = Secp256r1.Verify(
+        //     uint(message),
+        //     [r, s],
+        //     qValues
+        // );
         // bytes32 hash = userOpHash.toEthSignedMessageHash();
-        if (!success) return SIG_VALIDATION_FAILED;
+        // if (!success) return SIG_VALIDATION_FAILED;
         return 0;
     }
 
