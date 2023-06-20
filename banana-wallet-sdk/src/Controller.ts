@@ -1,8 +1,6 @@
 import Axios from "axios";
 import { UserCredentialObject } from "./interfaces/Banana.interface";
-import constructUniqueIdentifier from "./utils/constructUserUniqueIdentifier";
 import {
-  SERVER_URL,
   ADD_WALLETCRED_ROUTE,
   GET_WALLETCRED_ROUTE,
   CHECK_INITCODE_ROUTE,
@@ -13,13 +11,8 @@ import { BANANA_SERVER, Methods } from "./Constants";
 Axios.defaults.baseURL = "";
 const getWalletMetaData = async (walletIdentifier: string) => {
   try {
-    console.log("Wallet Identifier: ", walletIdentifier);
-    // const identifier = constructUniqueIdentifier(
-    //   walletIdentifier,
-    //   window.location.hostname
-    // );
     const walletCredentials = await Axios({
-      url: SERVER_URL + GET_WALLETCRED_ROUTE,
+      url: BANANA_SERVER + GET_WALLETCRED_ROUTE,
       method: Methods.GET,
       params: {
         uniqueIdentifier: walletIdentifier,
@@ -42,14 +35,8 @@ const setWalletMetaData = async (
   userCredentialObject: UserCredentialObject
 ) => {
   try {
-    console.log("Wallet Identifier: ", walletIdentifier);
-    console.log("Wallet Metadata: ", userCredentialObject);
-    // const identifier = constructUniqueIdentifier(
-    //   userIdentifier,
-    //   window.location.hostname
-    // );
     const updateUserCredentialStatus = await Axios({
-      url: SERVER_URL + ADD_WALLETCRED_ROUTE,
+      url: BANANA_SERVER + ADD_WALLETCRED_ROUTE,
       method: Methods.POST,
       data: {
         uniqueIdentifier: walletIdentifier,
@@ -74,7 +61,7 @@ const setWalletMetaData = async (
 const checkInitCodeStatus = async (walletIdentifier: string) => {
   try {
     const initCodeStatus = await Axios({
-      url: SERVER_URL + CHECK_INITCODE_ROUTE,
+      url: BANANA_SERVER + CHECK_INITCODE_ROUTE,
       method: Methods.GET,
       params: {
         uniqueIdentifier: walletIdentifier,
@@ -97,12 +84,8 @@ const checkInitCodeStatus = async (walletIdentifier: string) => {
 
 const checkIsWalletNameExist = async (walletName: string) => {
   try {
-    // const identifier = constructUniqueIdentifier(
-    //   walletName,
-    //   window.location.hostname
-    // );
     const isWalletUnique = await Axios({
-      url: SERVER_URL + IS_WALLETNAME_UNIQUE_ROUTE,
+      url: BANANA_SERVER + IS_WALLETNAME_UNIQUE_ROUTE,
       method: Methods.POST,
       data: {
         walletName: walletName,
@@ -120,7 +103,6 @@ const checkIsWalletNameExist = async (walletName: string) => {
 
 const getUsernameFromSessionId = async (sessionId: string): Promise<string> => {
   try {
-    // console.log("Session id ", sessionId);
     const usernameResponse = await Axios({
       url: BANANA_SERVER + "/connect",
       method: Methods.GET,
