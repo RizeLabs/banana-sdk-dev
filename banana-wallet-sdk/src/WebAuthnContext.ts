@@ -6,6 +6,7 @@ import { REGISTRATION_LAMBDA_URL, VERIFICATION_LAMBDA_URL } from "./routes";
 import { arrayify } from "ethers/lib/utils";
 import { ethers } from "ethers";
 
+
 export interface IWebAuthnContext {
   registerFingerprint: () => Promise<PublicKeyCredential>;
   verifyFingerprint: () => Promise<SignatureResponse>;
@@ -100,6 +101,7 @@ export const verifyFingerprint = async (
   reqId: string,
   encodedId: string
 ) => {
+  // reqId = "0xAB"
   const decodedId = base64url.decode(encodedId);
   const credential = await navigator.credentials.get({
     publicKey: {
@@ -124,6 +126,31 @@ export const verifyFingerprint = async (
 
   const clientDataJSON = Buffer.from(response.clientDataJSON);
 
+  console.log("response", response)
+  console.log("esponse.authenticatorData ",response.authenticatorData)
+  const Authstr = new TextDecoder().decode(response.authenticatorData);
+  console.log("Authstr", buf2hex("0x"+response.authenticatorData))
+  function buf2hex(buffer: any) { // buffer is an ArrayBuffer
+    return [...new Uint8Array(buffer)]
+        .map(x => x.toString(16).padStart(2, '0'))
+        .join('');
+  }
+
+  
+
+  console.log("requestId:", reqId)
+
+  console.log("Uint8Array.from(ethers.utils.base64.encode(reqId), (c) => c.charCodeAt(0)).buffer", Uint8Array.from(ethers.utils.base64.encode(reqId), (c) => c.charCodeAt(0)).buffer)
+  
+
+
+
+  
+  const Clientstr = new TextDecoder().decode(response.clientDataJSON);
+  console.log("Clientstr", Clientstr)
+
+  console.log("base64url encoded", base64url.encode(Uint8Array.from(reqId, (c) => c.charCodeAt(0)).buffer))
+
   const signature = await Axios({
     url: VERIFICATION_LAMBDA_URL,
     method: "post",
@@ -137,10 +164,21 @@ export const verifyFingerprint = async (
       signature: JSON.stringify(Array.from(new Uint8Array(response.signature))),
     },
   });
-  const value = clientDataJSON.toString("hex").slice(72, 248);
-  const clientDataJsonRequestId = ethers.utils.keccak256("0x" + value);
-  userOp.signature =
-    signature.data.message.finalSignature + clientDataJsonRequestId.slice(2);
+  
+  // console.log("r= ",ethers.BigNumber.from(signature.data.message.finalSignature.slice(0,66)))
+  // console.log("s= ",ethers.BigNumber.from("0x"+signature.data.message.finalSignature.slice(66,130)))
+  // sig = signature.data.message.finalSignature.slice(0,130) + sig.slice(2);
+  const sig2 = ethers.utils.defaultAbiCoder.encode(
+    ["uint", "uint","bytes", "string", "string"],
+    [
+      ethers.BigNumber.from(signature.data.message.finalSignature.slice(0,66)),
+      ethers.BigNumber.from("0x"+signature.data.message.finalSignature.slice(66,130)),
+      "0x"+buf2hex(response.authenticatorData),
+      '{"type":"webauthn.get","challenge":"',
+      '","origin":"http://localhost:3000","crossOrigin":false}'
+    ]
+  );
+  userOp.signature = sig2;
   return {
     newUserOp: userOp,
     process: signature.data.message.processStatus,
