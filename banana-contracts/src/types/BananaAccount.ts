@@ -73,6 +73,7 @@ export interface BananaAccountInterface extends utils.Interface {
     "VERSION()": FunctionFragment;
     "_getRSValues(bytes)": FunctionFragment;
     "_getRequestId(bytes)": FunctionFragment;
+    "addNewDevice(uint256[2],bytes32)": FunctionFragment;
     "addOwnerWithThreshold(address,uint256)": FunctionFragment;
     "approveHash(bytes32)": FunctionFragment;
     "approvedHashes(address,bytes32)": FunctionFragment;
@@ -119,6 +120,7 @@ export interface BananaAccountInterface extends utils.Interface {
       | "VERSION"
       | "_getRSValues"
       | "_getRequestId"
+      | "addNewDevice"
       | "addOwnerWithThreshold"
       | "approveHash"
       | "approvedHashes"
@@ -168,6 +170,13 @@ export interface BananaAccountInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "_getRequestId",
     values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "addNewDevice",
+    values: [
+      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      PromiseOrValue<BytesLike>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "addOwnerWithThreshold",
@@ -417,6 +426,10 @@ export interface BananaAccountInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "_getRequestId",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "addNewDevice",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -772,6 +785,12 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string] & { requestIdFromClientDataJSON: string }>;
 
+    addNewDevice(
+      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      encodedId: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     addOwnerWithThreshold(
       owner: PromiseOrValue<string>,
       _threshold: PromiseOrValue<BigNumberish>,
@@ -1035,6 +1054,12 @@ export interface BananaAccount extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  addNewDevice(
+    _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+    encodedId: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   addOwnerWithThreshold(
     owner: PromiseOrValue<string>,
     _threshold: PromiseOrValue<BigNumberish>,
@@ -1297,6 +1322,12 @@ export interface BananaAccount extends BaseContract {
       clientDataJSON: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    addNewDevice(
+      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      encodedId: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     addOwnerWithThreshold(
       owner: PromiseOrValue<string>,
@@ -1657,6 +1688,12 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    addNewDevice(
+      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      encodedId: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     addOwnerWithThreshold(
       owner: PromiseOrValue<string>,
       _threshold: PromiseOrValue<BigNumberish>,
@@ -1919,6 +1956,12 @@ export interface BananaAccount extends BaseContract {
     _getRequestId(
       clientDataJSON: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    addNewDevice(
+      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      encodedId: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     addOwnerWithThreshold(
