@@ -7,7 +7,7 @@ import { ERC4337EthersProvider } from "@account-abstraction/sdk";
 import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./Constants";
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
-import { EllipticCurve__factory } from "./types";
+import { EllipticCurve__factory } from './types'
 import { BananaCookie } from "./BananaCookie";
 import {
   setUserCredentials,
@@ -21,7 +21,7 @@ import {
   ChainConfig
 } from "./interfaces/Banana.interface";
 import { BananaAccount, BananaAccountProxyFactory } from './types'
-import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types/factories'
+import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types'
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
 import { Wallet } from "./BananaWallet"
@@ -168,14 +168,6 @@ export class Banana {
     }
     this.walletIdentifier = walletIdentifier;
     this.publicKey = await registerFingerprint();
-    const EC = EllipticCurve__factory.connect(
-      this.addresses.Elliptic,
-      this.jsonRpcProvider
-    );
-    const isPointOnCurve = await EC.isOnCurve(this.publicKey.q0, this.publicKey.q1)
-    if(!isPointOnCurve){
-       throw new Error("ERROR: Device does not support R1 curve")
-    }
   };
 
   getAddress(): string {
