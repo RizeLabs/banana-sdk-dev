@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React from 'react';
 import { useAccount, useSigner, useContract, useProvider } from 'wagmi';
-// import { Banana } from '@rize-labs/banana-wallet-sdk/src/BananaProvider'
-import { Banana } from '../sdk/BananaProvider';
+import { Banana } from '@rize-labs/banana-wallet-sdk/src/BananaProvider'
+// import { Banana } from '../sdk/BananaProvider';
 // import { Chains } from '@rize-labs/banana-wallet-sdk/src/Constants' 
-import { Chains } from '@rize-labs/banana-wallet-sdk/src/contants/Constants';
+import { Chains } from '@rize-labs/banana-wallet-sdk/src/constants/Constants';
 import chain from "../utils/chain";
 
 // creating chain specific instance of banana module
