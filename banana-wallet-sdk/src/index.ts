@@ -1,3 +1,5 @@
+//! for now exporting transporter later on rm it
+export { BananaTransporter } from './BananaTransporter'
 export * from './Constants'
 export * from './BananaProvider'
 export * from './BananaWallet'

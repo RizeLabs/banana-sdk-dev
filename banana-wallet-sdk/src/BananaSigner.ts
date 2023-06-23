@@ -20,12 +20,15 @@ import {
 import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
 import { Banana4337Provider } from "./Banana4337Provider";
 import { sendTransaction } from "./bundler/sendUserOp";
+import { BananaTransporter } from "./BananaTransporter";
+import { CANCEL_ACTION } from "./Constants";
 
 export class BananaSigner extends ERC4337EthersSigner {
   jsonRpcProvider: JsonRpcProvider;
   publicKey: PublicKey;
   address!: string;
   encodedId: string;
+  bananaTransporterInstance: BananaTransporter;
 
   constructor(
     readonly config: ClientConfig,
@@ -47,6 +50,7 @@ export class BananaSigner extends ERC4337EthersSigner {
     this.publicKey = publicKey;
     this.encodedId = publicKey.encodedId;
     this.getAddress();
+    this.bananaTransporterInstance = new BananaTransporter();
   }
 
   // need to do some changes in it
@@ -61,34 +65,45 @@ export class BananaSigner extends ERC4337EthersSigner {
       value: tx.value,
       gasLimit: tx.gasLimit,
     });
-    let processStatus = true;
-    while (processStatus) {
-      let minGasRequired = ethers.BigNumber.from(userOperation?.callGasLimit)
-        .add(ethers.BigNumber.from(userOperation?.verificationGasLimit))
-        .add(ethers.BigNumber.from(userOperation?.callGasLimit));
-      let currentGasPrice = await this.jsonRpcProvider.getGasPrice();
-      let minBalanceRequired = minGasRequired.mul(currentGasPrice);
-      //@ts-ignore
-      let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(
-        userOperation?.sender
-      );
+    userOperation.verificationGasLimit = 1.5e6;
+    userOperation.preVerificationGas = ethers.BigNumber.from(
+      await userOperation.preVerificationGas
+    ).add(5000);
 
-      if (userBalance.lt(minBalanceRequired)) {
-        throw new Error("ERROR: Insufficient balance in Wallet");
+    let minGasRequired = ethers.BigNumber.from(userOperation?.callGasLimit)
+      .add(ethers.BigNumber.from(userOperation?.verificationGasLimit))
+      .add(ethers.BigNumber.from(userOperation?.callGasLimit))
+      .add(ethers.BigNumber.from(userOperation?.preVerificationGas));
+    let currentGasPrice = await this.jsonRpcProvider.getGasPrice();
+    let minBalanceRequiredForGas = minGasRequired.mul(currentGasPrice);
+    //@ts-ignore
+    let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(
+      userOperation?.sender
+    );
+
+    if (userBalance.lt(minBalanceRequiredForGas)) {
+      throw new Error("ERROR: Insufficient balance in wallet for gas");
+    }
+
+    const message = await this.smartAccountAPI.getUserOpHash(userOperation);
+    console.log((parseInt(minGasRequired._hex) / 10 ** 18).toString());
+    console.log(' this is userOp formed ', userOperation);
+    let signatureObtained: string;
+    try {
+      signatureObtained =
+        await this.bananaTransporterInstance.getUserOpSignature(
+          tx,
+          parseInt(minBalanceRequiredForGas._hex).toString(),
+          message
+        );
+
+      if(JSON.parse(signatureObtained) === CANCEL_ACTION) {
+        return {} as TransactionResponse;
       }
 
-      userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
-      userOperation.verificationGasLimit = 1.5e6;
-      const message = await this.smartAccountAPI.getUserOpHash(userOperation);
-      const { newUserOp, process } = await this.signUserOp(
-        userOperation as any,
-        message,
-        this.encodedId
-      );
-      if (process === "success") {
-        userOperation = newUserOp;
-        processStatus = false;
-      }
+      userOperation.signature = JSON.parse(signatureObtained);
+    } catch (err) {
+      return Promise.reject(err);
     }
     let transactionResponse =
       await this.erc4337provider.constructUserOpTransactionResponse(
@@ -105,7 +120,7 @@ export class BananaSigner extends ERC4337EthersSigner {
         await this.httpRpcClient.sendUserOpToBundler(userOperation);
       }
     } catch (error: any) {
-      console.error('sendUserOpToBundler failed', error)
+      console.error("sendUserOpToBundler failed", error);
       throw this.unwrapError(error);
     }
     // TODO: handle errors - transaction that is "rejected" by bundler is _not likely_ to ever resolve its "wait()"
@@ -116,24 +131,22 @@ export class BananaSigner extends ERC4337EthersSigner {
     const messageHash = ethers.utils.keccak256(
       ethers.utils.solidityPack(["string"], [message])
     );
-    let process = true;
-    let userOpWithSignatureAndMessage: any;
+
+    let signatureObtained: string;
     try {
-      while (process) {
-        userOpWithSignatureAndMessage = await verifyFingerprint(
-          {} as UserOperation,
-          messageHash as string,
-          this.encodedId
-        );
-        if (userOpWithSignatureAndMessage.process === "success") {
-          process = false;
-        }
-      }
+      signatureObtained =
+        await this.bananaTransporterInstance.getMessageSignature(messageHash);
     } catch (err) {
       return Promise.reject(err);
     }
-    const signatureAndMessage =
-      userOpWithSignatureAndMessage.newUserOp.signature;
+
+    if(JSON.parse(signatureObtained) === CANCEL_ACTION) {
+      return {};
+    }
+
+    const signatureAndMessage = JSON.parse(signatureObtained);
+
+    console.log('signature and mssage ', signatureAndMessage);
     const abi = ethers.utils.defaultAbiCoder;
     const decoded = abi.decode(
       ["uint256", "uint256", "uint256"],

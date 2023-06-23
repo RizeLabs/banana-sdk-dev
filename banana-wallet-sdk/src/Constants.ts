@@ -4,8 +4,8 @@ import {
   ChainSpecificConfig,
 } from "./interfaces/Banana.interface";
 
-export const BANANA_APP = "https://bananawallet.xyz";
-export const BANANA_SERVER = "https://banana-server.xyz";
+export const BANANA_APP = 'http://localhost:3001';
+export const BANANA_SERVER = 'http://localhost:80';
 export const OPTIMISM_TESTNET_RPC =
   "https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas";
 export const MUMBAI_RPC =
@@ -22,6 +22,15 @@ export const BUNDLER_EOA_PUBLIC_KEY =
 export const BUNDLER_EOA_PRIVATE_KEY =
   "0xed096a60e1af7c04519965c9e1fe105b2cd287afd49e4f1d77744f91ab5eb36e";
 export const BENEFICIARY = "0xF9ca16Fb8D6F38d36505961dAd69d2011C4695cF";
+
+export enum Methods {
+    POST = 'POST',
+    GET = 'GET',
+    PUT = 'PUT',
+    DELETE = 'DELETE',
+}
+
+export const CANCEL_ACTION = 'cancell';
 
 export enum Chains {
   goerli = 5,
@@ -104,7 +113,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0xC69a1bfF74074BF4117CC39Be954a3d410a74Bec",
         TouchIdSafeWalletContractSingletonAddress:
-          "0x69738A5d78f82AF808F43692B9b15924545979Ca",
+          "0x33FF9B2A40810fA6B0cA5824fd2C189953ffD5D9",
         fallBackHandlerAddress: "0x82Ee69Db954d9648fF8191bB831B9f679E5bAcb0",
       };
     case Chains.gnosis:
@@ -178,28 +187,4 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
         jsonRpcUrl: ASTAR_MAINNET_RPC,
       }
   }
-}
-
-export declare enum ChainId {
-  MAINNET = 1,
-  ROPSTEN = 3,
-  RINKEBY = 4,
-  GOERLI = 5,
-  KOVAN = 42,
-  POLYGON = 137,
-  POLYGON_MUMBAI = 80001,
-  BSC = 56,
-  BSC_TESTNET = 97,
-  OPTIMISM = 10,
-  OPTIMISM_TESTNET = 69,
-  ARBITRUM = 42161,
-  ARBITRUM_TESTNET = 421611,
-  ARBITRUM_NOVA = 42170,
-  AVALANCHE = 43114,
-  AVALANCHE_TESTNET = 43113,
-  FANTOM = 250,
-  FANTOM_TESTNET = 4002,
-  GNOSIS = 100,
-  AURORA = 1313161554,
-  AURORA_TESTNET = 1313161556,
 }

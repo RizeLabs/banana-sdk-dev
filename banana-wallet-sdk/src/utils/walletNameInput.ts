@@ -1,11 +1,11 @@
 import { v4 } from "uuid";
-import { BANANA_APP } from "../Constants";
+import { BANANA_APP_URL } from "../Constants";
 import { getUsernameFromSessionId } from "../Controller";
 
 export const walletNameInput = async (): Promise<string> => {
   const sessionId = v4();
   // open session corresponding to this sessio id
-  const finalUrl = BANANA_APP + "/connect/" + sessionId + "?" + "dapp=" + window.location.hostname;
+  const finalUrl = BANANA_APP_URL + "/connect/" + sessionId + "?" + "dapp=" + window.location.hostname;
   // opening session for username input
   window.open(finalUrl, "_blank");
 

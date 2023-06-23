@@ -85,6 +85,7 @@ export interface BananaAccountInterface extends utils.Interface {
     "domainSeparator()": FunctionFragment;
     "enableModule(address)": FunctionFragment;
     "encodeTransactionData(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,uint256)": FunctionFragment;
+    "encodedIdToQValues(bytes32,uint256)": FunctionFragment;
     "entryPoint()": FunctionFragment;
     "execTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes)": FunctionFragment;
     "execTransactionFromEntrypoint(address,uint256,bytes,uint8)": FunctionFragment;
@@ -105,12 +106,11 @@ export interface BananaAccountInterface extends utils.Interface {
     "setFallbackHandler(address)": FunctionFragment;
     "setGuard(address)": FunctionFragment;
     "setup(address[],uint256,address,bytes,address,address,uint256,address)": FunctionFragment;
-    "setupWithEntrypoint(address[],uint256,address,bytes,address,address,uint256,address,address,uint256[2])": FunctionFragment;
+    "setupWithEntrypoint(address[],uint256,address,bytes,address,address,uint256,address,address,bytes32,uint256[2])": FunctionFragment;
     "signedMessages(bytes32)": FunctionFragment;
     "simulateAndRevert(address,bytes)": FunctionFragment;
     "swapOwner(address,address,address)": FunctionFragment;
     "toHex(bytes32)": FunctionFragment;
-    "usedMessages(bytes32)": FunctionFragment;
     "validateUserOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,uint256)": FunctionFragment;
   };
 
@@ -131,6 +131,7 @@ export interface BananaAccountInterface extends utils.Interface {
       | "domainSeparator"
       | "enableModule"
       | "encodeTransactionData"
+      | "encodedIdToQValues"
       | "entryPoint"
       | "execTransaction"
       | "execTransactionFromEntrypoint"
@@ -156,7 +157,6 @@ export interface BananaAccountInterface extends utils.Interface {
       | "simulateAndRevert"
       | "swapOwner"
       | "toHex"
-      | "usedMessages"
       | "validateUserOp"
   ): FunctionFragment;
 
@@ -236,6 +236,10 @@ export interface BananaAccountInterface extends utils.Interface {
       PromiseOrValue<string>,
       PromiseOrValue<BigNumberish>
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "encodedIdToQValues",
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "entryPoint",
@@ -373,6 +377,7 @@ export interface BananaAccountInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
+      PromiseOrValue<BytesLike>,
       [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
     ]
   ): string;
@@ -394,10 +399,6 @@ export interface BananaAccountInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "toHex",
-    values: [PromiseOrValue<BytesLike>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "usedMessages",
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
@@ -464,6 +465,10 @@ export interface BananaAccountInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "encodeTransactionData",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "encodedIdToQValues",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "entryPoint", data: BytesLike): Result;
@@ -539,10 +544,6 @@ export interface BananaAccountInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "swapOwner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "toHex", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "usedMessages",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "validateUserOp",
     data: BytesLike
@@ -847,6 +848,12 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    encodedIdToQValues(
+      arg0: PromiseOrValue<BytesLike>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     entryPoint(overrides?: CallOverrides): Promise<[string]>;
 
     execTransaction(
@@ -980,6 +987,7 @@ export interface BananaAccount extends BaseContract {
       payment: PromiseOrValue<BigNumberish>,
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
+      encodedId: PromiseOrValue<BytesLike>,
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -1006,11 +1014,6 @@ export interface BananaAccount extends BaseContract {
       data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[string]>;
-
-    usedMessages(
-      arg0: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
 
     validateUserOp(
       userOp: UserOperationStruct,
@@ -1107,6 +1110,12 @@ export interface BananaAccount extends BaseContract {
     _nonce: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  encodedIdToQValues(
+    arg0: PromiseOrValue<BytesLike>,
+    arg1: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   entryPoint(overrides?: CallOverrides): Promise<string>;
 
@@ -1241,6 +1250,7 @@ export interface BananaAccount extends BaseContract {
     payment: PromiseOrValue<BigNumberish>,
     paymentReceiver: PromiseOrValue<string>,
     _entryPoint: PromiseOrValue<string>,
+    encodedId: PromiseOrValue<BytesLike>,
     _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -1267,11 +1277,6 @@ export interface BananaAccount extends BaseContract {
     data: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<string>;
-
-  usedMessages(
-    arg0: PromiseOrValue<BytesLike>,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
 
   validateUserOp(
     userOp: UserOperationStruct,
@@ -1368,6 +1373,12 @@ export interface BananaAccount extends BaseContract {
       _nonce: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    encodedIdToQValues(
+      arg0: PromiseOrValue<BytesLike>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     entryPoint(overrides?: CallOverrides): Promise<string>;
 
@@ -1502,6 +1513,7 @@ export interface BananaAccount extends BaseContract {
       payment: PromiseOrValue<BigNumberish>,
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
+      encodedId: PromiseOrValue<BytesLike>,
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1528,11 +1540,6 @@ export interface BananaAccount extends BaseContract {
       data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
-
-    usedMessages(
-      arg0: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
 
     validateUserOp(
       userOp: UserOperationStruct,
@@ -1726,6 +1733,12 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    encodedIdToQValues(
+      arg0: PromiseOrValue<BytesLike>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     entryPoint(overrides?: CallOverrides): Promise<BigNumber>;
 
     execTransaction(
@@ -1859,6 +1872,7 @@ export interface BananaAccount extends BaseContract {
       payment: PromiseOrValue<BigNumberish>,
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
+      encodedId: PromiseOrValue<BytesLike>,
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -1883,11 +1897,6 @@ export interface BananaAccount extends BaseContract {
 
     toHex(
       data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    usedMessages(
-      arg0: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1985,6 +1994,12 @@ export interface BananaAccount extends BaseContract {
       gasToken: PromiseOrValue<string>,
       refundReceiver: PromiseOrValue<string>,
       _nonce: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    encodedIdToQValues(
+      arg0: PromiseOrValue<BytesLike>,
+      arg1: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -2121,6 +2136,7 @@ export interface BananaAccount extends BaseContract {
       payment: PromiseOrValue<BigNumberish>,
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
+      encodedId: PromiseOrValue<BytesLike>,
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
@@ -2145,11 +2161,6 @@ export interface BananaAccount extends BaseContract {
 
     toHex(
       data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    usedMessages(
-      arg0: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
