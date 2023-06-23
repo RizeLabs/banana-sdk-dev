@@ -87,7 +87,7 @@ export class MyWalletApi extends SimpleAccountAPI {
       0,                                              // payment 
       "0x0000000000000000000000000000000000000000",   // payment receiver
       this.entryPointAddress,   // entrypoint
-      this.encodedKey,
+      this.encodedKey,          // encodedId
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray,          // q values 
     ]);

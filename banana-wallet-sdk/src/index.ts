@@ -1,6 +1,6 @@
 //! for now exporting transporter later on rm it
 export { BananaTransporter } from './BananaTransporter'
-export * from './contants/Constants'
+export * from './constants/Constants'
 export * from './BananaProvider'
 export * from './BananaWallet'
 export * from './BananaSigner'

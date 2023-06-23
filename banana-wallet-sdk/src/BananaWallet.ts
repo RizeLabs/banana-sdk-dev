@@ -1,6 +1,6 @@
 
 import { BananaSigner } from "./BananaSigner";
-import { Chains } from "./contants/Constants";
+import { Chains } from "./constants/Constants";
 import { Banana4337Provider } from "./Banana4337Provider";
 import { ERC4337EthersSigner } from "@account-abstraction/sdk";
 import { BananaCookie } from "./BananaCookie";

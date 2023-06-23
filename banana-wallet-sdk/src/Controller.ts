@@ -5,11 +5,15 @@ import {
   GET_WALLETCRED_ROUTE,
   CHECK_INITCODE_ROUTE,
   IS_WALLETNAME_UNIQUE_ROUTE,
-} from "./contants/routes";
-import { BANANA_SERVER, Methods } from "./contants/Constants";
+  TRANSACTION_SIGN_CONFIRMATON_ROUTE,
+  MESSAGE_SIGN_CONFIRMATION_ROUTE,
+  CONNECT_ROUTE
+} from "./constants/routes";
+import { BANANA_SERVER, Methods } from "./constants/Constants";
 
 Axios.defaults.baseURL = "";
 const getWalletMetaData = async (walletIdentifier: string) => {
+  console.log(' this is wallet identifier ', walletIdentifier);
   try {
     const walletCredentials = await Axios({
       url: BANANA_SERVER + GET_WALLETCRED_ROUTE,
@@ -18,7 +22,6 @@ const getWalletMetaData = async (walletIdentifier: string) => {
         uniqueIdentifier: walletIdentifier,
       },
     });
-    console.log("Wallet Metadata: ", walletCredentials);
 
     if (walletCredentials.data.data !== "") {
       return JSON.parse(walletCredentials.data.data);
@@ -104,7 +107,7 @@ const checkIsWalletNameExist = async (walletName: string) => {
 const getUsernameFromSessionId = async (sessionId: string): Promise<string> => {
   try {
     const usernameResponse = await Axios({
-      url: BANANA_SERVER + "/connect",
+      url: BANANA_SERVER + CONNECT_ROUTE,
       method: Methods.GET,
       params: {
         sessionId: sessionId,
@@ -124,7 +127,7 @@ const getMessageSignConfirmation = async (
 ): Promise<string> => {
   try {
     const signConfirmationResp = await Axios({
-      url: BANANA_SERVER + "/message-sign-confirmation",
+      url: BANANA_SERVER + MESSAGE_SIGN_CONFIRMATION_ROUTE,
       method: Methods.GET,
       params: {
         sessionId: sessionId,
@@ -142,7 +145,7 @@ const getTransactionSignConfirmation = async (
 ): Promise<string> => {
   try {
     const signConfirmationResp = await Axios({
-      url: BANANA_SERVER + "/transaction-sign-confirmation",
+      url: BANANA_SERVER + TRANSACTION_SIGN_CONFIRMATON_ROUTE,
       method: Methods.GET,
       params: {
         sessionId: sessionId,

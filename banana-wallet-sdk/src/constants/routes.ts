@@ -1,7 +1,10 @@
-const ADD_WALLETCRED_ROUTE = "/api/add-user-credentials";
-const GET_WALLETCRED_ROUTE = "/api/get-user-credentials";
-const CHECK_INITCODE_ROUTE = "/api/check-init-code";
-const IS_WALLETNAME_UNIQUE_ROUTE = "/api/check-walletname-exists";
+const ADD_WALLETCRED_ROUTE = "/add-user-credentials";
+const GET_WALLETCRED_ROUTE = "/get-user-credentials";
+const CHECK_INITCODE_ROUTE = "/check-init-code";
+const IS_WALLETNAME_UNIQUE_ROUTE = "/check-walletname-exists";
+const TRANSACTION_SIGN_CONFIRMATON_ROUTE = "/transaction-sign-confirmation";
+const MESSAGE_SIGN_CONFIRMATION_ROUTE = "/message-sign-confirmation";
+const CONNECT_ROUTE = "/connect";
 // const SERVER_URL = 'https://banana-server.xyz'
 const SERVER_URL = "http://localhost:80";
 // const SERVER_URL = 'http://388c-180-151-107-169.ngrok-free.app'
@@ -21,4 +24,7 @@ export {
   REGISTRATION_LAMBDA_URL,
   VERIFICATION_LAMBDA_URL,
   K1_SIGNATURE_LAMBDA_URL,
+  TRANSACTION_SIGN_CONFIRMATON_ROUTE,
+  MESSAGE_SIGN_CONFIRMATION_ROUTE,
+  CONNECT_ROUTE
 };

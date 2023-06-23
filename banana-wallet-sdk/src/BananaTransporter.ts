@@ -1,5 +1,5 @@
 import { v4 } from "uuid";
-import { BANANA_APP_URL } from "./contants/Constants";
+import { BANANA_APP_URL } from "./constants/Constants";
 import { getUsernameFromSessionId, getMessageSignConfirmation, getTransactionSignConfirmation } from "./Controller";
 import { UserCredentialObject } from "./interfaces/Banana.interface";
 import { BananaCookie } from "./BananaCookie";
@@ -23,7 +23,6 @@ export class BananaTransporter implements BananaTransportProvider {
     const finalUrl = buildUrl(BANANA_APP_URL, {
         path: ['wallet', sessionId],
         queryParams: {
-            dapp: window.location.hostname,
             isMobile: 'false',
         }
     });

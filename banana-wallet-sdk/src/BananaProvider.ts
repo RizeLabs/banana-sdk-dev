@@ -3,9 +3,7 @@ import { EntryPoint__factory, EntryPoint } from "@account-abstraction/contracts"
 import { MyPaymasterApi } from "./MyPayMasterApi";
 import { MyWalletApi } from "./MyWalletApi";
 import { HttpRpcClient } from "@account-abstraction/sdk/dist/src/HttpRpcClient";
-import { ERC4337EthersProvider } from "@account-abstraction/sdk";
-import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./contants/Constants";
-import { registerFingerprint } from "./WebAuthnContext";
+import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./constants/Constants";
 import { BananaSigner } from "./BananaSigner";
 import { EllipticCurve__factory } from './types'
 import { BananaCookie } from "./BananaCookie";
@@ -28,7 +26,6 @@ import { Wallet } from "./BananaWallet"
 import { Banana4337Provider } from "./Banana4337Provider";
 //! Omiting this check for now
 import { NetworkAddressChecker } from "./utils/addressChecker";
-import { walletNameInput } from "./utils/walletNameInput";
 import { BananaTransporter } from "./BananaTransporter";
 import { getKeccakHash } from "./utils/getKeccakHash";
 
@@ -132,6 +129,7 @@ export class Banana {
         // this.createBananaSignerInstance();
         return;
       } else {
+        console.log('wallet identifier in create cookie obj ', walletIdentifier);
         const walletCreds = await getWalletMetaData(walletIdentifier);
         // get and check cred here
         // else of below if should not be triggered as we are already getting wallet name from cookie means the creds are initialized
@@ -151,6 +149,7 @@ export class Banana {
         }
       }
     } else {
+      console.log(' from second get wallet name of create cokkie obj ', walletIdentifier);
       // when nothing in cookie or cred is there but with no username in that case fetching key from user provided walletname
       const walletCreds = await getWalletMetaData(walletIdentifier);
       if (!!walletCreds) {
@@ -169,7 +168,6 @@ export class Banana {
       // he must have sent the username for registering wallet
     }
     this.walletIdentifier = walletIdentifier;
-    this.publicKey = await registerFingerprint();
   };
 
   getAddress(): string {

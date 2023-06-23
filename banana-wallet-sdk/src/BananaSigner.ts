@@ -9,7 +9,6 @@ import {
 import { ethers } from "ethers";
 import { Deferrable } from "@ethersproject/properties";
 import { Bytes } from "@ethersproject/bytes";
-import { verifyFingerprint } from "./WebAuthnContext";
 import { PublicKey } from "./interfaces/Banana.interface";
 import UserOperation from "./utils/userOperation";
 import {
@@ -21,7 +20,7 @@ import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI
 import { Banana4337Provider } from "./Banana4337Provider";
 import { sendTransaction } from "./bundler/sendUserOp";
 import { BananaTransporter } from "./BananaTransporter";
-import { CANCEL_ACTION } from "./contants/Constants";
+import { CANCEL_ACTION } from "./constants/Constants";
 
 export class BananaSigner extends ERC4337EthersSigner {
   jsonRpcProvider: JsonRpcProvider;
@@ -165,14 +164,5 @@ export class BananaSigner extends ERC4337EthersSigner {
       messageSigned: signedMessage.toHexString(),
       signature: finalSignature,
     };
-  }
-
-  async signUserOp(userOp: UserOperation, reqId: string, encodedId: string) {
-    const signedUserOp = await verifyFingerprint(
-      userOp as any,
-      reqId,
-      encodedId
-    );
-    return signedUserOp;
   }
 }
