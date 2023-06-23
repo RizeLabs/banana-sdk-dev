@@ -2,7 +2,7 @@ import * as base64url from "./utils/base64url-arraybuffer";
 import UserOperation from "./utils/userOperation";
 import { v4 as uuidv4 } from "uuid";
 import Axios from "axios";
-import { REGISTRATION_LAMBDA_URL, VERIFICATION_LAMBDA_URL } from "./routes";
+import { REGISTRATION_LAMBDA_URL, VERIFICATION_LAMBDA_URL } from "./contants/routes";
 import { arrayify } from "ethers/lib/utils";
 import { ethers } from "ethers";
 

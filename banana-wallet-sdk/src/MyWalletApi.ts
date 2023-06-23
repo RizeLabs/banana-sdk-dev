@@ -24,7 +24,8 @@ export interface MyWalletApiParams extends BaseApiParams {
   _singletonTouchIdSafeAddress: string
   _ownerAddress: string
   _fallBackHandler: string
-  _saltNonce: string
+  _saltNonce: string,
+  _encodedKey: string
 }
 
 /**
@@ -41,6 +42,7 @@ export class MyWalletApi extends SimpleAccountAPI {
   ownerAddress: string
   fallBackHandleraddress: string
   saltNonce: string
+  encodedKey: string
   constructor(params: MyWalletApiParams) {
     super(params)
     this.qValues = params._qValues
@@ -48,6 +50,7 @@ export class MyWalletApi extends SimpleAccountAPI {
     this.ownerAddress = params._ownerAddress
     this.fallBackHandleraddress = params._fallBackHandler
     this.saltNonce = params._saltNonce
+    this.encodedKey = params._encodedKey
   }
 
   /**
@@ -84,6 +87,7 @@ export class MyWalletApi extends SimpleAccountAPI {
       0,                                              // payment 
       "0x0000000000000000000000000000000000000000",   // payment receiver
       this.entryPointAddress,   // entrypoint
+      this.encodedKey,
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray,          // q values 
     ]);

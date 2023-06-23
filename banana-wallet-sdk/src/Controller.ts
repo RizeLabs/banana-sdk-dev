@@ -5,8 +5,8 @@ import {
   GET_WALLETCRED_ROUTE,
   CHECK_INITCODE_ROUTE,
   IS_WALLETNAME_UNIQUE_ROUTE,
-} from "./routes";
-import { BANANA_SERVER, Methods } from "./Constants";
+} from "./contants/routes";
+import { BANANA_SERVER, Methods } from "./contants/Constants";
 
 Axios.defaults.baseURL = "";
 const getWalletMetaData = async (walletIdentifier: string) => {

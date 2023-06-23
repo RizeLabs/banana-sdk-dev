@@ -4,7 +4,7 @@ import { MyPaymasterApi } from "./MyPayMasterApi";
 import { MyWalletApi } from "./MyWalletApi";
 import { HttpRpcClient } from "@account-abstraction/sdk/dist/src/HttpRpcClient";
 import { ERC4337EthersProvider } from "@account-abstraction/sdk";
-import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./Constants";
+import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./contants/Constants";
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
 import { EllipticCurve__factory } from './types'
@@ -30,6 +30,7 @@ import { Banana4337Provider } from "./Banana4337Provider";
 import { NetworkAddressChecker } from "./utils/addressChecker";
 import { walletNameInput } from "./utils/walletNameInput";
 import { BananaTransporter } from "./BananaTransporter";
+import { getKeccakHash } from "./utils/getKeccakHash";
 
 export class Banana {
   Provider: ClientConfig;
@@ -210,6 +211,7 @@ export class Banana {
       factoryAddress: TouchIdSafeWalletContractProxyFactoryAddress,
       paymasterAPI: myPaymasterApi,
       _qValues: [this.publicKey.q0, this.publicKey.q1],
+      _encodedKey: getKeccakHash(this.publicKey.encodedId),
       _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress,
       _ownerAddress: this.getAddress(),
       _fallBackHandler: this.addresses.fallBackHandlerAddress,
@@ -254,6 +256,7 @@ export class Banana {
       this.jsonRpcProvider
     );
     const TouchIdSafeWalletContractQValuesArray: Array<string> = [this.publicKey.q0, this.publicKey.q1];
+    console.log("TouchIdSafeWalletContractQValuesArray", TouchIdSafeWalletContractQValuesArray)
     //@ts-ignore
     const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
     [
@@ -266,6 +269,7 @@ export class Banana {
       0,                                              // payment 
       "0x0000000000000000000000000000000000000000",   // payment receiver
       this.Provider.entryPointAddress,                // entrypoint
+      getKeccakHash(this.publicKey.encodedId),
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray,          // q values 
     ]);

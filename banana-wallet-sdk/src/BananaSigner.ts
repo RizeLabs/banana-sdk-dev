@@ -21,7 +21,7 @@ import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI
 import { Banana4337Provider } from "./Banana4337Provider";
 import { sendTransaction } from "./bundler/sendUserOp";
 import { BananaTransporter } from "./BananaTransporter";
-import { CANCEL_ACTION } from "./Constants";
+import { CANCEL_ACTION } from "./contants/Constants";
 
 export class BananaSigner extends ERC4337EthersSigner {
   jsonRpcProvider: JsonRpcProvider;

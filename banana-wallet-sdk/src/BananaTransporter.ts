@@ -1,5 +1,5 @@
 import { v4 } from "uuid";
-import { BANANA_APP_URL } from "./Constants";
+import { BANANA_APP_URL } from "./contants/Constants";
 import { getUsernameFromSessionId, getMessageSignConfirmation, getTransactionSignConfirmation } from "./Controller";
 import { UserCredentialObject } from "./interfaces/Banana.interface";
 import { BananaCookie } from "./BananaCookie";

@@ -1,5 +1,5 @@
 import { v4 } from "uuid";
-import { BANANA_APP_URL } from "../Constants";
+import { BANANA_APP_URL } from "../contants/Constants";
 import { getUsernameFromSessionId } from "../Controller";
 
 export const walletNameInput = async (): Promise<string> => {
