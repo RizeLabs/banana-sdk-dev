@@ -77,9 +77,7 @@ contract BananaAccount is Safe {
     external  returns (uint256 validationData) {
         _requireFromEntryPoint();
         validationData = _validateSignature(userOp, userOpHash);
-        if (userOp.initCode.length == 0) {
-            _validateAndUpdateNonce(userOp);
-        }
+        require(userOp.nonce < type(uint64).max, "account: nonsequential nonce");
         _payPrefund(missingAccountFunds);
     }
 
@@ -88,13 +86,6 @@ contract BananaAccount is Safe {
     */
     function _requireFromEntryPoint() internal virtual view {
         require(msg.sender == entryPoint, "account: not from EntryPoint");
-    }
-
-    /// implement template method of BaseAccount
-    function _validateAndUpdateNonce(
-        UserOperation calldata userOp
-    ) internal {
-        require(nonce++ == userOp.nonce, "account: invalid nonce");
     }
 
     function _getRSValues(bytes calldata signature)
@@ -232,23 +223,26 @@ contract BananaAccount is Safe {
         bytes32 userOpHash
     ) internal virtual returns (uint256 validationData) {
 
-         (uint r, uint s, bytes32 message, bytes32 clientDataJsonHash, bytes32 encodedId) = abi.decode(
+         (uint r, uint s, bytes memory authenticatorData, string memory clientDataJSONPre, string memory clientDataJSONPost, bytes32 encodedId) = abi.decode(
             userOp.signature,
-            (uint, uint, bytes32, bytes32, bytes32)
+            (uint, uint, bytes, string, string, bytes32)
         );
 
         string memory userOpHashHex = lower(toHex(userOpHash));
 
         bytes memory base64RequestId = bytes(Base64.encode(userOpHashHex));
+        string memory opHashBase64 = string(base64RequestId);
+        string memory clientDataJSON = string.concat(clientDataJSONPre, opHashBase64, clientDataJSONPost);
 
-        require(keccak256(base64RequestId) == clientDataJsonHash, "Signed userOp doesn't match");
+        bytes32 clientHash = sha256(bytes(clientDataJSON));
+        bytes32 sigHash = sha256(bytes.concat(authenticatorData, clientHash));
 
         bool success = Secp256r1.Verify(
-            uint(message),
+            uint(sigHash),
             [r, s],
             encodedIdToQValues[encodedId]
         );
-        // bytes32 hash = userOpHash.toEthSignedMessageHash();
+   
         if (!success) return SIG_VALIDATION_FAILED;
         return 0;
     }

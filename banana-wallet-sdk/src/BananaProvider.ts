@@ -7,7 +7,7 @@ import { ERC4337EthersProvider } from "@account-abstraction/sdk";
 import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./Constants";
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
-import { EllipticCurve__factory } from "./types";
+import { EllipticCurve__factory } from './types'
 import { BananaCookie } from "./BananaCookie";
 import {
   setWalletMetaData,
@@ -21,7 +21,7 @@ import {
   ChainConfig
 } from "./interfaces/Banana.interface";
 import { BananaAccount, BananaAccountProxyFactory } from './types'
-import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types/factories'
+import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types'
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
 import { Wallet } from "./BananaWallet"
@@ -46,6 +46,7 @@ export class Banana {
   jsonRpcProviderUrl: string;
   addresses: ChainConfig;
   network: Chains
+  #isUserNameRequested = false
   #bananaTransportInstance: BananaTransporter
 
   constructor(readonly chain: Chains) {
@@ -105,7 +106,6 @@ export class Banana {
     );
     if(!setCredentialsStatus.success)
     throw new Error("Error: db update failure");
-    console.log("Cookie set status: ", setCredentialsStatus);
   }
 
   /**
@@ -169,19 +169,15 @@ export class Banana {
     }
     this.walletIdentifier = walletIdentifier;
     this.publicKey = await registerFingerprint();
-    const EC = EllipticCurve__factory.connect(
-      this.addresses.Elliptic,
-      this.jsonRpcProvider
-    );
-    const isPointOnCurve = await EC.isOnCurve(this.publicKey.q0, this.publicKey.q1)
-    if(!isPointOnCurve){
-       throw new Error("ERROR: Device does not support R1 curve")
-    }
   };
 
   getAddress(): string {
     const uncompressedPublicKey = `0x04${this.publicKey.q0.slice(2)}${this.publicKey.q1.slice(2)}`;
     return ethers.utils.computeAddress(uncompressedPublicKey)
+  }
+
+  getUsernameRequestStatus(): boolean {
+    return this.#isUserNameRequested;
   }
 
   /**
@@ -257,9 +253,7 @@ export class Banana {
       this.addresses.TouchIdSafeWalletContractSingletonAddress,
       this.jsonRpcProvider
     );
-    console.log("TouchIdSafeWalletContractSingleton", TouchIdSafeWalletContractSingleton)
     const TouchIdSafeWalletContractQValuesArray: Array<string> = [this.publicKey.q0, this.publicKey.q1];
-    console.log("TouchIdSafeWalletContractQValuesArray", TouchIdSafeWalletContractQValuesArray)
     //@ts-ignore
     const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
     [
@@ -276,7 +270,6 @@ export class Banana {
       TouchIdSafeWalletContractQValuesArray,          // q values 
     ]);
 
-    console.log("TouchIdSafeWalletContractInitializer", TouchIdSafeWalletContractInitializer)
     return TouchIdSafeWalletContractInitializer
   };
 
@@ -290,6 +283,7 @@ export class Banana {
    */
 
   createWallet = async (): Promise<Wallet> => {
+      this.#isUserNameRequested = true;
       const walletIdentifier = await this.#bananaTransportInstance.getWalletName();
       await this.createSignerAndCookieObject(walletIdentifier);
       this.walletIdentifier = walletIdentifier
@@ -347,6 +341,7 @@ export class Banana {
       const walletName = this.cookie.getCookie("bananaUser");
       this.cookie.deleteCookie(walletName);
       this.cookie.deleteCookie("bananaUser");
+      this.#isUserNameRequested = false;
       return { success: true }
     } catch (err) {
       return { success: false, error: err }

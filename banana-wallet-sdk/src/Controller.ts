@@ -48,15 +48,15 @@ const setWalletMetaData = async (
       return {
         success: true,
       };
-
+    
     return {
-      success: false,
-    };
-  } catch (err) {
-    console.log(err);
-    throw err;
-  }
-};
+            success: false
+        }
+    } catch (err) {
+        throw err;
+    }
+}
+
 
 const checkInitCodeStatus = async (walletIdentifier: string) => {
   try {

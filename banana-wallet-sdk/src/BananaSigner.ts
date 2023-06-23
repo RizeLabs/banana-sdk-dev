@@ -19,6 +19,7 @@ import {
 } from "@account-abstraction/sdk";
 import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
 import { Banana4337Provider } from "./Banana4337Provider";
+import { sendTransaction } from "./bundler/sendUserOp";
 import { BananaTransporter } from "./BananaTransporter";
 import { CANCEL_ACTION } from "./Constants";
 
@@ -45,7 +46,6 @@ export class BananaSigner extends ERC4337EthersSigner {
       httpRpcClient,
       smartAccountAPI
     );
-    console.log("Provider ", provider);
     this.jsonRpcProvider = provider;
     this.publicKey = publicKey;
     this.encodedId = publicKey.encodedId;
@@ -105,12 +105,20 @@ export class BananaSigner extends ERC4337EthersSigner {
     } catch (err) {
       return Promise.reject(err);
     }
-    const transactionResponse =
+    let transactionResponse =
       await this.erc4337provider.constructUserOpTransactionResponse(
         userOperation
       );
     try {
-      await this.httpRpcClient.sendUserOpToBundler(userOperation);
+
+      const networkInfo = await this.jsonRpcProvider.getNetwork();
+      if(networkInfo.chainId === 81 || networkInfo.chainId === 592) {
+        //! sending UserOp directly to ep for shibuya
+        const receipt = await sendTransaction(userOperation, this.jsonRpcProvider);
+        transactionResponse = receipt;
+      } else {
+        await this.httpRpcClient.sendUserOpToBundler(userOperation);
+      }
     } catch (error: any) {
       console.error("sendUserOpToBundler failed", error);
       throw this.unwrapError(error);

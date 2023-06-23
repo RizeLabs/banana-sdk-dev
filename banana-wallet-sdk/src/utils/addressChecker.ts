@@ -1,4 +1,4 @@
-import { MUMBAI_RPC, ARBITRUM_TESTNET_RPC, OPTIMISM_TESTNET_RPC, GOERLI_RPC } from "../Constants"
+import { MUMBAI_RPC, OPTIMISM_TESTNET_RPC, GOERLI_RPC } from "../Constants"
 import { ethers } from "ethers"
 
 export const NetworkAddressChecker = async (address: string) => {
