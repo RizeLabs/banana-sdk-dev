@@ -16,10 +16,15 @@ export default {
       viaIR: true,
       optimizer: {
         enabled: true,
-        runs: 1000000,
-        // details: {
-        //   yul: false
-        // }
+        runs: 100000,
+        details: {
+          yul: false
+          // yul: true,
+          // yulDetails: {
+          //   stackAllocation: true,
+          //   optimizerSteps: "dhfoDgvulfnTUtnIf"
+          // }
+        }
       },
     },
   },

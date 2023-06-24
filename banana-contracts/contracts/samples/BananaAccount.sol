@@ -35,7 +35,7 @@ contract BananaAccount is Safe {
     /// @param payment Value that should be paid
     /// @param paymentReceiver Address that should receive the payment (or 0 if tx.origin)
     /// @param _entryPoint Address for the trusted EIP4337 entrypoint
-    /// @param _qValues public address x and y coordinates of the user
+    /// @param _publicKeyData Contains qValues along with encodedIdHash
     function setupWithEntrypoint(
         address[] calldata _owners,
         uint256 _threshold,
@@ -46,11 +46,16 @@ contract BananaAccount is Safe {
         uint256 payment,
         address payable paymentReceiver,
         address _entryPoint,
-        bytes32 encodedId,
-        uint256[2] memory _qValues
+        bytes calldata _publicKeyData
     ) external {
         entryPoint = _entryPoint;
-        encodedIdToQValues[encodedId] = _qValues;
+        // encodedIdToQValues[encodedId] = _qValues;
+        (uint q0, uint q1, bytes32 encodedIdHash) = abi.decode(
+            _publicKeyData,
+            (uint, uint, bytes32)
+        );
+
+        encodedIdToQValues[encodedIdHash] = [q0, q1];
 
         _executeAndRevert(
             address(this),
@@ -229,7 +234,6 @@ contract BananaAccount is Safe {
         );
 
         string memory userOpHashHex = lower(toHex(userOpHash));
-
         bytes memory base64RequestId = bytes(Base64.encode(userOpHashHex));
         string memory opHashBase64 = string(base64RequestId);
         string memory clientDataJSON = string.concat(clientDataJSONPre, opHashBase64, clientDataJSONPost);
