@@ -53,7 +53,7 @@ const Staking = () => {
   // const stakeAddress = '0x54c1d3De7e3dCf4Ec62195542CA642f128a023Bf';
 
   // astar
-  const stakeAddress = '0x2ac3cbbE2f48c9143fc0eDEde1c26BBE9d0dd64a';
+  // const stakeAddress = '0x2ac3cbbE2f48c9143fc0eDEde1c26BBE9d0dd64a';
 
   // arbitrum testnet staking 
   // const stakeAddress = '0x19eEc1aE90bdC20C1c52DeD3273eEb78A08696A5'

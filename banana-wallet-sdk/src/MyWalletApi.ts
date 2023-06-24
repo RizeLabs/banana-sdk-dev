@@ -9,6 +9,7 @@ import { ethers } from 'ethers'
 import { BananaSigner } from './BananaSigner'
 import { BananaAccount } from './types'
 import { EntryPoint, EntryPoint__factory } from '@account-abstraction/contracts'
+import { getKeccakHash } from './utils/getKeccakHash'
 
 /**
  * constructor params, added no top of base params:
@@ -91,6 +92,28 @@ export class MyWalletApi extends SimpleAccountAPI {
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray,          // q values 
     ]);
+
+    console.log('q values ', this.qValues[0])
+    console.log('secopnd q value ', this.qValues[1]);
+    console.log('encoded key ', this.encodedKey)
+
+    const finalPublicData = this.qValues[0] + this.qValues[1].slice(2) + this.encodedKey.slice(2);
+
+    console.log('this is final public data ', finalPublicData);
+
+    const abi = ethers.utils.defaultAbiCoder;
+		const decodedElem = abi.decode(
+			['uint', 'uint', 'bytes32'],
+			finalPublicData
+		);
+
+    console.log(' these are decoded elem ', decodedElem);
+    
+    // const abi = ethers.utils.defaultAbiCoder;
+		// const decodedElem = abi.decode(
+		// 	['uint', 'uint', 'bytes32', 'bytes32', 'bytes32'],
+		// 	combinedSignature
+		// );
 
     return TouchIdSafeWalletContractInitializer
   };

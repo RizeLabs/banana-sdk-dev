@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { EntryPoint__factory, UserOperationStruct } from "@account-abstraction/contracts"
-import { ENTRYPOINT_ADDRESS, BUNDLER_EOA_PUBLIC_KEY, BUNDLER_EOA_PRIVATE_KEY, BENEFICIARY } from "../Constants"
+import { ENTRYPOINT_ADDRESS, BUNDLER_EOA_PUBLIC_KEY, BUNDLER_EOA_PRIVATE_KEY, BENEFICIARY } from "../constants/Constants"
 import { JsonRpcProvider } from "@ethersproject/providers";
 
 export const sendTransaction = async (userOp: UserOperationStruct, provider: JsonRpcProvider) => {

@@ -113,7 +113,6 @@ const getUsernameFromSessionId = async (sessionId: string): Promise<string> => {
         sessionId: sessionId,
       },
     });
-    // console.log("Username response ", usernameResponse);
     //@ts-ignore
     return usernameResponse.data.data;
   } catch (err) {
