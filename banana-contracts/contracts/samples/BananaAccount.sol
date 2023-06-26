@@ -222,6 +222,19 @@ contract BananaAccount is Safe {
         return true;
     }
 
+    function _getMessageToBeSigned(bytes32 userOpHash, bytes memory authenticatorData, string memory clientDataJSONPre, string memory clientDataJSONPost) 
+        internal returns(uint256 messageToBeSigned)
+    {
+        // string memory userOpHashHex = lower(toHex(userOpHash));
+        bytes memory base64RequestId = bytes(Base64.encode(lower(toHex(userOpHash))));
+        // string memory opHashBase64 = string(base64RequestId);
+        string memory clientDataJSON = string.concat(clientDataJSONPre, string(base64RequestId), clientDataJSONPost);
+
+        // bytes32 clientHash = sha256(bytes(clientDataJSON));
+        bytes32 sigHash = sha256(bytes.concat(authenticatorData, sha256(bytes(clientDataJSON))));
+        messageToBeSigned = uint256(sigHash);
+    }
+
     /// implement template method of BaseAccount
     function _validateSignature(
         UserOperation calldata userOp,
@@ -233,16 +246,8 @@ contract BananaAccount is Safe {
             (uint, uint, bytes, string, string, bytes32)
         );
 
-        string memory userOpHashHex = lower(toHex(userOpHash));
-        bytes memory base64RequestId = bytes(Base64.encode(userOpHashHex));
-        string memory opHashBase64 = string(base64RequestId);
-        string memory clientDataJSON = string.concat(clientDataJSONPre, opHashBase64, clientDataJSONPost);
-
-        bytes32 clientHash = sha256(bytes(clientDataJSON));
-        bytes32 sigHash = sha256(bytes.concat(authenticatorData, clientHash));
-
         bool success = Secp256r1.Verify(
-            uint(sigHash),
+            _getMessageToBeSigned(userOpHash, authenticatorData, clientDataJSONPre, clientDataJSONPost),
             [r, s],
             encodedIdToQValues[encodedId]
         );

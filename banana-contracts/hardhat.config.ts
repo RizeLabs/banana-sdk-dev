@@ -18,7 +18,7 @@ export default {
         enabled: true,
         runs: 100000,
         details: {
-          yul: false
+          yul: true
           // yul: true,
           // yulDetails: {
           //   stackAllocation: true,
