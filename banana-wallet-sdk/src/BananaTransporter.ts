@@ -27,9 +27,10 @@ export class BananaTransporter implements BananaTransportProvider {
         }
     });
 
-    var walletNamePopUp = window.open('', "_blank");
-    if(walletNamePopUp) {
-      walletNamePopUp!.location.href = finalUrl;
+    var walletNameRedirect = window.open('', "_blank");
+    if(walletNameRedirect) {
+      walletNameRedirect!.document.write('loading page for wallet name...');
+      walletNameRedirect!.location.href = finalUrl;
     } else {
       alert('Please make sure popup are enabled for providing username');
     }
@@ -59,9 +60,10 @@ export class BananaTransporter implements BananaTransportProvider {
         }
     });
 
-    var walletNamePopUp = window.open('', "_blank");
-    if(walletNamePopUp) {
-      walletNamePopUp!.location.href = finalUrl;
+    var signConfirmationRedirect = window.open('', "_blank");
+    if(signConfirmationRedirect) {
+      signConfirmationRedirect!.document.write('loading page for sign confirmation...');
+      signConfirmationRedirect!.location.href = finalUrl;
     } else {
       alert('Please enable popups for message and transaction signing');
     }
@@ -96,10 +98,10 @@ export class BananaTransporter implements BananaTransportProvider {
         }
     });
 
-    var walletNamePopUp = window.open('', "_blank");
-    if(walletNamePopUp) {
-      walletNamePopUp!.document.write('loading popup for transaction confirmation...');
-      walletNamePopUp!.location.href = finalUrl;
+    var transactionConfirmationRedirect = window.open('', "_blank");
+    if(transactionConfirmationRedirect) {
+      transactionConfirmationRedirect!.document.write('loading page for transaction confirmation...');
+      transactionConfirmationRedirect!.location.href = finalUrl;
     } else {
       alert('Please enable popups for message and transaction signing');
     }
