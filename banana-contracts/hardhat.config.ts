@@ -18,11 +18,7 @@ export default {
         enabled: true,
         runs: 100000,
         details: {
-          yul: false
-          // yul: true,
-          // yulDetails: {
-          //   stackAllocation: true,
-          //   optimizerSteps: "dhfoDgvulfnTUtnIf"
+          yul: true
           // }
         }
       },
