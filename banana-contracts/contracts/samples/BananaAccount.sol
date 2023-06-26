@@ -23,7 +23,7 @@ contract BananaAccount is Safe {
     address public entryPoint;
 
     //maintaing mapping of encodedId to qValues
-    mapping (bytes32 => uint256[2]) public encodedIdToQValues;
+    mapping (bytes32 => uint256[2]) public encodedIdHashToQValues;
     
     /// @dev Setup function sets initial storage of contract.
     /// @param _owners List of Safe owners.
@@ -35,7 +35,8 @@ contract BananaAccount is Safe {
     /// @param payment Value that should be paid
     /// @param paymentReceiver Address that should receive the payment (or 0 if tx.origin)
     /// @param _entryPoint Address for the trusted EIP4337 entrypoint
-    /// @param _publicKeyData Contains qValues along with encodedIdHash
+    /// @param _encodedIdHash contains the hash of encodedId which corresponds to the qValues
+    /// @param _qValues contains the qValues (X and Y coordinate over the elliptic curve) of the public key of the device
     function setupWithEntrypoint(
         address[] calldata _owners,
         uint256 _threshold,
@@ -46,16 +47,11 @@ contract BananaAccount is Safe {
         uint256 payment,
         address payable paymentReceiver,
         address _entryPoint,
-        bytes calldata _publicKeyData
+        bytes32 _encodedIdHash,
+        uint256[2] calldata _qValues
     ) external {
         entryPoint = _entryPoint;
-        // encodedIdToQValues[encodedId] = _qValues;
-        (uint q0, uint q1, bytes32 encodedIdHash) = abi.decode(
-            _publicKeyData,
-            (uint, uint, bytes32)
-        );
-
-        encodedIdToQValues[encodedIdHash] = [q0, q1];
+        encodedIdHashToQValues[_encodedIdHash] = _qValues;
 
         _executeAndRevert(
             address(this),
@@ -241,7 +237,7 @@ contract BananaAccount is Safe {
         bytes32 userOpHash
     ) internal virtual returns (uint256 validationData) {
 
-         (uint r, uint s, bytes memory authenticatorData, string memory clientDataJSONPre, string memory clientDataJSONPost, bytes32 encodedId) = abi.decode(
+         (uint r, uint s, bytes memory authenticatorData, string memory clientDataJSONPre, string memory clientDataJSONPost, bytes32 encodedIdHash) = abi.decode(
             userOp.signature,
             (uint, uint, bytes, string, string, bytes32)
         );
@@ -249,7 +245,7 @@ contract BananaAccount is Safe {
         bool success = Secp256r1.Verify(
             _getMessageToBeSigned(userOpHash, authenticatorData, clientDataJSONPre, clientDataJSONPost),
             [r, s],
-            encodedIdToQValues[encodedId]
+            encodedIdHashToQValues[encodedIdHash]
         );
    
         if (!success) return SIG_VALIDATION_FAILED;
@@ -308,7 +304,7 @@ contract BananaAccount is Safe {
         entryPoint = newEntrypoint;
     }
 
-    function addNewDevice(uint256[2] memory _qValues, bytes32 encodedId) public authorized {
-        encodedIdToQValues[encodedId] = _qValues;
+    function addNewDevice(uint256[2] memory _qValues, bytes32 _encodedIdHash) public authorized {
+        encodedIdHashToQValues[_encodedIdHash] = _qValues;
     } 
 }
