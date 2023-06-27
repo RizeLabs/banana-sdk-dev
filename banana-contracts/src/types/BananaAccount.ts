@@ -86,7 +86,7 @@ export interface BananaAccountInterface extends utils.Interface {
     "domainSeparator()": FunctionFragment;
     "enableModule(address)": FunctionFragment;
     "encodeTransactionData(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,uint256)": FunctionFragment;
-    "encodedIdToQValues(bytes32,uint256)": FunctionFragment;
+    "encodedIdHashToQValues(bytes32,uint256)": FunctionFragment;
     "entryPoint()": FunctionFragment;
     "execTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes)": FunctionFragment;
     "execTransactionFromEntrypoint(address,uint256,bytes,uint8)": FunctionFragment;
@@ -133,7 +133,7 @@ export interface BananaAccountInterface extends utils.Interface {
       | "domainSeparator"
       | "enableModule"
       | "encodeTransactionData"
-      | "encodedIdToQValues"
+      | "encodedIdHashToQValues"
       | "entryPoint"
       | "execTransaction"
       | "execTransactionFromEntrypoint"
@@ -247,7 +247,7 @@ export interface BananaAccountInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "encodedIdToQValues",
+    functionFragment: "encodedIdHashToQValues",
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
@@ -481,7 +481,7 @@ export interface BananaAccountInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "encodedIdToQValues",
+    functionFragment: "encodedIdHashToQValues",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "entryPoint", data: BytesLike): Result;
@@ -787,7 +787,7 @@ export interface BananaAccount extends BaseContract {
 
     addNewDevice(
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      encodedId: PromiseOrValue<BytesLike>,
+      _encodedIdHash: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -867,7 +867,7 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    encodedIdToQValues(
+    encodedIdHashToQValues(
       arg0: PromiseOrValue<BytesLike>,
       arg1: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -1006,7 +1006,7 @@ export interface BananaAccount extends BaseContract {
       payment: PromiseOrValue<BigNumberish>,
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
-      encodedId: PromiseOrValue<BytesLike>,
+      _encodedIdHash: PromiseOrValue<BytesLike>,
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -1056,7 +1056,7 @@ export interface BananaAccount extends BaseContract {
 
   addNewDevice(
     _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-    encodedId: PromiseOrValue<BytesLike>,
+    _encodedIdHash: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1136,7 +1136,7 @@ export interface BananaAccount extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  encodedIdToQValues(
+  encodedIdHashToQValues(
     arg0: PromiseOrValue<BytesLike>,
     arg1: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
@@ -1275,7 +1275,7 @@ export interface BananaAccount extends BaseContract {
     payment: PromiseOrValue<BigNumberish>,
     paymentReceiver: PromiseOrValue<string>,
     _entryPoint: PromiseOrValue<string>,
-    encodedId: PromiseOrValue<BytesLike>,
+    _encodedIdHash: PromiseOrValue<BytesLike>,
     _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -1325,7 +1325,7 @@ export interface BananaAccount extends BaseContract {
 
     addNewDevice(
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      encodedId: PromiseOrValue<BytesLike>,
+      _encodedIdHash: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1405,7 +1405,7 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    encodedIdToQValues(
+    encodedIdHashToQValues(
       arg0: PromiseOrValue<BytesLike>,
       arg1: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -1544,7 +1544,7 @@ export interface BananaAccount extends BaseContract {
       payment: PromiseOrValue<BigNumberish>,
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
-      encodedId: PromiseOrValue<BytesLike>,
+      _encodedIdHash: PromiseOrValue<BytesLike>,
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1690,7 +1690,7 @@ export interface BananaAccount extends BaseContract {
 
     addNewDevice(
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      encodedId: PromiseOrValue<BytesLike>,
+      _encodedIdHash: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1770,7 +1770,7 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    encodedIdToQValues(
+    encodedIdHashToQValues(
       arg0: PromiseOrValue<BytesLike>,
       arg1: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -1909,7 +1909,7 @@ export interface BananaAccount extends BaseContract {
       payment: PromiseOrValue<BigNumberish>,
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
-      encodedId: PromiseOrValue<BytesLike>,
+      _encodedIdHash: PromiseOrValue<BytesLike>,
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -1960,7 +1960,7 @@ export interface BananaAccount extends BaseContract {
 
     addNewDevice(
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      encodedId: PromiseOrValue<BytesLike>,
+      _encodedIdHash: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2040,7 +2040,7 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    encodedIdToQValues(
+    encodedIdHashToQValues(
       arg0: PromiseOrValue<BytesLike>,
       arg1: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -2179,7 +2179,7 @@ export interface BananaAccount extends BaseContract {
       payment: PromiseOrValue<BigNumberish>,
       paymentReceiver: PromiseOrValue<string>,
       _entryPoint: PromiseOrValue<string>,
-      encodedId: PromiseOrValue<BytesLike>,
+      _encodedIdHash: PromiseOrValue<BytesLike>,
       _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;

@@ -152,6 +152,7 @@ export class Banana {
       console.log(' from second get wallet name of create cokkie obj ', walletIdentifier);
       // when nothing in cookie or cred is there but with no username in that case fetching key from user provided walletname
       const walletCreds = await getWalletMetaData(walletIdentifier);
+      console.log(' this are wallet creds ', walletCreds)
       if (!!walletCreds) {
         this.cookieObject = walletCreds;
         const q0Value = this.cookieObject.q0;
@@ -328,6 +329,7 @@ export class Banana {
     this.bananaProvider = await this.getBananaProvider();
     this.walletAddress = this.cookieObject.walletAddress;
     this.postCookieChecks(walletIdentifier);
+    console.log(' thsi is wallet address ', this.walletAddress);
     return new Wallet(this.walletAddress, this.bananaProvider, this.network);
   }
 
@@ -404,6 +406,7 @@ export class Banana {
     // check for username
     const walletName = this.cookie.getCookie("bananaUser");
     if (!!walletName) {
+      console.log('seeting cokkie here ', this.cookieObject);
       this.cookie.setCookie(walletName, JSON.stringify(this.cookieObject));
       return;
     }

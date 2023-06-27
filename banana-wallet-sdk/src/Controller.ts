@@ -8,7 +8,7 @@ import {
   TRANSACTION_SIGN_CONFIRMATON_ROUTE,
   MESSAGE_SIGN_CONFIRMATION_ROUTE,
   CONNECT_ROUTE
-} from "./constants/routes";
+} from './constants/Routes';
 import { BANANA_SERVER, Methods } from "./constants/Constants";
 
 Axios.defaults.baseURL = "";

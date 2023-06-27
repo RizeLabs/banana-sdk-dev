@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export { BananaAccount__factory } from "./BananaAccount__factory";
-export { BananaAccountProxyFactory__factory } from "./BananaAccountProxyFactory__factory";
 export { BananaAccountProxy__factory } from "./BananaAccountProxy__factory";
+export { BananaAccountProxyFactory__factory } from "./BananaAccountProxyFactory__factory";
 export { BaseAccount__factory } from "./BaseAccount__factory";
 export { BaseGuard__factory } from "./BaseGuard__factory";
 export { BasePaymaster__factory } from "./BasePaymaster__factory";

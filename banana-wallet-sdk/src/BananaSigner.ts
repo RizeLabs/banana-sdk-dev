@@ -64,7 +64,7 @@ export class BananaSigner extends ERC4337EthersSigner {
       value: tx.value,
       gasLimit: tx.gasLimit,
     });
-    userOperation.verificationGasLimit = 1.5e6;
+    userOperation.verificationGasLimit = 3e6;
     userOperation.preVerificationGas = ethers.BigNumber.from(
       await userOperation.preVerificationGas
     ).add(5000);
