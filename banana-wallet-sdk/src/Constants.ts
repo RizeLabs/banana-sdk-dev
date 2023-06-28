@@ -15,6 +15,7 @@ export const GOERLI_RPC =
 export const GNOSIS_RPC = "https://rpc.gnosischain.com/";
 export const CHIADO_TESTNET_RPC = "https://rpc.chiado.gnosis.gateway.fm";
 export const SHIBUYA_TESTNET_RPC = "https://evm.shibuya.astar.network";
+export const POLYGON_MAINNET_RPC = "https://polygon-mainnet.g.alchemy.com/v2/M6obmh9NhecgkyNlK0G00anwrpBnjzwA";
 export const ASTAR_MAINNET_RPC = "https://astar.public.blastapi.io";
 export const POLYGON_MAINNET_RPC = "https://polygon-mainnet.g.alchemy.com/v2/M6obmh9NhecgkyNlK0G00anwrpBnjzwA";
 export const ENTRYPOINT_ADDRESS = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
@@ -81,7 +82,12 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
         bundlerUrl: SHIBUYA_TESTNET_RPC,
       };
-    case Chains.astar:
+    case Chains.polygonMainnet:
+      return {
+        entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+        bundlerUrl: "https://api.pimlico.io/v1/polygon/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445",
+      };
+      case Chains.astar:
       return {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
         bundlerUrl: ASTAR_MAINNET_RPC
@@ -151,6 +157,15 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
           "0xe33fCA6E9A75529407224c593783aF778b80DC2a",
         fallBackHandlerAddress: "0xC99154BA90386DCD0C5aF6CC8cc271e5aAF57176",
       };
+    case Chains.polygonMainnet: 
+      return {
+        Elliptic: "0xd223a0D7cD198a5d448DeEdE81c63a3Ad4f244FC",
+        TouchIdSafeWalletContractProxyFactoryAddress:
+          "0x9b601f8e34eff4Dffb7CA693626a584071B9588F",
+        TouchIdSafeWalletContractSingletonAddress:
+          "0xf05f7FD2acdF4d677CC9F156E8AE44EcC72dF817",
+        fallBackHandlerAddress: "0x1dE8E294f6051d159095777051788B34609c9729",
+     };
     case Chains.astar:
     return {
         Elliptic: "0x652D29F01fdF8d0c20F78f51bAc9B173B3a76a9B",
@@ -199,6 +214,10 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
       return {
         jsonRpcUrl: SHIBUYA_TESTNET_RPC,
       };
+    case Chains.polygonMainnet:
+      return {
+        jsonRpcUrl: POLYGON_MAINNET_RPC
+      }
     case Chains.astar:
       return {
         jsonRpcUrl: ASTAR_MAINNET_RPC,
