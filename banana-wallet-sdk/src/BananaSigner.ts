@@ -80,20 +80,22 @@ export class BananaSigner extends ERC4337EthersSigner {
       userOperation?.sender
     );
 
+    const chain = (await this.jsonRpcProvider.getNetwork()).name
+
     if (userBalance.lt(minBalanceRequiredForGas)) {
       throw new Error("ERROR: Insufficient balance in wallet for gas");
     }
 
     const message = await this.smartAccountAPI.getUserOpHash(userOperation);
     console.log((parseInt(minGasRequired._hex) / 10 ** 18).toString());
-    console.log(' this is userOp formed ', userOperation);
     let signatureObtained: string;
     try {
       signatureObtained =
         await this.bananaTransporterInstance.getUserOpSignature(
           tx,
           parseInt(minBalanceRequiredForGas._hex).toString(),
-          message
+          message,
+          chain
         );
 
       if(JSON.parse(signatureObtained) === CANCEL_ACTION) {

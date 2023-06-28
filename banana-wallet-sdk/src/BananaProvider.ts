@@ -80,6 +80,7 @@ export class Banana {
    * Set cookie to local and global storage after wallet creation.
    */
   private setCookieAfterAddressCreation = async (walletIdentifier: string, saltNonce: number) => {
+    const walletCreds = await getWalletMetaData(walletIdentifier);
     this.cookieObject = {
       q0: this.publicKey.q0,
       q1: this.publicKey.q1,
@@ -87,7 +88,8 @@ export class Banana {
       initcode: false,
       encodedId: this.publicKey.encodedId,
       username: walletIdentifier,
-      saltNonce: saltNonce.toString() //! Need to make changes to the mapper code for this additional property
+      saltNonce: saltNonce.toString(),
+      keyIds: (walletCreds.keyIds) ? walletCreds.keyIds : JSON.stringify([this.publicKey.encodedId]) //! Need to make changes to the mapper code for this additional property
     };
     // saving cookie correspond to user Identifier in cookie
     this.cookie.setCookie(
@@ -129,7 +131,6 @@ export class Banana {
         // this.createBananaSignerInstance();
         return;
       } else {
-        console.log('wallet identifier in create cookie obj ', walletIdentifier);
         const walletCreds = await getWalletMetaData(walletIdentifier);
         // get and check cred here
         // else of below if should not be triggered as we are already getting wallet name from cookie means the creds are initialized
@@ -149,10 +150,8 @@ export class Banana {
         }
       }
     } else {
-      console.log(' from second get wallet name of create cokkie obj ', walletIdentifier);
       // when nothing in cookie or cred is there but with no username in that case fetching key from user provided walletname
       const walletCreds = await getWalletMetaData(walletIdentifier);
-      console.log(' this are wallet creds ', walletCreds)
       if (!!walletCreds) {
         this.cookieObject = walletCreds;
         const q0Value = this.cookieObject.q0;
@@ -255,7 +254,6 @@ export class Banana {
       this.jsonRpcProvider
     );
     const TouchIdSafeWalletContractQValuesArray: Array<string> = [this.publicKey.q0, this.publicKey.q1];
-    console.log("TouchIdSafeWalletContractQValuesArray", TouchIdSafeWalletContractQValuesArray)
     //@ts-ignore
     const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
     [
@@ -329,7 +327,6 @@ export class Banana {
     this.bananaProvider = await this.getBananaProvider();
     this.walletAddress = this.cookieObject.walletAddress;
     this.postCookieChecks(walletIdentifier);
-    console.log(' thsi is wallet address ', this.walletAddress);
     return new Wallet(this.walletAddress, this.bananaProvider, this.network);
   }
 
@@ -406,7 +403,6 @@ export class Banana {
     // check for username
     const walletName = this.cookie.getCookie("bananaUser");
     if (!!walletName) {
-      console.log('seeting cokkie here ', this.cookieObject);
       this.cookie.setCookie(walletName, JSON.stringify(this.cookieObject));
       return;
     }

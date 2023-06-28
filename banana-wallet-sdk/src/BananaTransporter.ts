@@ -8,7 +8,7 @@ import buildUrl from "./utils/urlBuilder";
 
 export interface BananaTransportProvider {
   getWalletName(): Promise<string>;
-  getUserOpSignature(txn: TransactionRequest, minBalance: string, userOpHash: string): Promise<string>;
+  getUserOpSignature(txn: TransactionRequest, minBalance: string, userOpHash: string, chain: string): Promise<string>;
   getMessageSignature(message: string): Promise<string>;
 }
 
@@ -80,7 +80,7 @@ export class BananaTransporter implements BananaTransportProvider {
     });
   }
 
-  getUserOpSignature(txn: TransactionRequest, minBalance: string, userOpHash: string): Promise<string> {
+  getUserOpSignature(txn: TransactionRequest, minBalance: string, userOpHash: string, chain: string): Promise<string> {
     const sessionId = v4();
     const walletName = this.cookieInstance.getCookie('bananaUser');
     const walletMetaData: UserCredentialObject = this.cookieInstance.getCookie(walletName);
@@ -94,6 +94,7 @@ export class BananaTransporter implements BananaTransportProvider {
             gas: minBalance,
             userOpHash: userOpHash,
             walletname: walletName,
+            chain: chain,
             isMobile: 'false'
         }
     });
