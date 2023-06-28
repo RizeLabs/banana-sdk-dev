@@ -73,9 +73,9 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation?.sender
       );
 
-      if (userBalance.lt(minBalanceRequired)) {
-        throw new Error("ERROR: Insufficient balance in Wallet");
-      }
+      // if (userBalance.lt(minBalanceRequired)) {
+      //   throw new Error("ERROR: Insufficient balance in Wallet");
+      // }
 
       userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
       userOperation.verificationGasLimit = 1.5e6;
