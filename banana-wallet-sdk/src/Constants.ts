@@ -75,10 +75,9 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
     case Chains.polygonMainnet:
       return {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-        // bundlerUrl: "https://api.pimlico.io/v1/polygon/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445",
-        bundlerUrl: "https://api.stackup.sh/v1/node/ae1b4f72151fb2b79b2e7486f1f84e23af70b434396318d023e50bfdd8a833c3"
+        bundlerUrl: "https://api.pimlico.io/v1/polygon/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445",
       };
-      case Chains.astar:
+    case Chains.astar:
       return {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
         bundlerUrl: ASTAR_MAINNET_RPC
@@ -110,9 +109,9 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
       return {
         Elliptic: "0xEA4d16E741E76E7a93b8f46650537855149efc48",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0xC69a1bfF74074BF4117CC39Be954a3d410a74Bec",
+          "0x800cDedD56926Aeb68C08482772BE98e709751e7",
         TouchIdSafeWalletContractSingletonAddress:
-          "0x154Ccd13f501eE7Cad227c8eb888BBab96ffE78F",
+          "0xD20eE602c22bc9351EDEf084749350FFc89dBaB9",
         fallBackHandlerAddress: "0x82Ee69Db954d9648fF8191bB831B9f679E5bAcb0",
       };
     case Chains.gnosis:
@@ -148,7 +147,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0x73F3e11724a97f8c41E07286677F78D38441c03F",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xf05f7FD2acdF4d677CC9F156E8AE44EcC72dF817",
+          "0xB7C69a31011766e5A13f68fDD016e0BB163D5BF9",
         fallBackHandlerAddress: "0x1dE8E294f6051d159095777051788B34609c9729",
      };
     case Chains.astar:
@@ -193,34 +192,10 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
     case Chains.polygonMainnet:
       return {
         jsonRpcUrl: POLYGON_MAINNET_RPC
-      }
+      };
     case Chains.astar:
       return {
         jsonRpcUrl: ASTAR_MAINNET_RPC,
-      }
+      };
   }
-}
-
-export declare enum ChainId {
-  MAINNET = 1,
-  ROPSTEN = 3,
-  RINKEBY = 4,
-  GOERLI = 5,
-  KOVAN = 42,
-  POLYGON = 137,
-  POLYGON_MUMBAI = 80001,
-  BSC = 56,
-  BSC_TESTNET = 97,
-  OPTIMISM = 10,
-  OPTIMISM_TESTNET = 69,
-  ARBITRUM = 42161,
-  ARBITRUM_TESTNET = 421611,
-  ARBITRUM_NOVA = 42170,
-  AVALANCHE = 43114,
-  AVALANCHE_TESTNET = 43113,
-  FANTOM = 250,
-  FANTOM_TESTNET = 4002,
-  GNOSIS = 100,
-  AURORA = 1313161554,
-  AURORA_TESTNET = 1313161556,
 }
