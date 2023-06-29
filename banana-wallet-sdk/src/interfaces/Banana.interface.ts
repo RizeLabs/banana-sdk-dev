@@ -52,55 +52,9 @@ export interface ConnectOptions {
     networkId: string | number
 }
 
-export type NativeCurrency = {
-    name: string;
-    /** 2-6 characters long */
-    symbol: string;
-    decimals: number;
-};
-
-export type RpcUrls = {
-    http: string[];
-    webSocket?: string[];
-};
-
-export type BlockExplorer = {
-    name: string;
-    url: string;
-};
-
-export type Address = `0x${string}`;
-
-export type Contract = {
-    address: Address;
-    blockCreated?: number;
-};
-
-export type Chain = {
-    /** ID in number form */
-    id: number;
-    /** Human-readable name */
-    name: string;
-    /** Internal network name */
-    network: string;
-    /** Currency used by chain */
-    nativeCurrency: NativeCurrency;
-    /** Collection of RPC endpoints */
-    rpcUrls: {
-        [key: string]: RpcUrls;
-        default: RpcUrls;
-        public: RpcUrls;
-    };
-    /** Collection of block explorers */
-    blockExplorers?: {
-        [key: string]: BlockExplorer;
-        default: BlockExplorer;
-    };
-    /** Collection of contracts */
-    contracts?: {
-        ensRegistry?: Contract;
-        multicall3?: Contract;
-    };
-    /** Flag for test networks */
-    testnet?: boolean;
+export enum RequestType {
+    POST = 'POST',
+    GET = 'GET',
+    PUT = 'PUT',
+    DELETE = 'DELETE'
 };

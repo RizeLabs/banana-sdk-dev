@@ -167,7 +167,6 @@ export class Banana {
     }
     this.walletIdentifier = walletIdentifier;
     this.publicKey = await registerFingerprint();
-    
   };
 
   getAddress(): string {

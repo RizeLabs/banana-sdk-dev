@@ -70,6 +70,11 @@ export default {
   polygonMainnet: {
     url: "https://polygon-mainnet.g.alchemy.com/v2/M6obmh9NhecgkyNlK0G00anwrpBnjzwA",
     accounts: ['4d4d1e5c12708c233d5678fc1b9a82b51f4d24710d2e4bdbf724632060f1440a']
+  },
+  astar: {
+    // url: 'https://astar-mainnet.g.alchemy.com/v2/AeVnumdmpgsZZfta5rnQDeI5CxXOK3Hw',
+    url: 'https://astar.public.blastapi.io',
+    accounts: ["adf160e8af90b3b93ad7a443ab3e976fd310aabe9e14dc3d88b2c006af2c1b91"]
   }
   },
   etherscan: {

@@ -3,7 +3,6 @@ import {
   ChainConfig,
   ChainSpecificConfig,
 } from "./interfaces/Banana.interface";
-import { Chain } from "./interfaces/Banana.interface";
 
 export const BANANA_APP = "https://bananawallet.xyz";
 export const BANANA_SERVER = "https://banana-server.xyz";
@@ -11,14 +10,13 @@ export const OPTIMISM_TESTNET_RPC =
   "https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas";
 export const MUMBAI_RPC =
   "https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4";
-export const ARBITRUM_TESTNET_RPC =
-  "https://arb-goerli.g.alchemy.com/v2/i-ei4ue2tQfCNvYGJ63NWcv8U8nEl0dw";
 export const GOERLI_RPC =
   "https://eth-goerli.g.alchemy.com/v2/IaVkSX3wU98rK7vpVyFgIryaaHfYpoST";
 export const GNOSIS_RPC = "https://rpc.gnosischain.com/";
 export const CHIADO_TESTNET_RPC = "https://rpc.chiado.gnosis.gateway.fm";
 export const SHIBUYA_TESTNET_RPC = "https://evm.shibuya.astar.network";
 export const POLYGON_MAINNET_RPC = "https://polygon-mainnet.g.alchemy.com/v2/M6obmh9NhecgkyNlK0G00anwrpBnjzwA";
+export const ASTAR_MAINNET_RPC = "https://astar.public.blastapi.io";
 export const ENTRYPOINT_ADDRESS = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
 export const BUNDLER_EOA_PUBLIC_KEY =
   "0x48701dF467Ba0efC8D8f34B2686Dc3b0A0b1cab5";
@@ -26,34 +24,15 @@ export const BUNDLER_EOA_PRIVATE_KEY =
   "0xed096a60e1af7c04519965c9e1fe105b2cd287afd49e4f1d77744f91ab5eb36e";
 export const BENEFICIARY = "0xF9ca16Fb8D6F38d36505961dAd69d2011C4695cF";
 
-export const shibuyaChain = {
-  id: 81,
-  name: "Shibuya",
-  network: "shibuya",
-  nativeCurrency: {
-    decimals: 18,
-    name: "Shibuya",
-    symbol: "SBY",
-  },
-  rpcUrls: {
-    public: { http: ["https://evm.shibuya.astar.network"] },
-    default: { http: ["https://evm.shibuya.astar.network"] },
-  },
-  blockExplorers: {
-    etherscan: { name: "ShibuyaSubscan", url: "https://shibuya.subscan.io" },
-    default: { name: "ShibuyaSubscan", url: "https://shibuya.subscan.io" },
-  },
-} as Chain;
-
 export enum Chains {
   goerli = 5,
   mumbai = 80001,
   polygonMainnet = 137,
   optimismTestnet = 420,
-  arbitrumTestnet = 421613,
   gnosis = 100,
   chiadoTestnet = 10200,
   shibuyaTestnet = 81,
+  astar = 592,
 }
 
 export function getClientConfigInfo(chain: Chains): ClientConfig {
@@ -68,18 +47,13 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
       return {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
         bundlerUrl:
-          "https://api.stackup.sh/v1/node/4bdce488aaada61f31c31315a18106eda076b12836a9ab44158fbf7a5c6cbea9",
+          "https://api.pimlico.io/v1/mumbai/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445",
       };
     case Chains.optimismTestnet:
       return {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
         bundlerUrl:
           "https://api.pimlico.io/v1/optimism-goerli/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445", // optimism bundler
-      };
-    case Chains.arbitrumTestnet:
-      return {
-        entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-        bundlerUrl: "http://localhost:80/rpc", // arbitrum bundler
       };
     case Chains.gnosis:
       return {
@@ -101,10 +75,14 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
     case Chains.polygonMainnet:
       return {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-        // bundlerUrl: "https://api.pimlico.io/v1/polygon/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445",
-        bundlerUrl: "https://api.stackup.sh/v1/node/c8791966949251733b7f5c7d63fedd59b62ce7f81acd7c0a415ad17e76f2d1a2"
+        bundlerUrl: "https://api.pimlico.io/v1/polygon/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445",
       };
-    }
+    case Chains.astar:
+      return {
+        entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+        bundlerUrl: ASTAR_MAINNET_RPC
+      };
+  }
 }
 
 export function getChainSpecificAddress(chain: Chains): ChainConfig {
@@ -135,15 +113,6 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractSingletonAddress:
           "0xD20eE602c22bc9351EDEf084749350FFc89dBaB9",
         fallBackHandlerAddress: "0x82Ee69Db954d9648fF8191bB831B9f679E5bAcb0",
-      };
-    case Chains.arbitrumTestnet:
-      return {
-        Elliptic: "0xEA4d16E741E76E7a93b8f46650537855149efc48",
-        TouchIdSafeWalletContractProxyFactoryAddress:
-          "0xF1Fae5392dce474fc1c2D98c645f438d6c760E78",
-        TouchIdSafeWalletContractSingletonAddress:
-          "0x33FF9B2A40810fA6B0cA5824fd2C189953ffD5D9",
-        fallBackHandlerAddress: "0x414Ce649934a1b3cAE1903411e325E4159C46474",
       };
     case Chains.gnosis:
       return {
@@ -181,6 +150,15 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
           "0xB7C69a31011766e5A13f68fDD016e0BB163D5BF9",
         fallBackHandlerAddress: "0x1dE8E294f6051d159095777051788B34609c9729",
      };
+    case Chains.astar:
+    return {
+        Elliptic: "0x652D29F01fdF8d0c20F78f51bAc9B173B3a76a9B",
+        TouchIdSafeWalletContractProxyFactoryAddress:
+         "0x3A43b93362669087Be639e99B7a5B75d60E0B706",
+        TouchIdSafeWalletContractSingletonAddress:
+         "0x172F0658e4Bc99D97b6DA8880b9D4E1b7A26E407",
+        fallBackHandlerAddress: "0xbF86c32B55657f0DE7cf56aD1B6F1aB9843D0F46",
+    };
   }
 }
 
@@ -199,10 +177,6 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
       return {
         jsonRpcUrl: MUMBAI_RPC,
       };
-    case Chains.arbitrumTestnet:
-      return {
-        jsonRpcUrl: ARBITRUM_TESTNET_RPC,
-      };
     case Chains.gnosis:
       return {
         jsonRpcUrl: GNOSIS_RPC,
@@ -218,30 +192,10 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
     case Chains.polygonMainnet:
       return {
         jsonRpcUrl: POLYGON_MAINNET_RPC
-      }
+      };
+    case Chains.astar:
+      return {
+        jsonRpcUrl: ASTAR_MAINNET_RPC,
+      };
   }
-}
-
-export declare enum ChainId {
-  MAINNET = 1,
-  ROPSTEN = 3,
-  RINKEBY = 4,
-  GOERLI = 5,
-  KOVAN = 42,
-  POLYGON = 137,
-  POLYGON_MUMBAI = 80001,
-  BSC = 56,
-  BSC_TESTNET = 97,
-  OPTIMISM = 10,
-  OPTIMISM_TESTNET = 69,
-  ARBITRUM = 42161,
-  ARBITRUM_TESTNET = 421611,
-  ARBITRUM_NOVA = 42170,
-  AVALANCHE = 43114,
-  AVALANCHE_TESTNET = 43113,
-  FANTOM = 250,
-  FANTOM_TESTNET = 4002,
-  GNOSIS = 100,
-  AURORA = 1313161554,
-  AURORA_TESTNET = 1313161556,
 }
