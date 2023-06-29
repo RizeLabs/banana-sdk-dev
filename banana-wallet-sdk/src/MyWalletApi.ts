@@ -109,6 +109,9 @@ export class MyWalletApi extends SimpleAccountAPI {
         throw new Error('no factory to get initCode')
       }
     }
+    console.log(this.singletonTouchIdSafeAddress)
+    console.log(this.getTouchIdSafeWalletContractInitializer())
+    console.log(this.saltNonce)
     return hexConcat([
       this.factory.address,
       this.factory.interface.encodeFunctionData('createProxyWithNonce', [this.singletonTouchIdSafeAddress, this.getTouchIdSafeWalletContractInitializer(), this.saltNonce])
