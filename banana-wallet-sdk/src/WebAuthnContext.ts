@@ -5,6 +5,7 @@ import Axios from "axios";
 import { REGISTRATION_LAMBDA_URL, VERIFICATION_LAMBDA_URL } from "./routes";
 import { arrayify } from "ethers/lib/utils";
 import { ethers } from "ethers";
+import { getKeccakHash } from "./utils/getKeccakHash";
 
 const stringBeforeOriginInClientData = '","'; 
 const stringAfterChallengeInClientData = 'challenge":"';
@@ -131,8 +132,6 @@ export const verifyFingerprint = async (
   //@ts-ignore
   const response = credential.response;
 
-  const clientDataJSON = Buffer.from(response.clientDataJSON);
-
   const signature = await Axios({
     url: VERIFICATION_LAMBDA_URL,
     method: "post",
@@ -146,24 +145,21 @@ export const verifyFingerprint = async (
       signature: JSON.stringify(Array.from(new Uint8Array(response.signature))),
     },
   });
-  // const value = clientDataJSON.toString("hex").slice(72, 248);
-  // const clientDataJsonRequestId = ethers.utils.keccak256("0x" + value);
-  // userOp.signature =
-  //   signature.data.message.finalSignature + clientDataJsonRequestId.slice(2);
   const ClientDataJsonStr = new TextDecoder().decode(response.clientDataJSON);
   const clientDataJsonPostStartIndex = ClientDataJsonStr.indexOf("origin") - stringBeforeOriginInClientData.length
   const clientDataJsonPreEndIndex = ClientDataJsonStr.indexOf("challenge") + stringAfterChallengeInClientData.length;
-  const sig2 = ethers.utils.defaultAbiCoder.encode(
-    ["uint", "uint","bytes", "string", "string"],
+  const finalReplyProofSignature = ethers.utils.defaultAbiCoder.encode(
+    ["uint", "uint","bytes", "string", "string", "bytes32"],
     [
       ethers.BigNumber.from(signature.data.message.finalSignature.slice(0,66)),
       ethers.BigNumber.from("0x"+signature.data.message.finalSignature.slice(66,130)),
       "0x"+buf2hex(response.authenticatorData),
       ClientDataJsonStr.slice(0,clientDataJsonPreEndIndex),
-      ClientDataJsonStr.slice(clientDataJsonPostStartIndex)
+      ClientDataJsonStr.slice(clientDataJsonPostStartIndex),
+      getKeccakHash(encodedId)
     ]
   );
-  userOp.signature = sig2;
+  userOp.signature = finalReplyProofSignature;
   return {
     newUserOp: userOp,
     process: signature.data.message.processStatus,

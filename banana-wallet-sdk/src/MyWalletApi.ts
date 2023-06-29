@@ -25,6 +25,7 @@ export interface MyWalletApiParams extends BaseApiParams {
   _ownerAddress: string
   _fallBackHandler: string
   _saltNonce: string
+  _encodedIdHash: string
 }
 
 /**
@@ -41,6 +42,7 @@ export class MyWalletApi extends SimpleAccountAPI {
   ownerAddress: string
   fallBackHandleraddress: string
   saltNonce: string
+  encodedIdHash: string
   constructor(params: MyWalletApiParams) {
     super(params)
     this.qValues = params._qValues
@@ -48,6 +50,7 @@ export class MyWalletApi extends SimpleAccountAPI {
     this.ownerAddress = params._ownerAddress
     this.fallBackHandleraddress = params._fallBackHandler
     this.saltNonce = params._saltNonce
+    this.encodedIdHash = params._encodedIdHash
   }
 
   /**
@@ -71,22 +74,22 @@ export class MyWalletApi extends SimpleAccountAPI {
       this.singletonTouchIdSafeAddress,
       this.provider
     );
-    console.log(" this is ep address ", this.entryPointAddress);
     const TouchIdSafeWalletContractQValuesArray: Array<string> = [this.qValues[0], this.qValues[1]];
     //@ts-ignore
     const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
     [
-      [this.ownerAddress], // owners 
+      [this.ownerAddress],                            // owners 
       1,                                              // thresold will remain fix 
       "0x0000000000000000000000000000000000000000",   // to address 
       "0x",                                           // modules setup calldata
-      this.fallBackHandleraddress,   // fallback handler
+      this.fallBackHandleraddress,                    // fallback handler
       "0x0000000000000000000000000000000000000000",   // payment token
       0,                                              // payment 
       "0x0000000000000000000000000000000000000000",   // payment receiver
-      this.entryPointAddress,   // entrypoint
+      this.entryPointAddress,                         // entrypoint
+      this.encodedIdHash,                             // hash of encoded id
       // @ts-ignore
-      TouchIdSafeWalletContractQValuesArray,          // q values 
+      TouchIdSafeWalletContractQValuesArray           // q values 
     ]);
 
     return TouchIdSafeWalletContractInitializer
@@ -109,9 +112,6 @@ export class MyWalletApi extends SimpleAccountAPI {
         throw new Error('no factory to get initCode')
       }
     }
-    console.log(this.singletonTouchIdSafeAddress)
-    console.log(this.getTouchIdSafeWalletContractInitializer())
-    console.log(this.saltNonce)
     return hexConcat([
       this.factory.address,
       this.factory.interface.encodeFunctionData('createProxyWithNonce', [this.singletonTouchIdSafeAddress, this.getTouchIdSafeWalletContractInitializer(), this.saltNonce])
@@ -122,7 +122,6 @@ export class MyWalletApi extends SimpleAccountAPI {
     if (await this.checkAccountPhantom()) {
       return BigNumber.from(0)
     }
-    console.log(" this is ep ", this.entryPointAddress);
     const entryPoint: EntryPoint = EntryPoint__factory.connect(
       this.entryPointAddress,
       this.provider
