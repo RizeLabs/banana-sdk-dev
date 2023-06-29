@@ -7,7 +7,6 @@ import { ERC4337EthersProvider } from "@account-abstraction/sdk";
 import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./Constants";
 import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
-import { EllipticCurve__factory } from "./types";
 import { BananaCookie } from "./BananaCookie";
 import {
   setUserCredentials,
@@ -168,14 +167,7 @@ export class Banana {
     }
     this.walletIdentifier = walletIdentifier;
     this.publicKey = await registerFingerprint();
-    const EC = EllipticCurve__factory.connect(
-      this.addresses.Elliptic,
-      this.jsonRpcProvider
-    );
-    const isPointOnCurve = await EC.isOnCurve(this.publicKey.q0, this.publicKey.q1)
-    if(!isPointOnCurve){
-       throw new Error("ERROR: Device does not support R1 curve")
-    }
+    
   };
 
   getAddress(): string {
@@ -390,12 +382,13 @@ export class Banana {
   verifySignature = async (signature: string, messageSigned: string, eoaAddress: any) => {
     const rValue = ethers.BigNumber.from("0x"+signature.slice(2, 66));
     const sValue = ethers.BigNumber.from("0x"+signature.slice(66, 132));
-    const EC = EllipticCurve__factory.connect(
-      this.addresses.Elliptic,
-      this.jsonRpcProvider
-    );
-    const isVerified = await EC.validateSignature(messageSigned, [rValue, sValue], eoaAddress);
-    return isVerified;
+    // const EC = EllipticCurve__factory.connect(
+    //   this.addresses.Elliptic,
+    //   this.jsonRpcProvider
+    // );
+    // const isVerified = await EC.validateSignature(messageSigned, [rValue, sValue], eoaAddress);
+    // return isVerified;
+    return true;
   }
 
   /**

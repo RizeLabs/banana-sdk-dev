@@ -14,7 +14,6 @@ export { DelegateCallTransactionGuard__factory } from "./DelegateCallTransaction
 export { ERC1155TokenReceiver__factory } from "./ERC1155TokenReceiver__factory";
 export { ERC721TokenReceiver__factory } from "./ERC721TokenReceiver__factory";
 export { ERC777TokensRecipient__factory } from "./ERC777TokensRecipient__factory";
-export { EllipticCurve__factory } from "./EllipticCurve__factory";
 export { EntryPoint__factory } from "./EntryPoint__factory";
 export { FallbackManager__factory } from "./FallbackManager__factory";
 export { Guard__factory } from "./Guard__factory";

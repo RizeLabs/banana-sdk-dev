@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.12;
-// 
-// Heavily inspired from 
+//
+// Heavily inspired from
 // https://github.com/maxrobot/elliptic-solidity/blob/master/contracts/Secp256r1.sol
 // https://github.com/tdrerup/elliptic-curve-solidity/blob/master/contracts/curves/EllipticCurve.sol
 // modified to use precompile 0x05 modexp
 // and modified jacobian double
 // optimisations to avoid to an from from affine and jacobian coordinates
-// 
+//
 
 struct JPoint {
     uint256 x;
@@ -16,26 +16,28 @@ struct JPoint {
 }
 
 library Secp256r1 {
-
     uint256 constant gx = 0x6B17D1F2E12C4247F8BCE6E563A440F277037D812DEB33A0F4A13945D898C296;
     uint256 constant gy = 0x4FE342E2FE1A7F9B8EE7EB4A7C0F9E162BCE33576B315ECECBB6406837BF51F5;
     uint256 public constant pp = 0xFFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF;
-                          
+
     uint256 public constant nn = 0xFFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551;
     uint256 constant a = 0xFFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFC;
     uint256 constant b = 0x5AC635D8AA3A93E7B3EBBD55769886BC651D06B0CC53B0F63BCE3C3E27D2604B;
-    uint256 constant MOST_SIGNIFICANT = 0xc000000000000000000000000000000000000000000000000000000000000000;
+    uint256 constant MOST_SIGNIFICANT =
+        0xc000000000000000000000000000000000000000000000000000000000000000;
 
     /*
-    * Verify
-    * @description - verifies that a public key has signed a given message
-    * @param hashedMeassage - hashed message
-    * @param rs - signature  R and S
-    * @param qValues - public key coordinate X,Y
-    */
-    function Verify(uint256 hashedMeassage, uint[2] memory rs, uint[2] memory qValues)
-        internal returns (bool)
-    {
+     * Verify
+     * @description - verifies that a public key has signed a given message
+     * @param hashedMeassage - hashed message
+     * @param rs - signature  R and S
+     * @param qValues - public key coordinate X,Y
+     */
+    function Verify(
+        uint256 hashedMeassage,
+        uint[2] memory rs,
+        uint[2] memory qValues
+    ) internal returns (bool) {
         uint256 r = rs[0];
         uint256 s = rs[1];
         if (r >= nn || s >= nn) {
@@ -55,12 +57,10 @@ library Secp256r1 {
     }
 
     /*
-    * scalarMultiplications
-    * @description - performs a number of EC operations required in te pk signature verification
-    */
-    function scalarMultiplications(uint X, uint Y, uint u1, uint u2) 
-        internal returns(uint, uint)
-    {
+     * scalarMultiplications
+     * @description - performs a number of EC operations required in te pk signature verification
+     */
+    function scalarMultiplications(uint X, uint Y, uint u1, uint u2) internal returns (uint, uint) {
         uint x1;
         uint y1;
         uint z1;
@@ -75,18 +75,22 @@ library Secp256r1 {
 
         (x1, y1, z1) = ShamirMultJacobian(X, Y, u1, u2);
 
-
         return _affineFromJacobian(x1, y1, z1);
     }
 
     /*
-    * Strauss Shamir trick for EC multiplication
-    * https://stackoverflow.com/questions/50993471/ec-scalar-multiplication-with-strauss-shamir-method
-    * we optimise on this a bit to do with 2 bits at a time rather than a single bit
-    * the individual points for a single pass are precomputed
-    * overall this reduces the number of additions while keeping the same number of doublings
-    */
-    function ShamirMultJacobian(uint X, uint Y, uint u1, uint u2) internal pure returns (uint, uint, uint) {
+     * Strauss Shamir trick for EC multiplication
+     * https://stackoverflow.com/questions/50993471/ec-scalar-multiplication-with-strauss-shamir-method
+     * we optimise on this a bit to do with 2 bits at a time rather than a single bit
+     * the individual points for a single pass are precomputed
+     * overall this reduces the number of additions while keeping the same number of doublings
+     */
+    function ShamirMultJacobian(
+        uint X,
+        uint Y,
+        uint u1,
+        uint u2
+    ) internal pure returns (uint, uint, uint) {
         uint x = 0;
         uint y = 0;
         uint z = 0;
@@ -111,7 +115,10 @@ library Secp256r1 {
         return (x, y, z);
     }
 
-    function _preComputeJacobianPoints(uint X, uint Y) internal pure returns (JPoint[] memory points) {
+    function _preComputeJacobianPoints(
+        uint X,
+        uint Y
+    ) internal pure returns (JPoint[] memory points) {
         // JPoint[] memory u1Points = new JPoint[](4);
         // u1Points[0] = JPoint(0, 0, 0);
         // u1Points[1] = JPoint(gx, gy, 1); // u1
@@ -159,15 +166,13 @@ library Secp256r1 {
         (x, y, z) = _modifiedJacobianDouble(p.x, p.y, p.z);
         return JPoint(x, y, z);
     }
- 
+
     /*
-    * ScalarMult
-    * @description performs scalar multiplication of two elliptic curve points, based on golang
-    * crypto/elliptic library
-    */
-    function ScalarMult(uint Bx, uint By, uint k)
-        internal returns (uint, uint)
-    {
+     * ScalarMult
+     * @description performs scalar multiplication of two elliptic curve points, based on golang
+     * crypto/elliptic library
+     */
+    function ScalarMult(uint Bx, uint By, uint k) internal returns (uint, uint) {
         uint x = 0;
         uint y = 0;
         uint z = 0;
@@ -176,9 +181,7 @@ library Secp256r1 {
         return _affineFromJacobian(x, y, z);
     }
 
-    function ScalarMultJacobian(uint Bx, uint By, uint k)
-        internal pure returns (uint, uint, uint)
-    {
+    function ScalarMultJacobian(uint Bx, uint By, uint k) internal pure returns (uint, uint, uint) {
         uint Bz = 1;
         uint x = 0;
         uint y = 0;
@@ -195,21 +198,16 @@ library Secp256r1 {
         return (x, y, z);
     }
 
-    function ScalarBaseMultJacobian(uint k)
-        internal pure returns (uint, uint, uint)
-    {
+    function ScalarBaseMultJacobian(uint k) internal pure returns (uint, uint, uint) {
         return ScalarMultJacobian(gx, gy, k);
     }
 
-
     /* _affineFromJacobian
-    * @desription returns affine coordinates from a jacobian input follows 
-    * golang elliptic/crypto library
-    */
-    function _affineFromJacobian(uint x, uint y, uint z)
-        internal returns(uint ax, uint ay)
-    {
-        if (z==0) {
+     * @desription returns affine coordinates from a jacobian input follows
+     * golang elliptic/crypto library
+     */
+    function _affineFromJacobian(uint x, uint y, uint z) internal returns (uint ax, uint ay) {
+        if (z == 0) {
             return (0, 0);
         }
 
@@ -218,23 +216,27 @@ library Secp256r1 {
 
         ax = mulmod(x, zinvsq, pp);
         ay = mulmod(y, mulmod(zinvsq, zinv, pp), pp);
-
     }
+
     /*
-    * _jAdd
-    * @description performs double Jacobian as defined below:
-    * https://hyperelliptic.org/EFD/g1p/auto-code/shortw/jacobian-3/doubling/mdbl-2007-bl.op3
-    */
-    function _jAdd(uint p1, uint p2, uint p3, uint q1, uint q2, uint q3)
-        internal pure returns(uint r1, uint r2, uint r3)    
-    {
+     * _jAdd
+     * @description performs double Jacobian as defined below:
+     * https://hyperelliptic.org/EFD/g1p/auto-code/shortw/jacobian-3/doubling/mdbl-2007-bl.op3
+     */
+    function _jAdd(
+        uint p1,
+        uint p2,
+        uint p3,
+        uint q1,
+        uint q2,
+        uint q3
+    ) internal pure returns (uint r1, uint r2, uint r3) {
         if (p3 == 0) {
             r1 = q1;
             r2 = q2;
             r3 = q3;
 
             return (r1, r2, r3);
-
         } else if (q3 == 0) {
             r1 = p1;
             r2 = p2;
@@ -304,13 +306,19 @@ library Secp256r1 {
 
     // Point doubling on the modified jacobian coordinates
     // http://point-at-infinity.org/ecc/Prime_Curve_Modified_Jacobian_Coordinates.html
-    function _modifiedJacobianDouble(uint x, uint y, uint z) 
-        internal pure returns (uint x3, uint y3, uint z3)
-    {
+    function _modifiedJacobianDouble(
+        uint x,
+        uint y,
+        uint z
+    ) internal pure returns (uint x3, uint y3, uint z3) {
         assembly {
             let pd := 0xFFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF
             let z2 := mulmod(z, z, pd)
-            let az4 := mulmod(0xFFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFC, mulmod(z2, z2, pd), pd)
+            let az4 := mulmod(
+                0xFFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFC,
+                mulmod(z2, z2, pd),
+                pd
+            )
             let y2 := mulmod(y, y, pd)
             let s := mulmod(0x04, mulmod(x, y2, pd), pd)
             let u := mulmod(0x08, mulmod(y2, y2, pd), pd)
@@ -333,22 +341,20 @@ library Secp256r1 {
         }
     }
 
-    function _primemod(uint value, uint p)
-        internal returns (uint ret)
-    {
-        ret = modexp(value, p-2, p);
+    function _primemod(uint value, uint p) internal returns (uint ret) {
+        ret = modexp(value, p - 2, p);
         return ret;
     }
 
     // Wrapper for built-in BigNumber_modexp (contract 0x5) as described here. https://github.com/ethereum/EIPs/pull/198
-    function modexp(uint _base, uint _exp, uint _mod) internal returns(uint ret) {
+    function modexp(uint _base, uint _exp, uint _mod) internal returns (uint ret) {
         assembly {
             if gt(_base, _mod) {
                 _base := mod(_base, _mod)
             }
             // Free memory pointer is always stored at 0x40
             let freemem := mload(0x40)
-            
+
             mstore(freemem, 0x20)
             mstore(add(freemem, 0x20), 0x20)
             mstore(add(freemem, 0x40), 0x20)
@@ -361,10 +367,10 @@ library Secp256r1 {
             switch success
             case 0 {
                 revert(0x0, 0x0)
-            } default {
-                ret := mload(freemem) 
             }
-        }        
+            default {
+                ret := mload(freemem)
+            }
+        }
     }
-
 }

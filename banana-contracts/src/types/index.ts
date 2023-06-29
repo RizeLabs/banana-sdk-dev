@@ -14,7 +14,6 @@ export type { DelegateCallTransactionGuard } from "./DelegateCallTransactionGuar
 export type { ERC1155TokenReceiver } from "./ERC1155TokenReceiver";
 export type { ERC721TokenReceiver } from "./ERC721TokenReceiver";
 export type { ERC777TokensRecipient } from "./ERC777TokensRecipient";
-export type { EllipticCurve } from "./EllipticCurve";
 export type { EntryPoint } from "./EntryPoint";
 export type { FallbackManager } from "./FallbackManager";
 export type { Guard } from "./Guard";
@@ -64,7 +63,6 @@ export { DelegateCallTransactionGuard__factory } from "./factories/DelegateCallT
 export { ERC1155TokenReceiver__factory } from "./factories/ERC1155TokenReceiver__factory";
 export { ERC721TokenReceiver__factory } from "./factories/ERC721TokenReceiver__factory";
 export { ERC777TokensRecipient__factory } from "./factories/ERC777TokensRecipient__factory";
-export { EllipticCurve__factory } from "./factories/EllipticCurve__factory";
 export { EntryPoint__factory } from "./factories/EntryPoint__factory";
 export { FallbackManager__factory } from "./factories/FallbackManager__factory";
 export { Guard__factory } from "./factories/Guard__factory";

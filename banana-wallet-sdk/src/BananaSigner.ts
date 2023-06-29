@@ -78,6 +78,7 @@ export class BananaSigner extends ERC4337EthersSigner {
       // }
 
       userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
+      userOperation.preVerificationGas = 60000;
       userOperation.verificationGasLimit = 1.5e6;
       const message = await this.smartAccountAPI.getUserOpHash(userOperation);
       const { newUserOp, process } = await this.signUserOp(
