@@ -21,8 +21,8 @@ contract BananaAccount is Safe {
     //EIP4337 trusted entrypoint
     address public entryPoint;
 
-    //q values for the elliptic curve representing the public key of the user
-    uint256[2] qValues;
+    //maintaing mapping of encodedId to qValues
+    mapping (bytes32 => uint256[2]) public encodedIdHashToQValues;
 
     /// @dev Setup function sets initial storage of contract.
     /// @param _owners List of Safe owners.
@@ -34,6 +34,7 @@ contract BananaAccount is Safe {
     /// @param payment Value that should be paid
     /// @param paymentReceiver Address that should receive the payment (or 0 if tx.origin)
     /// @param _entryPoint Address for the trusted EIP4337 entrypoint
+    /// @param _encodedIdHash contains the hash of encodedId which corresponds to the qValues
     /// @param _qValues public address x and y coordinates of the user
     function setupWithEntrypoint(
         address[] calldata _owners,
@@ -45,10 +46,11 @@ contract BananaAccount is Safe {
         uint256 payment,
         address payable paymentReceiver,
         address _entryPoint,
+        bytes32 _encodedIdHash,
         uint256[2] memory _qValues
     ) external {
         entryPoint = _entryPoint;
-        qValues = _qValues;
+        encodedIdHashToQValues[_encodedIdHash] = _qValues;
 
         _executeAndRevert(
             address(this),
@@ -124,8 +126,9 @@ contract BananaAccount is Safe {
             uint256 s,
             bytes memory authenticatorData,
             string memory clientDataJSONPre,
-            string memory clientDataJSONPost
-        ) = abi.decode(userOp.signature, (uint256, uint256, bytes, string, string));
+            string memory clientDataJSONPost,
+            bytes32 encodedIdHash
+        ) = abi.decode(userOp.signature, (uint256, uint256, bytes, string, string, bytes32));
 
         bool success = Secp256r1.Verify(
             uint(
@@ -137,7 +140,7 @@ contract BananaAccount is Safe {
                 )
             ),
             [r, s],
-            qValues
+            encodedIdHashToQValues[encodedIdHash]
         );
 
         if (!success) return SIG_VALIDATION_FAILED;
@@ -159,6 +162,18 @@ contract BananaAccount is Safe {
         require(msg.sender == entryPoint, 'account: not from EntryPoint');
         // Execute transaction without further confirmations.
         _executeAndRevert(to, value, data, operation);
+    }
+
+    /// @dev check if the signature is valid
+    /// @param messageToBeSigned Message to be signed.
+    /// @param signature 'r' and 's' values of the signature.
+    /// @param publicKey 'x' and 'y' coordinates of the public key of R1 curve
+    function verifySignature(bytes32 messageToBeSigned, uint256[2] calldata signature, uint256[2] calldata publicKey) external view returns (bool) {
+        return Secp256r1.Verify(
+            uint(messageToBeSigned),
+            signature,
+            publicKey
+        );
     }
 
     function _executeAndRevert(
@@ -187,4 +202,8 @@ contract BananaAccount is Safe {
     function replaceEntrypoint(address newEntrypoint) public authorized {
         entryPoint = newEntrypoint;
     }
+
+    function addNewDevice(uint256[2] memory _qValues, bytes32 _encodedIdHash) public authorized {
+        encodedIdHashToQValues[_encodedIdHash] = _qValues;
+    } 
 }

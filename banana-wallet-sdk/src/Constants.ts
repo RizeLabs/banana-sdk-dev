@@ -133,7 +133,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0x800cDedD56926Aeb68C08482772BE98e709751e7",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xD20eE602c22bc9351EDEf084749350FFc89dBaB9",
+          "0x23cAA0031A64dB5539b0315b83B31B9c37BC69f1",
         fallBackHandlerAddress: "0x82Ee69Db954d9648fF8191bB831B9f679E5bAcb0",
       };
     case Chains.arbitrumTestnet:
