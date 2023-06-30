@@ -135,7 +135,7 @@ const Staking = () => {
   const mintERC721 = async () => {
     // const bananaERCTokenAddress = '0x177069b755F6ACC4EA7A9777D05f35AfC67A936A';
     // const bananaERCTokenAddress = '0x8fe7c2d6eB8DE9A452F59E62078f73780db1da83';
-    const bananaERCTokenAddress = '0x4e191815bbD8031955fe355C450eeB629451FfDf'
+    const bananaERCTokenAddress = '0xC5B44ba934CbDaa0D6E81Fa22E4d6AB99726F5c1'
     const walletAddress = await walletInstance.getAddress();
     let bananContract = new ethers.Contract(
       bananaERCTokenAddress,
@@ -189,7 +189,8 @@ const Staking = () => {
   const transferErc20 = async () => {
     // const bananaAddress = '0x66af7a792B10B2f6C32bA478890a9a8Ddf98066F';
     // const bananaAddress = '0xD8fdb3f42bf350D18968fd7b3DFf74b6C3C0bE42';
-    const bananaAddress = '0x3c75e43725a1EE466984E0A7c9C06A3F20757210'
+    // const bananaAddress = '0x3c75e43725a1EE466984E0A7c9C06A3F20757210'//mumbai
+    const bananaAddress = '0x0E7d52038e93CF7885EBBAf3C9bDdD44Bf3Efe84' //polygon
     const walletAddress = await walletInstance.getAddress();
     let bananContract = new ethers.Contract(
       bananaAddress,
@@ -233,7 +234,8 @@ const Staking = () => {
       setIsLoading(true);
       // const bananaAddress = '0x66af7a792B10B2f6C32bA478890a9a8Ddf98066F';
       // const bananaAddress = '0xD8fdb3f42bf350D18968fd7b3DFf74b6C3C0bE42';
-      const bananaAddress = '0x3c75e43725a1EE466984E0A7c9C06A3F20757210'
+      // const bananaAddress = '0x3c75e43725a1EE466984E0A7c9C06A3F20757210' //mumbai
+      const bananaAddress = '0x0E7d52038e93CF7885EBBAf3C9bDdD44Bf3Efe84' //polygon
 
       const walletAddress = await walletInstance.getAddress();
       let bananContract = new ethers.Contract(
