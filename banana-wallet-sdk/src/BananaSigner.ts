@@ -116,7 +116,6 @@ export class BananaSigner extends ERC4337EthersSigner {
     const messageHash = ethers.utils.keccak256(
       ethers.utils.solidityPack(["string"], [message])
     );
-    console.log(' this is msg hash ', messageHash);
     let process = true;
     let userOpWithSignatureAndMessage: any;
     try {
