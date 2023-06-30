@@ -73,9 +73,9 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation?.sender
       );
 
-      if (userBalance.lt(minBalanceRequired)) {
-        throw new Error("ERROR: Insufficient balance in Wallet");
-      }
+       if (userBalance.lt(minBalanceRequired)) {
+         throw new Error("ERROR: Insufficient balance in Wallet");
+       }
 
       userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
       userOperation.verificationGasLimit = 1.5e6;
@@ -132,25 +132,15 @@ export class BananaSigner extends ERC4337EthersSigner {
     } catch (err) {
       return Promise.reject(err);
     }
-    const signatureAndMessage =
+    const finalReplayProofSignature =
       userOpWithSignatureAndMessage.newUserOp.signature;
-    const abi = ethers.utils.defaultAbiCoder;
-    const decoded = abi.decode(
-      ["uint256", "uint256", "uint256"],
-      signatureAndMessage
-    );
-    const signedMessage = decoded[2];
-    const rHex = decoded[0].toHexString();
-    const sHex = decoded[1].toHexString();
-    const finalSignature = rHex + sHex.slice(2);
     /**
      * Note:
      * the `message` is signed using secp256r1 instead of secp256k1, hence to verify
      * signedMessage we cannot use ecrecover!
      */
     return {
-      messageSigned: signedMessage.toHexString(),
-      signature: finalSignature,
+      signature: finalReplayProofSignature,
     };
   }
 

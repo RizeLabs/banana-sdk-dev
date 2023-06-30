@@ -14,7 +14,6 @@ export { DelegateCallTransactionGuard__factory } from "./DelegateCallTransaction
 export { ERC1155TokenReceiver__factory } from "./ERC1155TokenReceiver__factory";
 export { ERC721TokenReceiver__factory } from "./ERC721TokenReceiver__factory";
 export { ERC777TokensRecipient__factory } from "./ERC777TokensRecipient__factory";
-export { EllipticCurve__factory } from "./EllipticCurve__factory";
 export { EntryPoint__factory } from "./EntryPoint__factory";
 export { FallbackManager__factory } from "./FallbackManager__factory";
 export { Guard__factory } from "./Guard__factory";
@@ -46,6 +45,7 @@ export { SenderCreator__factory } from "./SenderCreator__factory";
 export { SignMessageLib__factory } from "./SignMessageLib__factory";
 export { SimulateTxAccessor__factory } from "./SimulateTxAccessor__factory";
 export { StakeManager__factory } from "./StakeManager__factory";
+export { Staking__factory } from "./Staking__factory";
 export { StorageAccessible__factory } from "./StorageAccessible__factory";
 export { TokenCallbackHandler__factory } from "./TokenCallbackHandler__factory";
 export { ViewStorageAccessible__factory } from "./ViewStorageAccessible__factory";

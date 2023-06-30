@@ -25,6 +25,7 @@ export interface MyWalletApiParams extends BaseApiParams {
   _ownerAddress: string
   _fallBackHandler: string
   _saltNonce: string
+  _encodedIdHash: string
 }
 
 /**
@@ -41,6 +42,7 @@ export class MyWalletApi extends SimpleAccountAPI {
   ownerAddress: string
   fallBackHandleraddress: string
   saltNonce: string
+  encodedIdHash: string
   constructor(params: MyWalletApiParams) {
     super(params)
     this.qValues = params._qValues
@@ -48,6 +50,7 @@ export class MyWalletApi extends SimpleAccountAPI {
     this.ownerAddress = params._ownerAddress
     this.fallBackHandleraddress = params._fallBackHandler
     this.saltNonce = params._saltNonce
+    this.encodedIdHash = params._encodedIdHash
   }
 
   /**
@@ -75,17 +78,18 @@ export class MyWalletApi extends SimpleAccountAPI {
     //@ts-ignore
     const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
     [
-      [this.ownerAddress], // owners 
+      [this.ownerAddress],                            // owners 
       1,                                              // thresold will remain fix 
       "0x0000000000000000000000000000000000000000",   // to address 
       "0x",                                           // modules setup calldata
-      this.fallBackHandleraddress,   // fallback handler
+      this.fallBackHandleraddress,                    // fallback handler
       "0x0000000000000000000000000000000000000000",   // payment token
       0,                                              // payment 
       "0x0000000000000000000000000000000000000000",   // payment receiver
-      this.entryPointAddress,   // entrypoint
+      this.entryPointAddress,                         // entrypoint
+      this.encodedIdHash,                             // hash of encoded id
       // @ts-ignore
-      TouchIdSafeWalletContractQValuesArray,          // q values 
+      TouchIdSafeWalletContractQValuesArray           // q values 
     ]);
 
     return TouchIdSafeWalletContractInitializer
