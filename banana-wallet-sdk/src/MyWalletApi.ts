@@ -159,6 +159,9 @@ export class MyWalletApi extends SimpleAccountAPI {
       this.provider
     );
     const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
+    console.log('initiualizer ', TouchIdSafeWalletContractInitializer)
+    console.log(' singleton ', this.singletonTouchIdSafeAddress)
+    console.log(' nonce ', this.saltNonce)
     const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.singletonTouchIdSafeAddress, this.saltNonce, TouchIdSafeWalletContractInitializer);
     return TouchIdSafeWalletContractAddress
   }

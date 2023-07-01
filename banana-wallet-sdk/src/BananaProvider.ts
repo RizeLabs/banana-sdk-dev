@@ -89,7 +89,9 @@ export class Banana {
       encodedId: this.publicKey.encodedId,
       username: walletIdentifier,
       saltNonce: saltNonce.toString(),
-      keyIds: (walletCreds.keyIds) ? walletCreds.keyIds : JSON.stringify([this.publicKey.encodedId]) //! Need to make changes to the mapper code for this additional property
+      keyIds: (walletCreds.keyIds) ? walletCreds.keyIds : JSON.stringify([this.publicKey.encodedId]),
+      qValueX: (walletCreds.qValueX) ? walletCreds.qValueX : JSON.stringify([this.publicKey.q0]), 
+      qValueY: (walletCreds.qValueY) ? walletCreds.qValueY : JSON.stringify([this.publicKey.q1]) 
     };
     // saving cookie correspond to user Identifier in cookie
     this.cookie.setCookie(
