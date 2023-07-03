@@ -163,8 +163,8 @@ export class BananaSigner extends ERC4337EthersSigner {
      * signedMessage we cannot use ecrecover!
      */
     return {
+      messageSigned: signedMessage.toHexString(),
       signature: finalSignature,
     };
   }
 }
-

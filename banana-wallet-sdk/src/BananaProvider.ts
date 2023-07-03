@@ -1,10 +1,11 @@
-import { Bytes, ethers } from "ethers";
+import { ethers } from "ethers";
 import { EntryPoint__factory, EntryPoint } from "@account-abstraction/contracts";
 import { MyPaymasterApi } from "./MyPayMasterApi";
 import { MyWalletApi } from "./MyWalletApi";
 import { HttpRpcClient } from "@account-abstraction/sdk/dist/src/HttpRpcClient";
 import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./constants/Constants";
 import { BananaSigner } from "./BananaSigner";
+import { EllipticCurve__factory } from './types'
 import { BananaCookie } from "./BananaCookie";
 import {
   setWalletMetaData,
@@ -23,7 +24,6 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
 import { Wallet } from "./BananaWallet"
 import { Banana4337Provider } from "./Banana4337Provider";
-import { encode } from "./utils/base64url-arraybuffer";
 //! Omiting this check for now
 import { NetworkAddressChecker } from "./utils/addressChecker";
 import { BananaTransporter } from "./BananaTransporter";
@@ -89,9 +89,7 @@ export class Banana {
       encodedId: this.publicKey.encodedId,
       username: walletIdentifier,
       saltNonce: saltNonce.toString(),
-      keyIds: (walletCreds.keyIds) ? walletCreds.keyIds : JSON.stringify([this.publicKey.encodedId]),
-      qValueX: (walletCreds.qValueX) ? walletCreds.qValueX : JSON.stringify([this.publicKey.q0]), 
-      qValueY: (walletCreds.qValueY) ? walletCreds.qValueY : JSON.stringify([this.publicKey.q1]) 
+      keyIds: (walletCreds.keyIds) ? walletCreds.keyIds : JSON.stringify([this.publicKey.encodedId]) //! Need to make changes to the mapper code for this additional property
     };
     // saving cookie correspond to user Identifier in cookie
     this.cookie.setCookie(
@@ -215,7 +213,7 @@ export class Banana {
       _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress,
       _ownerAddress: this.getAddress(),
       _fallBackHandler: this.addresses.fallBackHandlerAddress,
-      _saltNonce: this.cookieObject.saltNonce,
+      _saltNonce: this.cookieObject.saltNonce
     });
 
     this.accountApi = smartWalletAPI;
@@ -383,35 +381,15 @@ export class Banana {
    */
 
   //! for now assigned eoaAddress as any type
-  verifySignature = async (signature: string, message: string, eoaAddress: any): Promise<boolean> => {
-
-    const bananaAccount: BananaAccount = BananaAccount__factory.connect(this.walletAddress, this.jsonRpcProvider);
-    const abiDecode = ethers.utils.defaultAbiCoder;
-    const decoded = abiDecode.decode(['uint', 'uint', 'bytes', 'string', 'string', 'bytes32'], signature);
-    const rHex = decoded[0]._hex;
-    const sHex = decoded[1]._hex;
-    const authenticatorData = decoded[2];
-    const clientDataJSONPre = decoded[3];
-    const clientDataJSONPost = decoded[4];
-
-    const messageHash = ethers.utils.keccak256(
-      ethers.utils.solidityPack(["string"], [message])
+  verifySignature = async (signature: string, messageSigned: string, eoaAddress: any) => {
+    const rValue = ethers.BigNumber.from("0x"+signature.slice(2, 66));
+    const sValue = ethers.BigNumber.from("0x"+signature.slice(66, 132));
+    const EC = EllipticCurve__factory.connect(
+      this.addresses.Elliptic,
+      this.jsonRpcProvider
     );
-
-    let isSignatureValid = false;
-
-    try {
-      const textEncoder = new TextEncoder();
-      const base64RequestId = encode(textEncoder.encode(messageHash).buffer)
-      const clientDataJSON = `${clientDataJSONPre}${base64RequestId}${clientDataJSONPost}`;
-      const concatenatedData = ethers.utils.concat([authenticatorData, ethers.utils.sha256(ethers.utils.toUtf8Bytes(clientDataJSON))]);
-      const messageToBeSigned = ethers.utils.sha256(concatenatedData);
-      isSignatureValid = await bananaAccount.verifySignature(messageToBeSigned, [rHex, sHex], eoaAddress);
-    } catch (err) {
-      console.log(err)
-      return false;
-    }
-    return isSignatureValid;
+    const isVerified = await EC.validateSignature(messageSigned, [rValue, sValue], eoaAddress);
+    return isVerified;
   }
 
   /**
