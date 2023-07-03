@@ -9,6 +9,7 @@ import { ethers } from 'ethers'
 import { BananaSigner } from './BananaSigner'
 import { BananaAccount } from './types'
 import { EntryPoint, EntryPoint__factory } from '@account-abstraction/contracts'
+import { getKeccakHash } from './utils/getKeccakHash'
 
 /**
  * constructor params, added no top of base params:
@@ -24,8 +25,8 @@ export interface MyWalletApiParams extends BaseApiParams {
   _singletonTouchIdSafeAddress: string
   _ownerAddress: string
   _fallBackHandler: string
-  _saltNonce: string
-  _encodedIdHash: string
+  _saltNonce: string,
+  _encodedKey: string
 }
 
 /**
@@ -42,7 +43,7 @@ export class MyWalletApi extends SimpleAccountAPI {
   ownerAddress: string
   fallBackHandleraddress: string
   saltNonce: string
-  encodedIdHash: string
+  encodedKey: string
   constructor(params: MyWalletApiParams) {
     super(params)
     this.qValues = params._qValues
@@ -50,7 +51,7 @@ export class MyWalletApi extends SimpleAccountAPI {
     this.ownerAddress = params._ownerAddress
     this.fallBackHandleraddress = params._fallBackHandler
     this.saltNonce = params._saltNonce
-    this.encodedIdHash = params._encodedIdHash
+    this.encodedKey = params._encodedKey
   }
 
   /**
@@ -86,8 +87,8 @@ export class MyWalletApi extends SimpleAccountAPI {
       "0x0000000000000000000000000000000000000000",   // payment token
       0,                                              // payment 
       "0x0000000000000000000000000000000000000000",   // payment receiver
-      this.entryPointAddress,                         // entrypoint
-      this.encodedIdHash,                             // hash of encoded id
+      this.entryPointAddress,   // entrypoint
+      this.encodedKey,          // encodedId
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray           // q values 
     ]);
@@ -158,6 +159,9 @@ export class MyWalletApi extends SimpleAccountAPI {
       this.provider
     );
     const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
+    console.log('initiualizer ', TouchIdSafeWalletContractInitializer)
+    console.log(' singleton ', this.singletonTouchIdSafeAddress)
+    console.log(' nonce ', this.saltNonce)
     const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.singletonTouchIdSafeAddress, this.saltNonce, TouchIdSafeWalletContractInitializer);
     return TouchIdSafeWalletContractAddress
   }

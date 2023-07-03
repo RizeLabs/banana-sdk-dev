@@ -3,14 +3,12 @@ import { EntryPoint__factory, EntryPoint } from "@account-abstraction/contracts"
 import { MyPaymasterApi } from "./MyPayMasterApi";
 import { MyWalletApi } from "./MyWalletApi";
 import { HttpRpcClient } from "@account-abstraction/sdk/dist/src/HttpRpcClient";
-import { ERC4337EthersProvider } from "@account-abstraction/sdk";
-import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./Constants";
-import { registerFingerprint } from "./WebAuthnContext";
+import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./constants/Constants";
 import { BananaSigner } from "./BananaSigner";
 import { BananaCookie } from "./BananaCookie";
 import {
-  setUserCredentials,
-  getUserCredentials,
+  setWalletMetaData,
+  getWalletMetaData,
   checkIsWalletNameExist
 } from "./Controller";
 import {
@@ -20,19 +18,19 @@ import {
   ChainConfig
 } from "./interfaces/Banana.interface";
 import { BananaAccount, BananaAccountProxyFactory } from './types'
-import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types/factories'
+import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types'
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
 import { Wallet } from "./BananaWallet"
 import { Banana4337Provider } from "./Banana4337Provider";
-import { walletNameInput } from "./utils/walletNameInput";
-import { getKeccakHash } from "./utils/getKeccakHash";
 import { encode } from "./utils/base64url-arraybuffer";
+//! Omiting this check for now
+import { NetworkAddressChecker } from "./utils/addressChecker";
+import { BananaTransporter } from "./BananaTransporter";
+import { getKeccakHash } from "./utils/getKeccakHash";
 
 export class Banana {
   Provider: ClientConfig;
-  SCWContract!: ethers.Contract;
-  TouchIdSafeWalletContract!: ethers.Contract;
   accountApi!: MyWalletApi;
   httpRpcClient!: HttpRpcClient;
   publicKey!: PublicKey;
@@ -47,6 +45,7 @@ export class Banana {
   addresses: ChainConfig;
   network: Chains
   #isUserNameRequested = false
+  #bananaTransportInstance: BananaTransporter
 
   constructor(readonly chain: Chains) {
     this.Provider = getClientConfigInfo(chain);
@@ -57,6 +56,7 @@ export class Banana {
     );
     this.cookie = new BananaCookie();
     this.network = chain;
+    this.#bananaTransportInstance = new BananaTransporter();
   }
 
   /**
@@ -80,6 +80,7 @@ export class Banana {
    * Set cookie to local and global storage after wallet creation.
    */
   private setCookieAfterAddressCreation = async (walletIdentifier: string, saltNonce: number) => {
+    const walletCreds = await getWalletMetaData(walletIdentifier);
     this.cookieObject = {
       q0: this.publicKey.q0,
       q1: this.publicKey.q1,
@@ -87,7 +88,10 @@ export class Banana {
       initcode: false,
       encodedId: this.publicKey.encodedId,
       username: walletIdentifier,
-      saltNonce: saltNonce.toString() //! Need to make changes to the mapper code for this additional property
+      saltNonce: saltNonce.toString(),
+      keyIds: (walletCreds.keyIds) ? walletCreds.keyIds : JSON.stringify([this.publicKey.encodedId]),
+      qValueX: (walletCreds.qValueX) ? walletCreds.qValueX : JSON.stringify([this.publicKey.q0]), 
+      qValueY: (walletCreds.qValueY) ? walletCreds.qValueY : JSON.stringify([this.publicKey.q1]) 
     };
     // saving cookie correspond to user Identifier in cookie
     this.cookie.setCookie(
@@ -98,7 +102,7 @@ export class Banana {
       walletIdentifier,
       JSON.stringify(this.cookieObject)
     );
-    const setCredentialsStatus = await setUserCredentials(
+    const setCredentialsStatus = await setWalletMetaData(
       walletIdentifier,
       this.cookieObject
     );
@@ -129,7 +133,7 @@ export class Banana {
         // this.createBananaSignerInstance();
         return;
       } else {
-        const walletCreds = await getUserCredentials(walletIdentifier);
+        const walletCreds = await getWalletMetaData(walletIdentifier);
         // get and check cred here
         // else of below if should not be triggered as we are already getting wallet name from cookie means the creds are initialized
         if (!!walletCreds) {
@@ -149,7 +153,7 @@ export class Banana {
       }
     } else {
       // when nothing in cookie or cred is there but with no username in that case fetching key from user provided walletname
-      const walletCreds = await getUserCredentials(walletIdentifier);
+      const walletCreds = await getWalletMetaData(walletIdentifier);
       if (!!walletCreds) {
         this.cookieObject = walletCreds;
         const q0Value = this.cookieObject.q0;
@@ -166,7 +170,6 @@ export class Banana {
       // he must have sent the username for registering wallet
     }
     this.walletIdentifier = walletIdentifier;
-    this.publicKey = await registerFingerprint();
   };
 
   getAddress(): string {
@@ -208,11 +211,11 @@ export class Banana {
       factoryAddress: TouchIdSafeWalletContractProxyFactoryAddress,
       paymasterAPI: myPaymasterApi,
       _qValues: [this.publicKey.q0, this.publicKey.q1],
+      _encodedKey: getKeccakHash(this.publicKey.encodedId),
       _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress,
       _ownerAddress: this.getAddress(),
       _fallBackHandler: this.addresses.fallBackHandlerAddress,
       _saltNonce: this.cookieObject.saltNonce,
-      _encodedIdHash: getKeccakHash(this.publicKey.encodedId)
     });
 
     this.accountApi = smartWalletAPI;
@@ -284,7 +287,7 @@ export class Banana {
 
   createWallet = async (): Promise<Wallet> => {
       this.#isUserNameRequested = true;
-      const walletIdentifier = await walletNameInput();
+      const walletIdentifier = await this.#bananaTransportInstance.getWalletName();
       await this.createSignerAndCookieObject(walletIdentifier);
       this.walletIdentifier = walletIdentifier
       const TouchIdSafeWalletContractProxyFactory = this.getTouchIdSafeWalletContractProxyFactory(this.jsonRpcProvider);
@@ -368,7 +371,7 @@ export class Banana {
    */
 
   getEOAAddress = async () => {
-    const walletMetaData = await getUserCredentials(this.walletIdentifier);
+    const walletMetaData = await getWalletMetaData(this.walletIdentifier);
     return [walletMetaData.q0, walletMetaData.q1];
   }
 

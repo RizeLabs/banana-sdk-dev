@@ -19,6 +19,9 @@ export interface UserCredentialObject {
     encodedId: string;
     username: string
     saltNonce: string
+    keyIds: string
+    qValueX: string
+    qValueY: string
 }
 
 export interface CookieObject {

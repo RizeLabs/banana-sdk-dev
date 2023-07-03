@@ -2,7 +2,9 @@
 import React from 'react';
 import { useAccount, useSigner, useContract, useProvider } from 'wagmi';
 import { Banana } from '@rize-labs/banana-wallet-sdk/src/BananaProvider'
-import { Chains } from '@rize-labs/banana-wallet-sdk/src/Constants' 
+// import { Banana } from '../sdk/BananaProvider';
+// import { Chains } from '@rize-labs/banana-wallet-sdk/src/Constants' 
+import { Chains } from '@rize-labs/banana-wallet-sdk/src/constants/Constants';
 import chain from "../utils/chain";
 
 // creating chain specific instance of banana module

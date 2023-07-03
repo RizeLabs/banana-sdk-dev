@@ -15,8 +15,8 @@ import { MyWalletDeployer } from "./types";
 import constructUserOpWithInitCode from "./initUserOp";
 import { BananaCookie } from "./BananaCookie";
 import {
-  setUserCredentials,
-  getUserCredentials,
+  setWalletMetaData,
+  getWalletMetaData,
   checkInitCodeStatus,
   checkIsWalletNameExist
 } from "./Controller";
@@ -81,7 +81,7 @@ export class Banana {
         this.createBananaSignerInstance();
         return;
       } else {
-        const walletCreds = await getUserCredentials(walletIdentifier);
+        const walletCreds = await getWalletMetaData(walletIdentifier);
         // get and check cred here
         // else of below if should not be triggered as we are already getting wallet name from cookie means the creds are initialized
         if (!!walletCreds) {
@@ -101,7 +101,7 @@ export class Banana {
       }
     } else {
       // when nothing in cookie or cred is there but with no username in that case fetching key from user provided walletname
-      const walletCreds = await getUserCredentials(walletIdentifier);
+      const walletCreds = await getWalletMetaData(walletIdentifier);
       if (!!walletCreds) {
         this.cookieObject = walletCreds;
         const q0Value = this.cookieObject.q0;
@@ -226,7 +226,7 @@ export class Banana {
         );
 
         // saving cookie correspond to user Identifier in server
-        const setCredentialsStatus = await setUserCredentials(
+        const setCredentialsStatus = await setWalletMetaData(
           walletIdentifier,
           this.cookieObject
         );
@@ -291,7 +291,7 @@ export class Banana {
         walletIdentifier,
         JSON.stringify(this.cookieObject)
       );
-      const setCredentialsStatus = await setUserCredentials(
+      const setCredentialsStatus = await setWalletMetaData(
         walletIdentifier,
         this.cookieObject
       );

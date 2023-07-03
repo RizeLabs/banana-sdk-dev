@@ -12,6 +12,7 @@ import { GetAccount } from '../../hooks/web3Hook'
 import ERC20 from '../../abi/ERC20.json'
 import ERC721 from '../../abi/ERC721.json'
 import { BananaAccount__factory } from "@rize-labs/banana-wallet-sdk/src/types";
+import { BananaTransporter } from "@rize-labs/banana-wallet-sdk/src/BananaTransporter";
 
 const Staking = () => {
   const [amount, setAmount] = useState("");
@@ -33,6 +34,12 @@ const Staking = () => {
     connectAccount();
   }, []);
 
+  const getMessage = async () => {
+    const bananTransporter = new BananaTransporter();
+    const message = await bananTransporter.getMessage();
+    console.log('this is message ', message);
+  }
+
 
 
   // optimism staking
@@ -40,11 +47,6 @@ const Staking = () => {
 
   // polygo staking 
   const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
-
-
-
-  // polygon mainnet
-  // const stakeAddress = '0x8B220bc9529c0bc18265c1B822FcC579eE586bA2';
 
   // shibuya 
   // const stakeAddress = '0x12cB6cdd140A01044ED575828EbE8F9DdBa5fb6A'
@@ -401,7 +403,7 @@ const Staking = () => {
                 />)}
             </div>
             <button onClick={() => signMessage()} > sign message </button>
-            <button onClick={() => resetWallet()} > Reset Wallet </button>
+            <button onClick={() => getMessage()} > Reset Wallet </button>
           </div>
         </div>
       </div>
