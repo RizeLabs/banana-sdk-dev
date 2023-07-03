@@ -79,18 +79,18 @@ export class MyWalletApi extends SimpleAccountAPI {
     //@ts-ignore
     const TouchIdSafeWalletContractInitializer = TouchIdSafeWalletContractSingleton.interface.encodeFunctionData('setupWithEntrypoint',
     [
-      [this.ownerAddress],                            // owners 
+      [this.ownerAddress], // owners 
       1,                                              // thresold will remain fix 
       "0x0000000000000000000000000000000000000000",   // to address 
       "0x",                                           // modules setup calldata
-      this.fallBackHandleraddress,                    // fallback handler
+      this.fallBackHandleraddress,   // fallback handler
       "0x0000000000000000000000000000000000000000",   // payment token
       0,                                              // payment 
       "0x0000000000000000000000000000000000000000",   // payment receiver
       this.entryPointAddress,   // entrypoint
       this.encodedKey,          // encodedId
       // @ts-ignore
-      TouchIdSafeWalletContractQValuesArray           // q values 
+      TouchIdSafeWalletContractQValuesArray,          // q values 
     ]);
 
     return TouchIdSafeWalletContractInitializer
@@ -159,9 +159,6 @@ export class MyWalletApi extends SimpleAccountAPI {
       this.provider
     );
     const TouchIdSafeWalletContractInitializer = this.getTouchIdSafeWalletContractInitializer();
-    console.log('initiualizer ', TouchIdSafeWalletContractInitializer)
-    console.log(' singleton ', this.singletonTouchIdSafeAddress)
-    console.log(' nonce ', this.saltNonce)
     const TouchIdSafeWalletContractAddress = await TouchIdSafeWalletContractProxyFactory.getAddress(this.singletonTouchIdSafeAddress, this.saltNonce, TouchIdSafeWalletContractInitializer);
     return TouchIdSafeWalletContractAddress
   }
