@@ -15,6 +15,7 @@ export const GOERLI_RPC =
 export const GNOSIS_RPC = "https://rpc.gnosischain.com/";
 export const CHIADO_TESTNET_RPC = "https://rpc.chiado.gnosis.gateway.fm";
 export const SHIBUYA_TESTNET_RPC = "https://evm.shibuya.astar.network";
+export const POLYGON_MAINNET_RPC = "https://polygon-mainnet.g.alchemy.com/v2/M6obmh9NhecgkyNlK0G00anwrpBnjzwA";
 export const ASTAR_MAINNET_RPC = "https://astar.public.blastapi.io";
 export const ENTRYPOINT_ADDRESS = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
 export const BUNDLER_EOA_PUBLIC_KEY =
@@ -35,6 +36,7 @@ export const CANCEL_ACTION = 'cancell';
 export enum Chains {
   goerli = 5,
   mumbai = 80001,
+  polygonMainnet = 137,
   optimismTestnet = 420,
   gnosis = 100,
   chiadoTestnet = 10200,
@@ -79,6 +81,11 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
         bundlerUrl: SHIBUYA_TESTNET_RPC,
       };
+    case Chains.polygonMainnet:
+      return {
+        entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+        bundlerUrl: "https://api.pimlico.io/v1/polygon/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445",
+      };
     case Chains.astar:
       return {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
@@ -93,64 +100,73 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
       return {
         Elliptic: "0xEA4d16E741E76E7a93b8f46650537855149efc48",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0xC69a1bfF74074BF4117CC39Be954a3d410a74Bec",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0x154Ccd13f501eE7Cad227c8eb888BBab96ffE78F",
-        fallBackHandlerAddress: "0x82Ee69Db954d9648fF8191bB831B9f679E5bAcb0",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.optimismTestnet: // mi
       return {
         Elliptic: "0xEA4d16E741E76E7a93b8f46650537855149efc48",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0xC69a1bfF74074BF4117CC39Be954a3d410a74Bec",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0x154Ccd13f501eE7Cad227c8eb888BBab96ffE78F",
-        fallBackHandlerAddress: "0x82Ee69Db954d9648fF8191bB831B9f679E5bAcb0",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.mumbai: // mi
       return {
         Elliptic: "0xEA4d16E741E76E7a93b8f46650537855149efc48",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0xC69a1bfF74074BF4117CC39Be954a3d410a74Bec",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xA668DfCc667AebA5C8C90c8FEd9eF00C5664BdFA",
-        fallBackHandlerAddress: "0x82Ee69Db954d9648fF8191bB831B9f679E5bAcb0",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.gnosis:
       return {
         Elliptic: "0xC29fDf5544312E23d9cDa9fB67388d040Fdbf434",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0xEA4d16E741E76E7a93b8f46650537855149efc48",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0x8505F94693Dbd0756c733056924de3f71a020f2E",
-        fallBackHandlerAddress: "0x72892C35B8E1256F323DE365ADbB71E7C7948CDF",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.chiadoTestnet:
       return {
         Elliptic: "0x200E1d8BC6d3F6ddB5a26bbbC5b839f2D5213407",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0x3AB5cB0d32665363559F2B8aff9Cbe9bC2193780",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xF1Fae5392dce474fc1c2D98c645f438d6c760E78",
-        fallBackHandlerAddress: "0xB88902418706f095E831E80bA766c151d3E1848D",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.shibuyaTestnet:
       return {
         Elliptic: "0x3f0dD0521518cd0c6833eD2622aDe9a813f7E56e",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0x02Da54e40c004fF59a904E98EDF4e1Ad9bb2aC82",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xe33fCA6E9A75529407224c593783aF778b80DC2a",
-        fallBackHandlerAddress: "0xC99154BA90386DCD0C5aF6CC8cc271e5aAF57176",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
+    case Chains.polygonMainnet: 
+      return {
+        Elliptic: "0xd223a0D7cD198a5d448DeEdE81c63a3Ad4f244FC",
+        TouchIdSafeWalletContractProxyFactoryAddress:
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
+        TouchIdSafeWalletContractSingletonAddress:
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
+     };
     case Chains.astar:
     return {
         Elliptic: "0x652D29F01fdF8d0c20F78f51bAc9B173B3a76a9B",
         TouchIdSafeWalletContractProxyFactoryAddress:
-         "0x3A43b93362669087Be639e99B7a5B75d60E0B706",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-         "0x172F0658e4Bc99D97b6DA8880b9D4E1b7A26E407",
-        fallBackHandlerAddress: "0xbF86c32B55657f0DE7cf56aD1B6F1aB9843D0F46",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
     };
   }
 }
@@ -182,9 +198,13 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
       return {
         jsonRpcUrl: SHIBUYA_TESTNET_RPC,
       };
+    case Chains.polygonMainnet:
+      return {
+        jsonRpcUrl: POLYGON_MAINNET_RPC
+      };
     case Chains.astar:
       return {
         jsonRpcUrl: ASTAR_MAINNET_RPC,
-      }
+      };
   }
 }
