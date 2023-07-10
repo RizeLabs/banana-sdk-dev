@@ -4,10 +4,10 @@ import {
   ChainSpecificConfig,
 } from "./interfaces/Banana.interface";
 
-// export const BANANA_APP = "https://bananawallet.xyz";
-export const BANANA_APP = 'http://localhost:3001';
-// export const BANANA_SERVER = "https://banana-server.xyz";
-export const BANANA_SERVER = 'http://localhost:80';
+export const BANANA_APP = "https://bananawallet.xyz";
+// export const BANANA_APP = 'http://localhost:3001';
+export const BANANA_SERVER = "https://banana-server.xyz";
+// export const BANANA_SERVER = 'http://localhost:80';
 export const OPTIMISM_TESTNET_RPC =
   "https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas";
 export const MUMBAI_RPC =

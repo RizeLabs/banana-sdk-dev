@@ -159,6 +159,12 @@ export const verifyFingerprint = async (
       getKeccakHash(encodedId)
     ]
   );
+
+  const decoded = ethers.utils.defaultAbiCoder.decode(
+    ["uint", "uint","bytes", "string", "string", "bytes32"],
+    finalReplyProofSignature
+  );
+  console.log('final decoded signature ', decoded)
   userOp.signature = finalReplyProofSignature;
   return {
     newUserOp: userOp,
