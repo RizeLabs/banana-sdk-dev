@@ -22,7 +22,12 @@ const Navbar = () => {
   const [load, setLoad] = useState(false);
 
   // let nullBanana = new Banana(Chains.chiadoTestnet);
-  let nullBanana = new Banana(chain);
+  let nullBanana = new Banana(chain, [
+    {
+      chainId: '80001',
+      paymasterUrl: 'https://api.stackup.sh/v1/paymaster/56933d7c3f0ed4ef2d488f51d7e8123c4b9e33b279ae1804879a177d76870595'
+    }
+  ]);
     // 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas');
 
 //  let nullBanana = new Banana(Chains.mumbai , 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4');

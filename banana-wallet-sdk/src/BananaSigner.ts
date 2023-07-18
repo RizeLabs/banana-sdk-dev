@@ -20,12 +20,15 @@ import {
 import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
 import { Banana4337Provider } from "./Banana4337Provider";
 import { sendTransaction } from "./bundler/sendUserOp";
+import { getRequestDataForPaymaster } from "./paymaster/getRequestData";
+import { getPaymasterAndData } from "./paymaster/getPaymasterAndData";
 
 export class BananaSigner extends ERC4337EthersSigner {
   jsonRpcProvider: JsonRpcProvider;
   publicKey: PublicKey;
   address!: string;
   encodedId: string;
+  paymasterUrl: string | undefined;
 
   constructor(
     readonly config: ClientConfig,
@@ -34,7 +37,8 @@ export class BananaSigner extends ERC4337EthersSigner {
     readonly httpRpcClient: HttpRpcClient,
     readonly smartAccountAPI: BaseAccountAPI,
     provider: JsonRpcProvider,
-    publicKey: PublicKey
+    publicKey: PublicKey,
+    _paymasterUrl: string | undefined
   ) {
     super(
       config,
@@ -46,6 +50,7 @@ export class BananaSigner extends ERC4337EthersSigner {
     this.jsonRpcProvider = provider;
     this.publicKey = publicKey;
     this.encodedId = publicKey.encodedId;
+    this.paymasterUrl = _paymasterUrl;
     this.getAddress();
   }
 
@@ -73,12 +78,23 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation?.sender
       );
 
-       if (userBalance.lt(minBalanceRequired)) {
+       if (!this.paymasterUrl && userBalance.lt(minBalanceRequired)) {
          throw new Error("ERROR: Insufficient balance in Wallet");
        }
 
       userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
       userOperation.verificationGasLimit = 1.5e6;
+
+      if(this.paymasterUrl) {
+        const requestData = await getRequestDataForPaymaster(userOperation);
+        console.log('this is request data ', requestData);
+        const paymasterAndData = await getPaymasterAndData(this.paymasterUrl, requestData);
+        console.log('pasymaster and data ', paymasterAndData);
+        (userOperation || { paymasterAndData: null }).paymasterAndData = paymasterAndData || '';
+      }
+
+      console.log('this is updated paymaster', userOperation)
+
       const message = await this.smartAccountAPI.getUserOpHash(userOperation);
       const { newUserOp, process } = await this.signUserOp(
         userOperation as any,
@@ -95,7 +111,6 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation
       );
     try {
-
       const networkInfo = await this.jsonRpcProvider.getNetwork();
       if(networkInfo.chainId === 81 || networkInfo.chainId === 592) {
         //! sending UserOp directly to ep for shibuya
