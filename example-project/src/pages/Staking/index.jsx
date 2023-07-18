@@ -12,6 +12,9 @@ import { GetAccount } from '../../hooks/web3Hook'
 import ERC20 from '../../abi/ERC20.json'
 import ERC721 from '../../abi/ERC721.json'
 import { BananaAccount__factory } from "@rize-labs/banana-wallet-sdk/src/types";
+import { AxelarQueryAPI, Environment, EvmChain, GasToken } from '@axelar-network/axelarjs-sdk'
+import { Banana } from "@rize-labs/banana-wallet-sdk/src/BananaProvider";
+import { Chains } from "@rize-labs/banana-wallet-sdk/src/Constants";
 
 const Staking = () => {
   const [amount, setAmount] = useState("");
@@ -36,10 +39,13 @@ const Staking = () => {
 
 
   // optimism staking
-  // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
+  const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
+
+  const optimismStakeAddress = stakeAddress
+  const mumbaiStakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
 
   // polygo staking 
-  const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
+  // const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
 
 
 
@@ -98,6 +104,26 @@ const Staking = () => {
       stakeAfterAuth()
     }
     setShowPopover(false);
+  };
+
+
+  const connectAndSend = async () => {
+    const bananaInstance = new Banana(Chains.optimismTestnet, 'register');
+
+    const walletName = bananaInstance.getWalletName()
+    const wallet = await bananaInstance.connectWallet(walletName);
+
+    const signer = wallet.getSigner();
+
+    const tx = {
+      gasLimit: '0x55555',
+      to: optimismStakeAddress,
+      value: ethers.utils.parseEther('0.00001'),
+      data: new ethers.utils.Interface(StakingArtifact.abi).encodeFunctionData('stake', [])
+    };
+
+    const txnResp = await signer.sendBatchTransaction([tx]);
+    console.log('txn response ', txnResp)
   };
 
   const erc721Transfer = async () => {
@@ -171,10 +197,9 @@ const Staking = () => {
     //   ethers.BigNumber.from("0")
     // );
 
-    // const walletAddress = await walletInstance.getAddress();
-    const tx1 = {
+    const tx1 = { 
         gasLimit: '0x55555',
-        to: '0xF9ca16Fb8D6F38d36505961dAd69d2011C4695cF',
+        to: '0x288d1d682311018736B820294D22Ed0DBE372188',
         value: ethers.utils.parseEther("0.01"),
         data: "0x"
       };
@@ -234,8 +259,8 @@ const Staking = () => {
       setIsLoading(true);
       // const bananaAddress = '0x66af7a792B10B2f6C32bA478890a9a8Ddf98066F';
       // const bananaAddress = '0xD8fdb3f42bf350D18968fd7b3DFf74b6C3C0bE42';
-      // const bananaAddress = '0x3c75e43725a1EE466984E0A7c9C06A3F20757210' //mumbai
-      const bananaAddress = '0x0E7d52038e93CF7885EBBAf3C9bDdD44Bf3Efe84' //polygon
+      const bananaAddress = '0x3c75e43725a1EE466984E0A7c9C06A3F20757210' //mumbai
+      // const bananaAddress = '0x0E7d52038e93CF7885EBBAf3C9bDdD44Bf3Efe84' //polygon
 
       const walletAddress = await walletInstance.getAddress();
       let bananContract = new ethers.Contract(
@@ -261,8 +286,9 @@ const Staking = () => {
             value: 0,
             data: mintingCallData
           }
-  
-          let txn = await signer.sendTransaction(tx1);
+
+          let txn = await signer.sendBatchTransaction([tx1, tx1]);
+          // let txn = await signer.sendTransaction(tx1);
   
           console.log(txn);
           toast.success("Successfully Claimed 100 BNT Tokens!!");
@@ -312,27 +338,76 @@ const Staking = () => {
         value: ethers.utils.parseEther(amount),
         data: new ethers.utils.Interface(StakingArtifact.abi).encodeFunctionData('stake', [])
       }
-    //  const provider = new ethers.providers.JsonRpcProvider(
-    //     // this.jsonRpcProviderUrl
-    //     "https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4"
-    //   );
-    //   let StakingContract = new ethers.Contract(
-    //     stakeAddress,
-    //     StakingArtifact.abi,
-    //     // aaSigner
-    //     provider
-    //   );
-    //   const stakingCallData = StakingContract.interface.encodeFunctionData(
-    //     "stake",
-    //     []
-    //   );
 
-      // const txn = await bananaInstance.execute(stakingCallData, stakeAddress, amount)
-      // console.log(" this is txn ", txn);
-      const txn = await signer.sendTransaction(tx);
+      // (address to, uint256 value, bytes memory data, uint8 operation)
+      const encodedPayload = ethers.utils.defaultAbiCoder.encode(
+        [
+          'address',
+          'uint256',
+          'bytes',
+          'uint8'
+        ],
+        [
+          tx.to,
+          tx.value,
+          tx.data,
+          ethers.BigNumber.from("0") // for type of call (delegate or normal)
+        ]
+      );
+
+      const walletAddress = '0x499960a32e1F20bBE5FF1998d8fc67C3D506Ee02'
+
+      console.log('this is encoded payload data', encodedPayload)
+      // build a briding txn here
+      // tx2 -> encode callTokenWithContract
+          // payload encoded tx 
+      const acc = BananaAccount__factory.connect(walletAddress, signer);
+      // string memory symbol,
+      // string memory destinationChain,
+      // string memory contractAddress,
+      // uint256 amount,
+      // bytes memory payload
+
+
+
+      const crossChainTransactionData = acc.interface.encodeFunctionData('crossChainTransact', [
+        'WMATIC',
+        'optimism',
+        walletAddress,
+        ethers.utils.parseEther('0.1'),
+        // encodedPayload
+        '0x'
+      ]);
+
+      console.log('this is crosschaintransactindata', crossChainTransactionData);
+
+      const api = new AxelarQueryAPI({ environment: Environment.TESTNET });
+
+      // Calculate how much gas to pay to Axelar to execute the transaction at the destination chain
+      const gasFee = await api.estimateGasFee(
+        EvmChain.POLYGON,
+        EvmChain.OPTIMISM,
+        GasToken.MATIC,
+        1000000,
+        5,
+      );
+      console.log('this ios gas fees ',gasFee);
+      console.log('convrted', ethers.utils.parseEther(String(gasFee / 10 ** 18)))
+      // console.log('fees ', ethers.BigInt.from(gasFee))
+      const tx2 = {
+        to: walletAddress,
+        value: ethers.utils.parseEther(String(gasFee / 10 ** 18)),
+        data: crossChainTransactionData,
+        gasLimit: '0x55555',
+      };
+
+      console.log('second txn', tx2);
+
+      connectAndSend();
+
+      // const txn = await signer.sendTransaction(tx);
+      const txn = await signer.sendBatchTransaction([ tx2 ]);
       console.log("transaction ", txn);
-      // const receipt = await txn.wait();
-      // console.log("txn receipt ", receipt)
 
       toast.success("Successfully staked your funds !!");
     // } else {

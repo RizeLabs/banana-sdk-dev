@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@axelar-network/axelarjs-sdk": "^0.13.5",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@ethersproject/abi": "^5.7.0",
