@@ -16,7 +16,7 @@ export default {
       viaIR: true,
       optimizer: {
         enabled: true,
-        runs: 1000000,
+        runs: 100,
         // details: {
         //   yul: false
         // }
@@ -39,11 +39,11 @@ export default {
   },
   optimismTestnet: {
     url: `https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas`,
-    accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : ["77b838ecdcebf23e06ad223a1295746d3e055584c5690d0b899513c8ab7cf644"]
+    accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : ["37b2d0ea3d633604bcf4ae4c8a936b5cd2452e580918e0a7acc14ff981375da9"]
   },
   mumbai: {
     url: 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4',
-    accounts: ["77b838ecdcebf23e06ad223a1295746d3e055584c5690d0b899513c8ab7cf644"]
+    accounts: ["37b2d0ea3d633604bcf4ae4c8a936b5cd2452e580918e0a7acc14ff981375da9"]
   },
   shardeum: {
     url: 'https://sphinx.shardeum.org/',
@@ -80,9 +80,9 @@ export default {
   }
   },
   etherscan: {
-    // apiKey: "YJ546HGGQFGMEE4B22QNGB58QKZ97G8YSP"
+    // apiKey: "YJ546HGGQFGMEE4B22QNGB58QKZ97G8YSP" // opt goerli
     // apiKey: "2S8CM6KUUPXGG7JV63UZVVVZTWP6RYJXYE"
-    apiKey: "C2J3GI995B9DKK1XVF3P67UDHU72P4Q15D",
+    apiKey: "C2J3GI995B9DKK1XVF3P67UDHU72P4Q15D", // mumbai
     // apiKey: "ESHESDSD935HS3IAW42I9X8HDJ13TX4IUM" //gnosis
  }
 };

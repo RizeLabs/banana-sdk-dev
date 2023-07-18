@@ -9,6 +9,8 @@ import { ethers } from 'ethers'
 import { BananaSigner } from './BananaSigner'
 import { BananaAccount } from './types'
 import { EntryPoint, EntryPoint__factory } from '@account-abstraction/contracts'
+import { UserOperationStruct } from './types/BananaAccount'
+import { TransactionDetailsForUserOp } from './interfaces/Banana.interface'
 
 /**
  * constructor params, added no top of base params:
@@ -147,6 +149,124 @@ export class MyWalletApi extends SimpleAccountAPI {
         delegateCall
       ])
   }
+
+  async encodeBatchExecute(info): Promise<string> {
+    const accountContract = await this._getAccountContract()
+    const delegateCall = ethers.BigNumber.from("0")
+    const target = info.map(data => data.target);
+    const value = info.map(data => data.value);
+    const data = info.map(data => data.data);
+    return accountContract.interface.encodeFunctionData(
+      'execBatchTransactionFromEntrypoint',
+      [
+        target,
+        value,
+        data,
+        delegateCall
+      ])
+  }
+
+  async encodeUserOpCallDataAndGasLimitForBatchedTransaction (detailsForUserOp: TransactionDetailsForUserOp): Promise<{ callData: string, callGasLimit: BigNumber }> {
+    function parseNumber (a: any): BigNumber | null {
+      if (a == null || a === '') return null
+      return BigNumber.from(a.toString())
+    }
+
+    // const value = parseNumber(detailsForUserOp.value) ?? BigNumber.from(0)
+    detailsForUserOp.map(op =>  parseNumber(op.value) ?? BigNumber.from(0))
+    // const callData = await this.encodeExecute(detailsForUserOp.target, value, detailsForUserOp.data)
+    const callData = await this.encodeBatchExecute(detailsForUserOp);
+    let callGasLimit;
+    try {
+      callGasLimit = parseNumber(detailsForUserOp.gasLimit) ?? await this.provider.estimateGas({
+        from: this.entryPointAddress,
+        to: this.getAccountAddress(),
+        data: callData
+      })
+    } catch (err) {
+      callGasLimit = ethers.BigNumber.from(1e6);
+      console.log('getting error here', err);
+    }
+    
+    return {
+      callData,
+      callGasLimit
+    }
+  }
+//   async encodeUserOpCallDataAndGasLimitForBatchedTransaction(detailsForUserOp) {
+//     var _a, _b;
+//     function parseNumber(a) {
+//         if (a == null || a === '')
+//             return null;
+//         return ethers_1.BigNumber.from(a.toString());
+//     }
+//     // const value = (_a = parseNumber(detailsForUserOp.value)) !== null && _a !== void 0 ? _a : ethers_1.BigNumber.from(0);
+//     const callData = await this.encodeExecute(detailsForUserOp.target, value, detailsForUserOp.data);
+//     const callGasLimit = (_b = parseNumber(detailsForUserOp.gasLimit)) !== null && _b !== void 0 ? _b : await this.provider.estimateGas({
+//         from: this.entryPointAddress,
+//         to: this.getAccountAddress(),
+//         data: callData
+//     });
+//     return {
+//         callData,
+//         callGasLimit
+//     };
+// }
+
+  async createUnsignedUserOpForBatchedTransaction(info: TransactionDetailsForUserOp[]): Promise<UserOperationStruct>  {
+    const {
+      callData,
+      callGasLimit
+    } = await this.encodeUserOpCallDataAndGasLimitForBatchedTransaction(info)
+    console.log('this is calldata and allgaslimit', callData, callGasLimit)
+    const initCode = await this.getInitCode()
+
+    const initGas = await this.estimateCreationGas(initCode)
+    const verificationGasLimit = BigNumber.from(await this.getVerificationGasLimit())
+      .add(initGas)
+
+    let {
+      maxFeePerGas,
+      maxPriorityFeePerGas
+    } = info
+    if (maxFeePerGas == null || maxPriorityFeePerGas == null) {
+      const feeData = await this.provider.getFeeData()
+      if (maxFeePerGas == null) {
+        maxFeePerGas = feeData.maxFeePerGas ?? undefined
+      }
+      if (maxPriorityFeePerGas == null) {
+        maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined
+      }
+    }
+
+    const partialUserOp: any = {
+      sender: this.getAccountAddress(),
+      nonce: info.nonce ?? this.getNonce(),
+      initCode,
+      callData,
+      callGasLimit,
+      verificationGasLimit,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
+      paymasterAndData: '0x'
+    }
+
+    let paymasterAndData: string | undefined
+    if (this.paymasterAPI != null) {
+      // fill (partial) preVerificationGas (all except the cost of the generated paymasterAndData)
+      const userOpForPm = {
+        ...partialUserOp,
+        preVerificationGas: await this.getPreVerificationGas(partialUserOp)
+      }
+      paymasterAndData = await this.paymasterAPI.getPaymasterAndData(userOpForPm)
+    }
+    partialUserOp.paymasterAndData = paymasterAndData ?? '0x'
+    return {
+      ...partialUserOp,
+      preVerificationGas: this.getPreVerificationGas(partialUserOp),
+      signature: ''
+    }
+}
 
   async signUserOpHash (userOpHash: string): Promise<string> {
     return await this.owner.signMessage(arrayify(userOpHash))

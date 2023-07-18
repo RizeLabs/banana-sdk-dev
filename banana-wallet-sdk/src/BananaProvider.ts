@@ -46,9 +46,12 @@ export class Banana {
   jsonRpcProviderUrl: string;
   addresses: ChainConfig;
   network: Chains
+  action?: string
   #isUserNameRequested = false
 
-  constructor(readonly chain: Chains) {
+  constructor(readonly chain: Chains, readonly _action?: string) {
+    this.action = _action;
+    console.log('this is action', this.action)
     this.Provider = getClientConfigInfo(chain);
     this.addresses = getChainSpecificAddress(chain)
     this.jsonRpcProviderUrl = getChainSpecificConfig(chain).jsonRpcUrl;
@@ -224,7 +227,7 @@ export class Banana {
     );
 
     this.httpRpcClient = httpRpcClient;
-
+    console.log('setting action ', this.action)
     this.bananaProvider = await new Banana4337Provider(
       network.chainId,
       this.Provider,
@@ -234,7 +237,8 @@ export class Banana {
       entryPoint,
       smartWalletAPI,
       this.publicKey,
-      this.jsonRpcProvider
+      this.jsonRpcProvider,
+      this.action
     ).init();
 
     return this.bananaProvider;

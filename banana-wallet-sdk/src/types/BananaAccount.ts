@@ -71,23 +71,27 @@ export type UserOperationStructOutput = [
 export interface BananaAccountInterface extends utils.Interface {
   functions: {
     "VERSION()": FunctionFragment;
-    "addNewDevice(uint256[2],bytes32)": FunctionFragment;
     "addOwnerWithThreshold(address,uint256)": FunctionFragment;
     "approveHash(bytes32)": FunctionFragment;
     "approvedHashes(address,bytes32)": FunctionFragment;
     "changeThreshold(uint256)": FunctionFragment;
     "checkNSignatures(bytes32,bytes,bytes,uint256)": FunctionFragment;
     "checkSignatures(bytes32,bytes,bytes)": FunctionFragment;
+    "crossChainTransact(string,string,string,uint256,bytes)": FunctionFragment;
     "disableModule(address,address)": FunctionFragment;
     "domainSeparator()": FunctionFragment;
     "enableModule(address)": FunctionFragment;
     "encodeTransactionData(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,uint256)": FunctionFragment;
     "encodedIdHashToQValues(bytes32,uint256)": FunctionFragment;
     "entryPoint()": FunctionFragment;
+    "execBatchTransactionFromEntrypoint(address[],uint256[],bytes[],uint8)": FunctionFragment;
     "execTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes)": FunctionFragment;
     "execTransactionFromEntrypoint(address,uint256,bytes,uint8)": FunctionFragment;
     "execTransactionFromModule(address,uint256,bytes,uint8)": FunctionFragment;
     "execTransactionFromModuleReturnData(address,uint256,bytes,uint8)": FunctionFragment;
+    "execute(bytes32,string,string,bytes)": FunctionFragment;
+    "executeWithToken(bytes32,string,string,bytes,string,uint256)": FunctionFragment;
+    "gateway()": FunctionFragment;
     "getChainId()": FunctionFragment;
     "getModulesPaginated(address,uint256)": FunctionFragment;
     "getOwners()": FunctionFragment;
@@ -98,7 +102,6 @@ export interface BananaAccountInterface extends utils.Interface {
     "isOwner(address)": FunctionFragment;
     "nonce()": FunctionFragment;
     "removeOwner(address,address,uint256)": FunctionFragment;
-    "replaceEntrypoint(address)": FunctionFragment;
     "setFallbackHandler(address)": FunctionFragment;
     "setGuard(address)": FunctionFragment;
     "setup(address[],uint256,address,bytes,address,address,uint256,address)": FunctionFragment;
@@ -113,23 +116,27 @@ export interface BananaAccountInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "VERSION"
-      | "addNewDevice"
       | "addOwnerWithThreshold"
       | "approveHash"
       | "approvedHashes"
       | "changeThreshold"
       | "checkNSignatures"
       | "checkSignatures"
+      | "crossChainTransact"
       | "disableModule"
       | "domainSeparator"
       | "enableModule"
       | "encodeTransactionData"
       | "encodedIdHashToQValues"
       | "entryPoint"
+      | "execBatchTransactionFromEntrypoint"
       | "execTransaction"
       | "execTransactionFromEntrypoint"
       | "execTransactionFromModule"
       | "execTransactionFromModuleReturnData"
+      | "execute"
+      | "executeWithToken"
+      | "gateway"
       | "getChainId"
       | "getModulesPaginated"
       | "getOwners"
@@ -140,7 +147,6 @@ export interface BananaAccountInterface extends utils.Interface {
       | "isOwner"
       | "nonce"
       | "removeOwner"
-      | "replaceEntrypoint"
       | "setFallbackHandler"
       | "setGuard"
       | "setup"
@@ -153,13 +159,6 @@ export interface BananaAccountInterface extends utils.Interface {
   ): FunctionFragment;
 
   encodeFunctionData(functionFragment: "VERSION", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "addNewDevice",
-    values: [
-      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
   encodeFunctionData(
     functionFragment: "addOwnerWithThreshold",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
@@ -190,6 +189,16 @@ export interface BananaAccountInterface extends utils.Interface {
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "crossChainTransact",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
       PromiseOrValue<BytesLike>
     ]
   ): string;
@@ -227,6 +236,15 @@ export interface BananaAccountInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "entryPoint",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "execBatchTransactionFromEntrypoint",
+    values: [
+      PromiseOrValue<string>[],
+      PromiseOrValue<BigNumberish>[],
+      PromiseOrValue<BytesLike>[],
+      PromiseOrValue<BigNumberish>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "execTransaction",
@@ -270,6 +288,27 @@ export interface BananaAccountInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>
     ]
   ): string;
+  encodeFunctionData(
+    functionFragment: "execute",
+    values: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "executeWithToken",
+    values: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(functionFragment: "gateway", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getChainId",
     values?: undefined
@@ -318,10 +357,6 @@ export interface BananaAccountInterface extends utils.Interface {
       PromiseOrValue<string>,
       PromiseOrValue<BigNumberish>
     ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "replaceEntrypoint",
-    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "setFallbackHandler",
@@ -395,10 +430,6 @@ export interface BananaAccountInterface extends utils.Interface {
 
   decodeFunctionResult(functionFragment: "VERSION", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "addNewDevice",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "addOwnerWithThreshold",
     data: BytesLike
   ): Result;
@@ -423,6 +454,10 @@ export interface BananaAccountInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "crossChainTransact",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "disableModule",
     data: BytesLike
   ): Result;
@@ -444,6 +479,10 @@ export interface BananaAccountInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "entryPoint", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "execBatchTransactionFromEntrypoint",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "execTransaction",
     data: BytesLike
   ): Result;
@@ -459,6 +498,12 @@ export interface BananaAccountInterface extends utils.Interface {
     functionFragment: "execTransactionFromModuleReturnData",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "execute", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "executeWithToken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "gateway", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getChainId", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getModulesPaginated",
@@ -485,10 +530,6 @@ export interface BananaAccountInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "nonce", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "removeOwner",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "replaceEntrypoint",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -535,6 +576,7 @@ export interface BananaAccountInterface extends utils.Interface {
     "SafeReceived(address,uint256)": EventFragment;
     "SafeSetup(address,address[],uint256,address,address)": EventFragment;
     "SignMsg(bytes32)": EventFragment;
+    "TokenReceivedEvent(string,string,uint256,string)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "AddedOwner"): EventFragment;
@@ -552,6 +594,7 @@ export interface BananaAccountInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "SafeReceived"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SafeSetup"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SignMsg"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenReceivedEvent"): EventFragment;
 }
 
 export interface AddedOwnerEventObject {
@@ -703,6 +746,20 @@ export type SignMsgEvent = TypedEvent<[string], SignMsgEventObject>;
 
 export type SignMsgEventFilter = TypedEventFilter<SignMsgEvent>;
 
+export interface TokenReceivedEventEventObject {
+  tokenSymbol: string;
+  sourceAddress: string;
+  amount: BigNumber;
+  sourceChain: string;
+}
+export type TokenReceivedEventEvent = TypedEvent<
+  [string, string, BigNumber, string],
+  TokenReceivedEventEventObject
+>;
+
+export type TokenReceivedEventEventFilter =
+  TypedEventFilter<TokenReceivedEventEvent>;
+
 export interface BananaAccount extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
@@ -731,12 +788,6 @@ export interface BananaAccount extends BaseContract {
 
   functions: {
     VERSION(overrides?: CallOverrides): Promise<[string]>;
-
-    addNewDevice(
-      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      _encodedIdHash: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
 
     addOwnerWithThreshold(
       owner: PromiseOrValue<string>,
@@ -775,6 +826,15 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[void]>;
 
+    crossChainTransact(
+      symbol: PromiseOrValue<string>,
+      destinationChain: PromiseOrValue<string>,
+      contractAddress: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      payload: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     disableModule(
       prevModule: PromiseOrValue<string>,
       module: PromiseOrValue<string>,
@@ -809,6 +869,14 @@ export interface BananaAccount extends BaseContract {
     ): Promise<[BigNumber]>;
 
     entryPoint(overrides?: CallOverrides): Promise<[string]>;
+
+    execBatchTransactionFromEntrypoint(
+      to: PromiseOrValue<string>[],
+      value: PromiseOrValue<BigNumberish>[],
+      data: PromiseOrValue<BytesLike>[],
+      operation: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
     execTransaction(
       to: PromiseOrValue<string>,
@@ -847,6 +915,26 @@ export interface BananaAccount extends BaseContract {
       operation: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    execute(
+      commandId: PromiseOrValue<BytesLike>,
+      sourceChain: PromiseOrValue<string>,
+      sourceAddress: PromiseOrValue<string>,
+      payload: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    executeWithToken(
+      commandId: PromiseOrValue<BytesLike>,
+      sourceChain: PromiseOrValue<string>,
+      sourceAddress: PromiseOrValue<string>,
+      payload: PromiseOrValue<BytesLike>,
+      tokenSymbol: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    gateway(overrides?: CallOverrides): Promise<[string]>;
 
     getChainId(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -896,11 +984,6 @@ export interface BananaAccount extends BaseContract {
       prevOwner: PromiseOrValue<string>,
       owner: PromiseOrValue<string>,
       _threshold: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    replaceEntrypoint(
-      newEntrypoint: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -976,12 +1059,6 @@ export interface BananaAccount extends BaseContract {
 
   VERSION(overrides?: CallOverrides): Promise<string>;
 
-  addNewDevice(
-    _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-    _encodedIdHash: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   addOwnerWithThreshold(
     owner: PromiseOrValue<string>,
     _threshold: PromiseOrValue<BigNumberish>,
@@ -1019,6 +1096,15 @@ export interface BananaAccount extends BaseContract {
     overrides?: CallOverrides
   ): Promise<void>;
 
+  crossChainTransact(
+    symbol: PromiseOrValue<string>,
+    destinationChain: PromiseOrValue<string>,
+    contractAddress: PromiseOrValue<string>,
+    amount: PromiseOrValue<BigNumberish>,
+    payload: PromiseOrValue<BytesLike>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   disableModule(
     prevModule: PromiseOrValue<string>,
     module: PromiseOrValue<string>,
@@ -1053,6 +1139,14 @@ export interface BananaAccount extends BaseContract {
   ): Promise<BigNumber>;
 
   entryPoint(overrides?: CallOverrides): Promise<string>;
+
+  execBatchTransactionFromEntrypoint(
+    to: PromiseOrValue<string>[],
+    value: PromiseOrValue<BigNumberish>[],
+    data: PromiseOrValue<BytesLike>[],
+    operation: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   execTransaction(
     to: PromiseOrValue<string>,
@@ -1091,6 +1185,26 @@ export interface BananaAccount extends BaseContract {
     operation: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  execute(
+    commandId: PromiseOrValue<BytesLike>,
+    sourceChain: PromiseOrValue<string>,
+    sourceAddress: PromiseOrValue<string>,
+    payload: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  executeWithToken(
+    commandId: PromiseOrValue<BytesLike>,
+    sourceChain: PromiseOrValue<string>,
+    sourceAddress: PromiseOrValue<string>,
+    payload: PromiseOrValue<BytesLike>,
+    tokenSymbol: PromiseOrValue<string>,
+    amount: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  gateway(overrides?: CallOverrides): Promise<string>;
 
   getChainId(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1140,11 +1254,6 @@ export interface BananaAccount extends BaseContract {
     prevOwner: PromiseOrValue<string>,
     owner: PromiseOrValue<string>,
     _threshold: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  replaceEntrypoint(
-    newEntrypoint: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1220,12 +1329,6 @@ export interface BananaAccount extends BaseContract {
   callStatic: {
     VERSION(overrides?: CallOverrides): Promise<string>;
 
-    addNewDevice(
-      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      _encodedIdHash: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     addOwnerWithThreshold(
       owner: PromiseOrValue<string>,
       _threshold: PromiseOrValue<BigNumberish>,
@@ -1260,6 +1363,15 @@ export interface BananaAccount extends BaseContract {
       dataHash: PromiseOrValue<BytesLike>,
       data: PromiseOrValue<BytesLike>,
       signatures: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    crossChainTransact(
+      symbol: PromiseOrValue<string>,
+      destinationChain: PromiseOrValue<string>,
+      contractAddress: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      payload: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1298,6 +1410,14 @@ export interface BananaAccount extends BaseContract {
 
     entryPoint(overrides?: CallOverrides): Promise<string>;
 
+    execBatchTransactionFromEntrypoint(
+      to: PromiseOrValue<string>[],
+      value: PromiseOrValue<BigNumberish>[],
+      data: PromiseOrValue<BytesLike>[],
+      operation: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     execTransaction(
       to: PromiseOrValue<string>,
       value: PromiseOrValue<BigNumberish>,
@@ -1335,6 +1455,26 @@ export interface BananaAccount extends BaseContract {
       operation: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[boolean, string] & { success: boolean; returnData: string }>;
+
+    execute(
+      commandId: PromiseOrValue<BytesLike>,
+      sourceChain: PromiseOrValue<string>,
+      sourceAddress: PromiseOrValue<string>,
+      payload: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    executeWithToken(
+      commandId: PromiseOrValue<BytesLike>,
+      sourceChain: PromiseOrValue<string>,
+      sourceAddress: PromiseOrValue<string>,
+      payload: PromiseOrValue<BytesLike>,
+      tokenSymbol: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    gateway(overrides?: CallOverrides): Promise<string>;
 
     getChainId(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1384,11 +1524,6 @@ export interface BananaAccount extends BaseContract {
       prevOwner: PromiseOrValue<string>,
       owner: PromiseOrValue<string>,
       _threshold: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    replaceEntrypoint(
-      newEntrypoint: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1555,16 +1690,23 @@ export interface BananaAccount extends BaseContract {
       msgHash?: PromiseOrValue<BytesLike> | null
     ): SignMsgEventFilter;
     SignMsg(msgHash?: PromiseOrValue<BytesLike> | null): SignMsgEventFilter;
+
+    "TokenReceivedEvent(string,string,uint256,string)"(
+      tokenSymbol?: null,
+      sourceAddress?: null,
+      amount?: null,
+      sourceChain?: null
+    ): TokenReceivedEventEventFilter;
+    TokenReceivedEvent(
+      tokenSymbol?: null,
+      sourceAddress?: null,
+      amount?: null,
+      sourceChain?: null
+    ): TokenReceivedEventEventFilter;
   };
 
   estimateGas: {
     VERSION(overrides?: CallOverrides): Promise<BigNumber>;
-
-    addNewDevice(
-      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      _encodedIdHash: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
 
     addOwnerWithThreshold(
       owner: PromiseOrValue<string>,
@@ -1603,6 +1745,15 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    crossChainTransact(
+      symbol: PromiseOrValue<string>,
+      destinationChain: PromiseOrValue<string>,
+      contractAddress: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      payload: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     disableModule(
       prevModule: PromiseOrValue<string>,
       module: PromiseOrValue<string>,
@@ -1637,6 +1788,14 @@ export interface BananaAccount extends BaseContract {
     ): Promise<BigNumber>;
 
     entryPoint(overrides?: CallOverrides): Promise<BigNumber>;
+
+    execBatchTransactionFromEntrypoint(
+      to: PromiseOrValue<string>[],
+      value: PromiseOrValue<BigNumberish>[],
+      data: PromiseOrValue<BytesLike>[],
+      operation: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
 
     execTransaction(
       to: PromiseOrValue<string>,
@@ -1675,6 +1834,26 @@ export interface BananaAccount extends BaseContract {
       operation: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    execute(
+      commandId: PromiseOrValue<BytesLike>,
+      sourceChain: PromiseOrValue<string>,
+      sourceAddress: PromiseOrValue<string>,
+      payload: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    executeWithToken(
+      commandId: PromiseOrValue<BytesLike>,
+      sourceChain: PromiseOrValue<string>,
+      sourceAddress: PromiseOrValue<string>,
+      payload: PromiseOrValue<BytesLike>,
+      tokenSymbol: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    gateway(overrides?: CallOverrides): Promise<BigNumber>;
 
     getChainId(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1724,11 +1903,6 @@ export interface BananaAccount extends BaseContract {
       prevOwner: PromiseOrValue<string>,
       owner: PromiseOrValue<string>,
       _threshold: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    replaceEntrypoint(
-      newEntrypoint: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1805,12 +1979,6 @@ export interface BananaAccount extends BaseContract {
   populateTransaction: {
     VERSION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    addNewDevice(
-      _qValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-      _encodedIdHash: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
     addOwnerWithThreshold(
       owner: PromiseOrValue<string>,
       _threshold: PromiseOrValue<BigNumberish>,
@@ -1848,6 +2016,15 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    crossChainTransact(
+      symbol: PromiseOrValue<string>,
+      destinationChain: PromiseOrValue<string>,
+      contractAddress: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      payload: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     disableModule(
       prevModule: PromiseOrValue<string>,
       module: PromiseOrValue<string>,
@@ -1882,6 +2059,14 @@ export interface BananaAccount extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     entryPoint(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    execBatchTransactionFromEntrypoint(
+      to: PromiseOrValue<string>[],
+      value: PromiseOrValue<BigNumberish>[],
+      data: PromiseOrValue<BytesLike>[],
+      operation: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
 
     execTransaction(
       to: PromiseOrValue<string>,
@@ -1920,6 +2105,26 @@ export interface BananaAccount extends BaseContract {
       operation: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
+
+    execute(
+      commandId: PromiseOrValue<BytesLike>,
+      sourceChain: PromiseOrValue<string>,
+      sourceAddress: PromiseOrValue<string>,
+      payload: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    executeWithToken(
+      commandId: PromiseOrValue<BytesLike>,
+      sourceChain: PromiseOrValue<string>,
+      sourceAddress: PromiseOrValue<string>,
+      payload: PromiseOrValue<BytesLike>,
+      tokenSymbol: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    gateway(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getChainId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1969,11 +2174,6 @@ export interface BananaAccount extends BaseContract {
       prevOwner: PromiseOrValue<string>,
       owner: PromiseOrValue<string>,
       _threshold: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    replaceEntrypoint(
-      newEntrypoint: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -20,21 +20,26 @@ import {
 import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
 import { Banana4337Provider } from "./Banana4337Provider";
 import { sendTransaction } from "./bundler/sendUserOp";
+import { MyWalletApi } from "./MyWalletApi";
+import { BananaAccount, BananaAccount__factory } from "./types";
+import Axios from "axios";
 
 export class BananaSigner extends ERC4337EthersSigner {
   jsonRpcProvider: JsonRpcProvider;
   publicKey: PublicKey;
   address!: string;
   encodedId: string;
+  action?: string
 
   constructor(
     readonly config: ClientConfig,
     readonly originalSigner: Signer,
     readonly erc4337provider: Banana4337Provider,
     readonly httpRpcClient: HttpRpcClient,
-    readonly smartAccountAPI: BaseAccountAPI,
+    readonly smartAccountAPI: MyWalletApi,
     provider: JsonRpcProvider,
-    publicKey: PublicKey
+    publicKey: PublicKey,
+    _action ?: string
   ) {
     super(
       config,
@@ -47,6 +52,8 @@ export class BananaSigner extends ERC4337EthersSigner {
     this.publicKey = publicKey;
     this.encodedId = publicKey.encodedId;
     this.getAddress();
+    console.log('action in signer ', _action)
+    this.action = _action;
   }
 
   // need to do some changes in it
@@ -102,6 +109,193 @@ export class BananaSigner extends ERC4337EthersSigner {
         const receipt = await sendTransaction(userOperation, this.jsonRpcProvider);
         transactionResponse = receipt;
       } else {
+        console.log('this is uyserop ', userOperation)
+        userOperation.sender = (await userOperation.sender);
+        userOperation.nonce = (await userOperation.nonce)
+        if(this.action && this.action === 'register') {
+          // send it to a url
+        } else 
+        await this.httpRpcClient.sendUserOpToBundler(userOperation);
+      }
+    } catch (error: any) {
+      console.error('sendUserOpToBundler failed', error)
+      throw this.unwrapError(error);
+    }
+    // TODO: handle errors - transaction that is "rejected" by bundler is _not likely_ to ever resolve its "wait()"
+    return transactionResponse;
+  }
+
+  // async sendBatchTransaction(
+  //   transactions: Deferrable<TransactionRequest>[]
+  // ): Promise<TransactionResponse> {
+  //   let txns: TransactionRequest[] = [];
+  //   let values = [], to = [], txnData = [];
+  //   values = transactions.map(txn => txn.value);
+  //   to = transactions.map(txn => txn.to);
+  //   txnData = transactions.map(txn => txn.data);
+    
+    
+  //   console.log(to, values, txnData);
+  //   const delegateCall = ethers.BigNumber.from("1")
+  //   const bananaAccount: BananaAccount = BananaAccount__factory.connect(await this.smartAccountAPI.getAccountAddress(), this.jsonRpcProvider)
+  //   const finaltxnData = bananaAccount.interface.encodeFunctionData(
+  //     //@ts-ignore
+  //     'execBatchTransactionFromEntrypoint',
+  //     [
+  //       to,
+  //       values,
+  //       txnData,
+  //       delegateCall
+  //     ])
+  //   console.log(finaltxnData);
+  //   const batchedTxn = {
+  //     to: await this.smartAccountAPI.getAccountAddress(),
+  //     value: 0,
+  //     data: finaltxnData,
+  //     gasLimit: '0xf4240'
+  //   }
+    
+  //   const populatedTxn = await this.populateTransaction(batchedTxn);
+  //   console.log('populated txn', populatedTxn);
+  //   await this.verifyAllNecessaryFields(populatedTxn);
+  //   console.log('verified');
+  //   let userOperation = await this.smartAccountAPI.createUnsignedUserOp({
+  //     target: populatedTxn.to ?? "",
+  //     data: populatedTxn.data?.toString() ?? "",
+  //     value: populatedTxn.value,
+  //     gasLimit: populatedTxn.gasLimit,
+  //   });
+  //   let processStatus = true;
+  //   while (processStatus) {
+  //     let minGasRequired = ethers.BigNumber.from(userOperation?.callGasLimit)
+  //       .add(ethers.BigNumber.from(userOperation?.verificationGasLimit))
+  //       .add(ethers.BigNumber.from(userOperation?.callGasLimit));
+  //     let currentGasPrice = await this.jsonRpcProvider.getGasPrice();
+  //     let minBalanceRequired = minGasRequired.mul(currentGasPrice);
+  //     //@ts-ignore
+  //     let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(
+  //       userOperation?.sender
+  //     );
+
+  //      if (userBalance.lt(minBalanceRequired)) {
+  //        throw new Error("ERROR: Insufficient balance in Wallet");
+  //      }
+
+  //     userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
+  //     userOperation.verificationGasLimit = 1.5e6;
+  //     const message = await this.smartAccountAPI.getUserOpHash(userOperation);
+  //     const { newUserOp, process } = await this.signUserOp(
+  //       userOperation as any,
+  //       message,
+  //       this.encodedId
+  //     );
+  //     if (process === "success") {
+  //       userOperation = newUserOp;
+  //       processStatus = false;
+  //     }
+  //   }
+  //   let transactionResponse =
+  //     await this.erc4337provider.constructUserOpTransactionResponse(
+  //       userOperation
+  //     );
+  //   try {
+
+  //     const networkInfo = await this.jsonRpcProvider.getNetwork();
+  //     if(networkInfo.chainId === 81 || networkInfo.chainId === 592) {
+  //       //! sending UserOp directly to ep for shibuya
+  //       const receipt = await sendTransaction(userOperation, this.jsonRpcProvider);
+  //       transactionResponse = receipt;
+  //     } else {
+  //       await this.httpRpcClient.sendUserOpToBundler(userOperation);
+  //     }
+  //   } catch (error: any) {
+  //     console.error('sendUserOpToBundler failed', error)
+  //     throw this.unwrapError(error);
+  //   }
+  //   // TODO: handle errors - transaction that is "rejected" by bundler is _not likely_ to ever resolve its "wait()"
+  //   return transactionResponse; 
+  // }
+  async  sendBatchTransaction(
+    transactions: Deferrable<TransactionRequest>[]
+  ) {
+    // const tx: TransactionRequest = await this.populateTransaction(transaction);
+    let txns = [];
+    for(let i=0; i < transactions.length; i++) {
+      const txn = await this.populateTransaction(transactions[i]);
+      await this.verifyAllNecessaryFields(txn);
+      txns.push(txn);
+    }
+    console.log("these are txns ", txns);
+
+    const info = txns.map(txn => {
+      return {
+        target: txn.to ?? "",
+        data: txn.data?.toString() ?? "",
+        value: txn.value,
+        gasLimit: txn.gasLimit
+      }
+    });
+
+    console.log("info ", info)
+
+    let userOperation = await this.smartAccountAPI.createUnsignedUserOpForBatchedTransaction(info);
+    let processStatus = true;
+    while (processStatus) {
+      let minGasRequired = ethers.BigNumber.from(userOperation?.callGasLimit)
+        .add(ethers.BigNumber.from(userOperation?.verificationGasLimit))
+        .add(ethers.BigNumber.from(userOperation?.callGasLimit));
+      let currentGasPrice = await this.jsonRpcProvider.getGasPrice();
+      let minBalanceRequired = minGasRequired.mul(currentGasPrice);
+      //@ts-ignore
+      let userBalance: BigNumber = await this.jsonRpcProvider.getBalance(
+        userOperation?.sender
+      );
+
+       if (userBalance.lt(minBalanceRequired)) {
+         throw new Error("ERROR: Insufficient balance in Wallet");
+       }
+
+      userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
+      userOperation.verificationGasLimit = 1.5e6;
+      const message = await this.smartAccountAPI.getUserOpHash(userOperation);
+      const { newUserOp, process } = await this.signUserOp(
+        userOperation as any,
+        message,
+        this.encodedId
+      );
+      if (process === "success") {
+        userOperation = newUserOp;
+        processStatus = false;
+      }
+    }
+    let transactionResponse =
+      await this.erc4337provider.constructUserOpTransactionResponse(
+        userOperation
+      );
+    try {
+
+      const networkInfo = await this.jsonRpcProvider.getNetwork();
+      if(networkInfo.chainId === 81 || networkInfo.chainId === 592) {
+        //! sending UserOp directly to ep for shibuya
+        const receipt = await sendTransaction(userOperation, this.jsonRpcProvider);
+        transactionResponse = receipt;
+      } else {
+        console.log('this is action', this.action);
+        
+        console.log('this is uyserop ', userOperation)
+        userOperation.sender = (await userOperation.sender);
+        userOperation.nonce = (await userOperation.nonce)
+
+        if(this.action && this.action === 'register') {
+          // send it to a url
+          const forwarder = 'http://localhost:80';
+          const resp = await Axios.post(forwarder + '/register', {
+            params: {
+              op: userOperation
+            }
+          });
+          console.log('resp', resp);
+        } else 
         await this.httpRpcClient.sendUserOpToBundler(userOperation);
       }
     } catch (error: any) {

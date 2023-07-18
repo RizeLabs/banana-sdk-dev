@@ -104,7 +104,15 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        // "0xc4499d4709013a0189dB55aFcfA0f37c4BaE5bCd",
+        // "0xC3BA94d2a314030a15c8070b57cd91fD53bd5611",
+        // "0x4cf1c08470602F1D5c33516085640E5645AF889E",
+        // "0x18E3a76b7B2BA375F916f640028b811aFACf4f15",
+          // "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+          // "0x2C6565E11d3aA6944C12951Ed23e98827A0A7019",
+          // "0x69bf6C757D211FAb03cf5669Abe8290bDC7d25F6",
+          // "0xC5ea1f607F67a66885852eEd51a5d10A4a19DE49",
+          "0xb0c3F912540e703d5DB1681B5B7075c60a46F2d3",
         fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.mumbai: // mi
@@ -113,7 +121,14 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+          // "0xcd264d127fABE7363Ebc3f0b85f86626E1e74128",
+          // "0x2C6565E11d3aA6944C12951Ed23e98827A0A7019",
+          // "0xc4499d4709013a0189dB55aFcfA0f37c4BaE5bCd",
+          // "0xC3BA94d2a314030a15c8070b57cd91fD53bd5611",
+          // "0x4cf1c08470602F1D5c33516085640E5645AF889E",
+          // "0x69bf6C757D211FAb03cf5669Abe8290bDC7d25F6",
+          // "0xC5ea1f607F67a66885852eEd51a5d10A4a19DE49",
+          "0xb0c3F912540e703d5DB1681B5B7075c60a46F2d3",
         fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.gnosis:

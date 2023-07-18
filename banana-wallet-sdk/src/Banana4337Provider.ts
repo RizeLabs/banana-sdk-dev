@@ -9,6 +9,7 @@ import { BaseProvider, JsonRpcProvider } from "@ethersproject/providers";
 import { Signer } from "ethers";
 import { BananaSigner } from "./BananaSigner";
 import { PublicKey } from "./interfaces/Banana.interface";
+import { MyWalletApi } from "./MyWalletApi";
 
 export class Banana4337Provider extends ERC4337EthersProvider {
   readonly signer: BananaSigner;
@@ -20,9 +21,10 @@ export class Banana4337Provider extends ERC4337EthersProvider {
     readonly originalProvider: BaseProvider,
     readonly httpRpcClient: HttpRpcClient,
     readonly entryPoint: EntryPoint,
-    readonly smartAccountAPI: BaseAccountAPI,
+    readonly smartAccountAPI: MyWalletApi,
     readonly publicKey: PublicKey,
-    readonly jsonRpcProvider: JsonRpcProvider
+    readonly jsonRpcProvider: JsonRpcProvider,
+    readonly action?: string
   ) {
     super(
       chainId,
@@ -33,6 +35,7 @@ export class Banana4337Provider extends ERC4337EthersProvider {
       entryPoint,
       smartAccountAPI
     );
+    console.log('got action in provider ',action)
     this.signer = new BananaSigner(
       config,
       originalSigner,
@@ -40,7 +43,8 @@ export class Banana4337Provider extends ERC4337EthersProvider {
       httpRpcClient,
       smartAccountAPI,
       jsonRpcProvider,
-      publicKey
+      publicKey,
+      action
     );
   }
 

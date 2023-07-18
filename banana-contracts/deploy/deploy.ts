@@ -177,7 +177,10 @@ async function main() {
 	// console.log('BananaTouchIdAccountProxy Factory :', bananaTouchIdAccountProxyFactory.address);
 
 	const BananaAccount = await ethers.getContractFactory('BananaAccount');
-	const BananaAccountDeployer = await BananaAccount.deploy();
+	// for mumbai
+	// const BananaAccountDeployer = await BananaAccount.deploy('0xBF62ef1486468a6bd26Dd669C06db43dEd5B849B', '0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6');
+	// for optimism testnet
+	const BananaAccountDeployer = await BananaAccount.deploy('0xe432150cce91c13a887f7D836923d5597adD8E31', '0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6');
 	console.log('Banana Account:', BananaAccountDeployer.address);
 
 	// const TokenCallBackHandlerDeployer = await ethers.getContractFactory('TokenCallbackHandler');
