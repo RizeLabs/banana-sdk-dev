@@ -118,7 +118,7 @@ const Staking = () => {
     const tx = {
       gasLimit: '0x55555',
       to: optimismStakeAddress,
-      value: ethers.utils.parseEther('0.00001'),
+      value: ethers.utils.parseEther('0.0000001'),
       data: new ethers.utils.Interface(StakingArtifact.abi).encodeFunctionData('stake', [])
     };
 
@@ -355,7 +355,7 @@ const Staking = () => {
         ]
       );
 
-      const walletAddress = '0x499960a32e1F20bBE5FF1998d8fc67C3D506Ee02'
+      const walletAddress = '0xf12A23770FB1dcD1e8B3b21F24C5AAc8f9283d85'
 
       console.log('this is encoded payload data', encodedPayload)
       // build a briding txn here
@@ -389,9 +389,9 @@ const Staking = () => {
         EvmChain.OPTIMISM,
         GasToken.MATIC,
         1000000,
-        5,
+        3,
       );
-      console.log('this ios gas fees ',gasFee);
+      console.log('this ios gas fees ',gasFee / 10 ** 18);
       console.log('convrted', ethers.utils.parseEther(String(gasFee / 10 ** 18)))
       // console.log('fees ', ethers.BigInt.from(gasFee))
       const tx2 = {
@@ -403,10 +403,10 @@ const Staking = () => {
 
       console.log('second txn', tx2);
 
-      connectAndSend();
+      await connectAndSend();
 
       // const txn = await signer.sendTransaction(tx);
-      const txn = await signer.sendBatchTransaction([ tx2 ]);
+      const txn = await signer.sendBatchTransaction([ tx, tx2 ]);
       console.log("transaction ", txn);
 
       toast.success("Successfully staked your funds !!");
