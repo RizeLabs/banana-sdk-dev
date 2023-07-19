@@ -92,9 +92,7 @@ export class BananaSigner extends ERC4337EthersSigner {
         console.log('pasymaster and data ', paymasterAndData);
         (userOperation || { paymasterAndData: null }).paymasterAndData = paymasterAndData || '';
       }
-
-      console.log('this is updated paymaster', userOperation)
-
+      
       const message = await this.smartAccountAPI.getUserOpHash(userOperation);
       const { newUserOp, process } = await this.signUserOp(
         userOperation as any,
@@ -105,6 +103,7 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation = newUserOp;
         processStatus = false;
       }
+      console.log('this is updated paymaster', userOperation)
     }
     let transactionResponse =
       await this.erc4337provider.constructUserOpTransactionResponse(
