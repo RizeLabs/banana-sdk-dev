@@ -87,9 +87,7 @@ export class BananaSigner extends ERC4337EthersSigner {
 
       if(this.paymasterUrl) {
         const requestData = await getRequestDataForPaymaster(userOperation);
-        console.log('this is request data ', requestData);
         const paymasterAndData = await getPaymasterAndData(this.paymasterUrl, requestData);
-        console.log('pasymaster and data ', paymasterAndData);
         (userOperation || { paymasterAndData: null }).paymasterAndData = paymasterAndData || '';
       }
       
@@ -103,7 +101,6 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation = newUserOp;
         processStatus = false;
       }
-      console.log('this is updated paymaster', userOperation)
     }
     let transactionResponse =
       await this.erc4337provider.constructUserOpTransactionResponse(

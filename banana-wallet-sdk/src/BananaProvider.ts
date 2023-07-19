@@ -60,7 +60,6 @@ export class Banana {
     this.cookie = new BananaCookie();
     this.network = chain;
     this.currentPaymasterUrl = _paymasterOptions?.find(paymaster => paymaster.chainId === String(this.network))?.paymasterUrl;
-    console.log('this is paymaster url ', this.currentPaymasterUrl);
   }
 
   /**
