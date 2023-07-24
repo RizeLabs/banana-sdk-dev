@@ -11,10 +11,12 @@ import TransactionPopover from "../../components/Popup/index"
 import { GetAccount } from '../../hooks/web3Hook'
 import ERC20 from '../../abi/ERC20.json'
 import ERC721 from '../../abi/ERC721.json'
+import WMATIC from '../../abi/WMATIC.json'
 import { BananaAccount__factory } from "@rize-labs/banana-wallet-sdk/src/types";
 import { AxelarQueryAPI, Environment, EvmChain, GasToken } from '@axelar-network/axelarjs-sdk'
 import { Banana } from "@rize-labs/banana-wallet-sdk/src/BananaProvider";
 import { Chains } from "@rize-labs/banana-wallet-sdk/src/Constants";
+
 
 const Staking = () => {
   const [amount, setAmount] = useState("");
@@ -39,13 +41,13 @@ const Staking = () => {
 
 
   // optimism staking
-  const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
+  // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
 
-  const optimismStakeAddress = stakeAddress
+  const optimismStakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
   const mumbaiStakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
 
   // polygo staking 
-  // const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
+  const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
 
 
 
@@ -105,24 +107,33 @@ const Staking = () => {
     }
     setShowPopover(false);
   };
+  const avalancheStaking = '0x65f0dAC1129b1406Ae8c96752b729e4bd4355Ef8';
 
 
   const connectAndSend = async () => {
-    const bananaInstance = new Banana(Chains.optimismTestnet, 'register');
+    const bananaInstance = new Banana(Chains.fuji, 'register');
+
+    // approve and transfer
 
     const walletName = bananaInstance.getWalletName()
     const wallet = await bananaInstance.connectWallet(walletName);
 
     const signer = wallet.getSigner();
 
-    const tx = {
+    // both address on avalanche
+    const wmaticAvalance = '0xB923E2374639D0605388D91CFedAfCeCE03Cfd8f'
+
+    // approve
+    const txn1 = {
+      to: wmaticAvalance,
+      value: 0,
       gasLimit: '0x55555',
-      to: optimismStakeAddress,
-      value: ethers.utils.parseEther('0.0000001'),
-      data: new ethers.utils.Interface(StakingArtifact.abi).encodeFunctionData('stake', [])
+      data: new ethers.utils.Interface(WMATIC).encodeFunctionData(
+      'transfer',
+      [avalancheStaking, ethers.utils.parseEther("0.00001")])
     };
 
-    const txnResp = await signer.sendBatchTransaction([tx]);
+    const txnResp = await signer.sendBatchTransaction([ txn1 ]);
     console.log('txn response ', txnResp)
   };
 
@@ -334,7 +345,8 @@ const Staking = () => {
       // let aaSigner = aaProvider.getSigner();
       const tx = {
         gasLimit: '0x55555',
-        to: stakeAddress,
+        to: avalancheStaking,
+        // stakeAddress,
         value: ethers.utils.parseEther(amount),
         data: new ethers.utils.Interface(StakingArtifact.abi).encodeFunctionData('stake', [])
       }
@@ -355,9 +367,9 @@ const Staking = () => {
         ]
       );
 
-      const walletAddress = '0xf12A23770FB1dcD1e8B3b21F24C5AAc8f9283d85'
+      const walletAddress = '0x1B8732B3054b70A6FBd4409dDf3159a45766ff0C'
 
-      console.log('this is encoded payload data', encodedPayload)
+      // console.log('this is encoded payload data', encodedPayload)
       // build a briding txn here
       // tx2 -> encode callTokenWithContract
           // payload encoded tx 
@@ -368,13 +380,11 @@ const Staking = () => {
       // uint256 amount,
       // bytes memory payload
 
-
-
       const crossChainTransactionData = acc.interface.encodeFunctionData('crossChainTransact', [
         'WMATIC',
-        'optimism',
+        'Avalanche',
         walletAddress,
-        ethers.utils.parseEther('0.1'),
+        ethers.utils.parseEther('0.01'),
         // encodedPayload
         '0x'
       ]);
@@ -386,7 +396,7 @@ const Staking = () => {
       // Calculate how much gas to pay to Axelar to execute the transaction at the destination chain
       const gasFee = await api.estimateGasFee(
         EvmChain.POLYGON,
-        EvmChain.OPTIMISM,
+        EvmChain.AVALANCHE,
         GasToken.MATIC,
         1000000,
         3,
@@ -406,7 +416,7 @@ const Staking = () => {
       await connectAndSend();
 
       // const txn = await signer.sendTransaction(tx);
-      const txn = await signer.sendBatchTransaction([ tx, tx2 ]);
+      const txn = await signer.sendBatchTransaction([ tx2 ]);
       console.log("transaction ", txn);
 
       toast.success("Successfully staked your funds !!");

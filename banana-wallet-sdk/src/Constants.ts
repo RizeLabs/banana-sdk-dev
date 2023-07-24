@@ -19,11 +19,12 @@ export const CHIADO_TESTNET_RPC = "https://rpc.chiado.gnosis.gateway.fm";
 export const SHIBUYA_TESTNET_RPC = "https://evm.shibuya.astar.network";
 export const POLYGON_MAINNET_RPC = "https://polygon-mainnet.g.alchemy.com/v2/M6obmh9NhecgkyNlK0G00anwrpBnjzwA";
 export const ASTAR_MAINNET_RPC = "https://astar.public.blastapi.io";
+export const FUJI = 'https://ava-testnet.public.blastapi.io/ext/bc/C/rpc';
 export const ENTRYPOINT_ADDRESS = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
 export const BUNDLER_EOA_PUBLIC_KEY =
-  "0x48701dF467Ba0efC8D8f34B2686Dc3b0A0b1cab5";
+  "0xFBd25f4F9de58B72F5e652B51625D3fCD761dec5"; 
 export const BUNDLER_EOA_PRIVATE_KEY =
-  "0xed096a60e1af7c04519965c9e1fe105b2cd287afd49e4f1d77744f91ab5eb36e";
+  "409816806d2f48f7cdd75d3e3804334ba1aab00e9aa6d039ffe2376200c9119d";
 export const BENEFICIARY = "0xF9ca16Fb8D6F38d36505961dAd69d2011C4695cF";
 
 export enum Chains {
@@ -35,6 +36,7 @@ export enum Chains {
   chiadoTestnet = 10200,
   shibuyaTestnet = 81,
   astar = 592,
+  fuji = 43113
 }
 
 export function getClientConfigInfo(chain: Chains): ClientConfig {
@@ -84,6 +86,11 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
         bundlerUrl: ASTAR_MAINNET_RPC
       };
+    case Chains.fuji:
+      return {
+        entryPointAddress: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
+        bundlerUrl: 'https://api.stackup.sh/v1/node/19849775238e4e502afa29a1d6c55aa3f0fbba5cf1933a901cd7963e3715baae'
+      }
   }
 }
 
@@ -96,6 +103,16 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
           "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
           "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
+      };
+    case Chains.fuji: //mi
+      return {
+        Elliptic: "0xEA4d16E741E76E7a93b8f46650537855149efc48",
+        TouchIdSafeWalletContractProxyFactoryAddress:
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
+        TouchIdSafeWalletContractSingletonAddress:
+          // "0xeDba372c904298b79D421a70d9D448E822Bc697E",
+          "0xDcA01E080a8984830f1f2292d5c723d38223563C",
         fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.optimismTestnet: // mi
@@ -128,7 +145,9 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
           // "0x4cf1c08470602F1D5c33516085640E5645AF889E",
           // "0x69bf6C757D211FAb03cf5669Abe8290bDC7d25F6",
           // "0xC5ea1f607F67a66885852eEd51a5d10A4a19DE49",
-          "0xb0c3F912540e703d5DB1681B5B7075c60a46F2d3",
+          // "0xb0c3F912540e703d5DB1681B5B7075c60a46F2d3",
+          // "0xeDba372c904298b79D421a70d9D448E822Bc697E",
+          "0xDcA01E080a8984830f1f2292d5c723d38223563C",
         fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.gnosis:
@@ -137,7 +156,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+          "0xDcA01E080a8984830f1f2292d5c723d38223563C",
         fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.chiadoTestnet:
@@ -214,5 +233,9 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
       return {
         jsonRpcUrl: ASTAR_MAINNET_RPC,
       };
+    case Chains.fuji:
+      return {
+        jsonRpcUrl: FUJI
+      }
   }
 }

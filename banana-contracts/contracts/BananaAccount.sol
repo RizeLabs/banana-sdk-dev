@@ -155,6 +155,8 @@ contract BananaAccount is Safe, AxelarExecutable {
         // Only Entrypoint is allowed.
         require(msg.sender == entryPoint, 'account: not from EntryPoint');
         // Execute transaction without further confirmations.
+        // just for testing
+         emit TokenReceivedEvent("sample", "0x288d1d682311018736B820294D22Ed0DBE372188", 10, "chain");
         _executeAndRevert(to, value, data, operation);
     }
 
@@ -181,8 +183,6 @@ contract BananaAccount is Safe, AxelarExecutable {
         uint256 amount
         ) internal override {
             emit TokenReceivedEvent(tokenSymbol, sourceAddress, amount, sourceChain);
-            // (address to, uint256 value, bytes memory data, uint8 operation) = abi.decode(payload, (address, uint256, bytes, uint8));
-            // _executeAndRevert(to, value, data, Enum.Operation(operation));
     }
 
        function crossChainTransact(

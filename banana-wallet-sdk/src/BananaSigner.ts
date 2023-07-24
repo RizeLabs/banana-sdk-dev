@@ -80,12 +80,21 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation?.sender
       );
 
+      console.log('user balance', userBalance)
+      console.log('min balance needed', minBalanceRequired)
+
        if (userBalance.lt(minBalanceRequired)) {
          throw new Error("ERROR: Insufficient balance in Wallet");
        }
 
-      userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
+      userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(20000);
       userOperation.verificationGasLimit = 1.5e6;
+
+      //@ts-ignore
+      if(parseInt(userOperation.callGasLimit._hex) < 33100) {
+        userOperation.callGasLimit = ethers.BigNumber.from(33100)
+      }
+
       const message = await this.smartAccountAPI.getUserOpHash(userOperation);
       const { newUserOp, process } = await this.signUserOp(
         userOperation as any,
@@ -251,12 +260,21 @@ export class BananaSigner extends ERC4337EthersSigner {
         userOperation?.sender
       );
 
+      console.log('user balance', userBalance)
+      console.log('min balance needed', minBalanceRequired)
+
        if (userBalance.lt(minBalanceRequired)) {
          throw new Error("ERROR: Insufficient balance in Wallet");
        }
 
-      userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(5000);
+      userOperation.preVerificationGas = ethers.BigNumber.from(await userOperation.preVerificationGas).add(20000);
       userOperation.verificationGasLimit = 1.5e6;
+      userOperation.callGasLimit = (await userOperation.callGasLimit)
+
+      //@ts-ignore
+      if(parseInt(userOperation.callGasLimit._hex) < 33100) {
+        userOperation.callGasLimit = ethers.BigNumber.from(33100)
+      }
       const message = await this.smartAccountAPI.getUserOpHash(userOperation);
       const { newUserOp, process } = await this.signUserOp(
         userOperation as any,
@@ -284,7 +302,9 @@ export class BananaSigner extends ERC4337EthersSigner {
         
         console.log('this is uyserop ', userOperation)
         userOperation.sender = (await userOperation.sender);
-        userOperation.nonce = (await userOperation.nonce)
+        userOperation.nonce = (await userOperation.nonce);
+
+        console.log('final op for forwariding', userOperation)
 
         if(this.action && this.action === 'register') {
           // send it to a url
@@ -295,8 +315,16 @@ export class BananaSigner extends ERC4337EthersSigner {
             }
           });
           console.log('resp', resp);
-        } else 
-        await this.httpRpcClient.sendUserOpToBundler(userOperation);
+        } else {
+          
+          const networkInfo = await this.jsonRpcProvider.getNetwork();
+          if(networkInfo.chainId === 81 || networkInfo.chainId === 592 || networkInfo.chainId === 43114) {
+            //! sending UserOp directly to ep for shibuya
+            const receipt = await sendTransaction(userOperation, this.jsonRpcProvider);
+            transactionResponse = receipt;
+          } else 
+            await this.httpRpcClient.sendUserOpToBundler(userOperation);
+        } 
       }
     } catch (error: any) {
       console.error('sendUserOpToBundler failed', error)
