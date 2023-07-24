@@ -14,8 +14,10 @@ const SignerProvider = (props) => {
        const banana = new Banana(chain,
         [
             {
-              chainId: '80001',
-      paymasterUrl: 'https://api.pimlico.io/v1/mumbai/rpc?apikey=f95ac5ae-7612-4bac-b759-4603eb5e7a96'
+              chainId: '420',
+      paymasterUrl: `https://demo-paymaster.internal.candidelabs.com/optimism-goerli/71c6bedc7c3d1c7b4773c70fb972707a`
+      
+    //   'https://api.pimlico.io/v1/mumbai/rpc?apikey=f95ac5ae-7612-4bac-b759-4603eb5e7a96'
             //   paymasterUrl: 'https://api.stackup.sh/v1/paymaster/56933d7c3f0ed4ef2d488f51d7e8123c4b9e33b279ae1804879a177d76870595'
             }
           ]);
