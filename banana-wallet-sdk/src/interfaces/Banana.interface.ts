@@ -52,6 +52,11 @@ export interface ConnectOptions {
     networkId: string | number
 }
 
+export interface PaymasterOptions {
+    chainId: string,
+    paymasterUrl: string
+}
+
 export enum RequestType {
     POST = 'POST',
     GET = 'GET',

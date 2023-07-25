@@ -17,7 +17,8 @@ import {
   PublicKey,
   ClientConfig,
   UserCredentialObject,
-  ChainConfig
+  ChainConfig,
+  PaymasterOptions
 } from "./interfaces/Banana.interface";
 import { BananaAccount, BananaAccountProxyFactory } from './types'
 import { BananaAccount__factory, BananaAccountProxyFactory__factory} from './types/factories'
@@ -46,9 +47,10 @@ export class Banana {
   jsonRpcProviderUrl: string;
   addresses: ChainConfig;
   network: Chains
+  currentPaymasterUrl: string | undefined
   #isUserNameRequested = false
 
-  constructor(readonly chain: Chains) {
+  constructor(readonly chain: Chains, readonly _paymasterOptions?: PaymasterOptions[]) {
     this.Provider = getClientConfigInfo(chain);
     this.addresses = getChainSpecificAddress(chain)
     this.jsonRpcProviderUrl = getChainSpecificConfig(chain).jsonRpcUrl;
@@ -57,6 +59,7 @@ export class Banana {
     );
     this.cookie = new BananaCookie();
     this.network = chain;
+    this.currentPaymasterUrl = _paymasterOptions?.find(paymaster => paymaster.chainId === String(this.network))?.paymasterUrl;
   }
 
   /**
@@ -234,7 +237,8 @@ export class Banana {
       entryPoint,
       smartWalletAPI,
       this.publicKey,
-      this.jsonRpcProvider
+      this.jsonRpcProvider,
+      this.currentPaymasterUrl
     ).init();
 
     return this.bananaProvider;

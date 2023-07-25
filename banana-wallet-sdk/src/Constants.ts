@@ -87,7 +87,7 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
 
 export function getChainSpecificAddress(chain: Chains): ChainConfig {
   switch (chain) {
-    case Chains.goerli: //mi
+    case Chains.goerli:
       return {
         Elliptic: "0xEA4d16E741E76E7a93b8f46650537855149efc48",
         TouchIdSafeWalletContractProxyFactoryAddress:
@@ -96,7 +96,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
           "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
         fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
-    case Chains.optimismTestnet: // mi
+    case Chains.optimismTestnet: 
       return {
         Elliptic: "0xEA4d16E741E76E7a93b8f46650537855149efc48",
         TouchIdSafeWalletContractProxyFactoryAddress:
