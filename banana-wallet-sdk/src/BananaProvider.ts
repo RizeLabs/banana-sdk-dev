@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { Bytes, ethers } from "ethers";
 import { EntryPoint__factory, EntryPoint } from "@account-abstraction/contracts";
 import { MyPaymasterApi } from "./MyPayMasterApi";
 import { MyWalletApi } from "./MyWalletApi";
@@ -25,10 +25,10 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
 import { Wallet } from "./BananaWallet"
 import { Banana4337Provider } from "./Banana4337Provider";
-//! Omiting this check for now
-import { NetworkAddressChecker } from "./utils/addressChecker";
 import { walletNameInput } from "./utils/walletNameInput";
 import { BananaTransporter } from "./BananaTransporter";
+import { getKeccakHash } from "./utils/getKeccakHash";
+import { encode } from "./utils/base64url-arraybuffer";
 
 export class Banana {
   Provider: ClientConfig;
@@ -212,7 +212,8 @@ export class Banana {
       _singletonTouchIdSafeAddress: this.addresses.TouchIdSafeWalletContractSingletonAddress,
       _ownerAddress: this.getAddress(),
       _fallBackHandler: this.addresses.fallBackHandlerAddress,
-      _saltNonce: this.cookieObject.saltNonce
+      _saltNonce: this.cookieObject.saltNonce,
+      _encodedIdHash: getKeccakHash(this.publicKey.encodedId)
     });
 
     this.accountApi = smartWalletAPI;
@@ -265,6 +266,7 @@ export class Banana {
       0,                                              // payment 
       "0x0000000000000000000000000000000000000000",   // payment receiver
       this.Provider.entryPointAddress,                // entrypoint
+      getKeccakHash(this.publicKey.encodedId),
       // @ts-ignore
       TouchIdSafeWalletContractQValuesArray,          // q values 
     ]);
@@ -379,16 +381,35 @@ export class Banana {
    */
 
   //! for now assigned eoaAddress as any type
-  verifySignature = async (signature: string, messageSigned: string, eoaAddress: any) => {
-    const rValue = ethers.BigNumber.from("0x"+signature.slice(2, 66));
-    const sValue = ethers.BigNumber.from("0x"+signature.slice(66, 132));
-    // const EC = EllipticCurve__factory.connect(
-    //   this.addresses.Elliptic,
-    //   this.jsonRpcProvider
-    // );
-    // const isVerified = await EC.validateSignature(messageSigned, [rValue, sValue], eoaAddress);
-    // return isVerified;
-    return true;
+  verifySignature = async (signature: string, message: string, eoaAddress: any): Promise<boolean> => {
+
+    const bananaAccount: BananaAccount = BananaAccount__factory.connect(this.walletAddress, this.jsonRpcProvider);
+    const abiDecode = ethers.utils.defaultAbiCoder;
+    const decoded = abiDecode.decode(['uint', 'uint', 'bytes', 'string', 'string', 'bytes32'], signature);
+    const rHex = decoded[0]._hex;
+    const sHex = decoded[1]._hex;
+    const authenticatorData = decoded[2];
+    const clientDataJSONPre = decoded[3];
+    const clientDataJSONPost = decoded[4];
+
+    const messageHash = ethers.utils.keccak256(
+      ethers.utils.solidityPack(["string"], [message])
+    );
+
+    let isSignatureValid = false;
+
+    try {
+      const textEncoder = new TextEncoder();
+      const base64RequestId = encode(textEncoder.encode(messageHash).buffer)
+      const clientDataJSON = `${clientDataJSONPre}${base64RequestId}${clientDataJSONPost}`;
+      const concatenatedData = ethers.utils.concat([authenticatorData, ethers.utils.sha256(ethers.utils.toUtf8Bytes(clientDataJSON))]);
+      const messageToBeSigned = ethers.utils.sha256(concatenatedData);
+      isSignatureValid = await bananaAccount.verifySignature(messageToBeSigned, [rHex, sHex], eoaAddress);
+    } catch (err) {
+      console.log(err)
+      return false;
+    }
+    return isSignatureValid;
   }
 
   /**

@@ -107,73 +107,73 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
       return {
         Elliptic: "0xEA4d16E741E76E7a93b8f46650537855149efc48",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0xC69a1bfF74074BF4117CC39Be954a3d410a74Bec",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0x154Ccd13f501eE7Cad227c8eb888BBab96ffE78F",
-        fallBackHandlerAddress: "0x82Ee69Db954d9648fF8191bB831B9f679E5bAcb0",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.optimismTestnet: // mi
       return {
         Elliptic: "0xEA4d16E741E76E7a93b8f46650537855149efc48",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0xC69a1bfF74074BF4117CC39Be954a3d410a74Bec",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0x154Ccd13f501eE7Cad227c8eb888BBab96ffE78F",
-        fallBackHandlerAddress: "0x82Ee69Db954d9648fF8191bB831B9f679E5bAcb0",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.mumbai: // mi
       return {
         Elliptic: "0xEA4d16E741E76E7a93b8f46650537855149efc48",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0x800cDedD56926Aeb68C08482772BE98e709751e7",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0x23cAA0031A64dB5539b0315b83B31B9c37BC69f1",
-        fallBackHandlerAddress: "0x82Ee69Db954d9648fF8191bB831B9f679E5bAcb0",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.gnosis:
       return {
         Elliptic: "0xC29fDf5544312E23d9cDa9fB67388d040Fdbf434",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0xEA4d16E741E76E7a93b8f46650537855149efc48",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0x8505F94693Dbd0756c733056924de3f71a020f2E",
-        fallBackHandlerAddress: "0x72892C35B8E1256F323DE365ADbB71E7C7948CDF",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.chiadoTestnet:
       return {
         Elliptic: "0x200E1d8BC6d3F6ddB5a26bbbC5b839f2D5213407",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0x3AB5cB0d32665363559F2B8aff9Cbe9bC2193780",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xF1Fae5392dce474fc1c2D98c645f438d6c760E78",
-        fallBackHandlerAddress: "0xB88902418706f095E831E80bA766c151d3E1848D",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.shibuyaTestnet:
       return {
         Elliptic: "0x3f0dD0521518cd0c6833eD2622aDe9a813f7E56e",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0x02Da54e40c004fF59a904E98EDF4e1Ad9bb2aC82",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xe33fCA6E9A75529407224c593783aF778b80DC2a",
-        fallBackHandlerAddress: "0xC99154BA90386DCD0C5aF6CC8cc271e5aAF57176",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.polygonMainnet: 
       return {
         Elliptic: "0xd223a0D7cD198a5d448DeEdE81c63a3Ad4f244FC",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0x8315d0Ac70C28310bCAb684f9542Dcf156faD3ec",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xf05f7FD2acdF4d677CC9F156E8AE44EcC72dF817",
-        fallBackHandlerAddress: "0x1dE8E294f6051d159095777051788B34609c9729",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
      };
     case Chains.astar:
     return {
         Elliptic: "0x652D29F01fdF8d0c20F78f51bAc9B173B3a76a9B",
         TouchIdSafeWalletContractProxyFactoryAddress:
-         "0x3A43b93362669087Be639e99B7a5B75d60E0B706",
+          "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-         "0x172F0658e4Bc99D97b6DA8880b9D4E1b7A26E407",
-        fallBackHandlerAddress: "0xbF86c32B55657f0DE7cf56aD1B6F1aB9843D0F46",
+          "0x6f4D71B05140a1DD6D328e0C58216edD1590654e",
+        fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
     };
     case Chains.polygonMainnet: 
       return {
