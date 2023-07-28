@@ -90,7 +90,7 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
       return {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
         // bundlerUrl: "https://api.pimlico.io/v1/polygon/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445",
-        bundlerUrl: "https://api.stackup.sh/v1/node/ae1b4f72151fb2b79b2e7486f1f84e23af70b434396318d023e50bfdd8a833c3"
+        bundlerUrl: "https://api.stackup.sh/v1/node/c8791966949251733b7f5c7d63fedd59b62ce7f81acd7c0a415ad17e76f2d1a2"
       };
     }
 }
@@ -166,7 +166,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0x73F3e11724a97f8c41E07286677F78D38441c03F",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xf05f7FD2acdF4d677CC9F156E8AE44EcC72dF817",
+          "0xB7C69a31011766e5A13f68fDD016e0BB163D5BF9",
         fallBackHandlerAddress: "0x1dE8E294f6051d159095777051788B34609c9729",
      };
   }
