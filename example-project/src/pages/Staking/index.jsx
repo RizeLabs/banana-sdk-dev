@@ -52,7 +52,7 @@ const Staking = () => {
   // const stakeAddress = '0x8B220bc9529c0bc18265c1B822FcC579eE586bA2';
 
   // polygon mainnet
-  const stakeAddress = '0x8B220bc9529c0bc18265c1B822FcC579eE586bA2';
+  // const stakeAddress = '0x8B220bc9529c0bc18265c1B822FcC579eE586bA2';
 
   // shibuya 
   // const stakeAddress = '0x12cB6cdd140A01044ED575828EbE8F9DdBa5fb6A'
