@@ -1,3 +1,5 @@
+import { ethers } from "ethers";
+
 const getRequestDataForPaymaster = async (
   userOp: any,
 ) => {
@@ -7,7 +9,7 @@ const getRequestDataForPaymaster = async (
     initCode: userOp?.initCode,
     callData: userOp?.callData,
     callGasLimit: (await userOp?.callGasLimit)._hex, 
-    verificationGasLimit: userOp?.verificationGasLimit,
+    verificationGasLimit: ethers.BigNumber.from(userOp?.verificationGasLimit)._hex,
     preVerificationGas: (await userOp?.preVerificationGas)._hex, 
     maxFeePerGas: (await userOp?.maxFeePerGas)._hex, 
     maxPriorityFeePerGas: (await userOp?.maxPriorityFeePerGas)._hex, 
@@ -17,9 +19,8 @@ const getRequestDataForPaymaster = async (
 
   const requestData = [
     userOp,
-    {
-      entryPoint: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789'
-    }
+    '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
+    {}
   ];
 
   return requestData;
