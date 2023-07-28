@@ -112,7 +112,6 @@ export class BananaSigner extends ERC4337EthersSigner {
       if(JSON.parse(signatureObtained) === CANCEL_ACTION) {
         return {} as TransactionResponse;
       }
-
       userOperation.signature = JSON.parse(signatureObtained);
     } catch (err) {
       return Promise.reject(err);
