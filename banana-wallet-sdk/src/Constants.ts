@@ -17,7 +17,6 @@ export const CHIADO_TESTNET_RPC = "https://rpc.chiado.gnosis.gateway.fm";
 export const SHIBUYA_TESTNET_RPC = "https://evm.shibuya.astar.network";
 export const POLYGON_MAINNET_RPC = "https://polygon-mainnet.g.alchemy.com/v2/M6obmh9NhecgkyNlK0G00anwrpBnjzwA";
 export const ASTAR_MAINNET_RPC = "https://astar.public.blastapi.io";
-export const POLYGON_MAINNET_RPC = "https://polygon-mainnet.g.alchemy.com/v2/M6obmh9NhecgkyNlK0G00anwrpBnjzwA";
 export const ENTRYPOINT_ADDRESS = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
 export const BUNDLER_EOA_PUBLIC_KEY =
   "0x48701dF467Ba0efC8D8f34B2686Dc3b0A0b1cab5";
@@ -162,7 +161,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
       return {
         Elliptic: "0xd223a0D7cD198a5d448DeEdE81c63a3Ad4f244FC",
         TouchIdSafeWalletContractProxyFactoryAddress:
-          "0x73F3e11724a97f8c41E07286677F78D38441c03F",
+          "0x8315d0Ac70C28310bCAb684f9542Dcf156faD3ec",
         TouchIdSafeWalletContractSingletonAddress:
           "0xf05f7FD2acdF4d677CC9F156E8AE44EcC72dF817",
         fallBackHandlerAddress: "0x1dE8E294f6051d159095777051788B34609c9729",
