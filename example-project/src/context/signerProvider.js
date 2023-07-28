@@ -11,7 +11,13 @@ const SignerProvider = (props) => {
 
     const initSigner = () => {
         // const banana = new Banana(Chains.optimismTestnet , 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas');
-       const banana = new Banana(chain);
+       const banana = new Banana(chain,
+        [
+            {
+              chainId: '80001',
+              paymasterUrl: 'https://api.stackup.sh/v1/paymaster/56933d7c3f0ed4ef2d488f51d7e8123c4b9e33b279ae1804879a177d76870595'
+            }
+          ]);
         console.log(" this is signer ", banana);
         setBananaInstance(banana);
         console.log(" this is instance ", bananaInstance)

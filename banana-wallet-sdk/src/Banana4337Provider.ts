@@ -22,7 +22,8 @@ export class Banana4337Provider extends ERC4337EthersProvider {
     readonly entryPoint: EntryPoint,
     readonly smartAccountAPI: BaseAccountAPI,
     readonly publicKey: PublicKey,
-    readonly jsonRpcProvider: JsonRpcProvider
+    readonly jsonRpcProvider: JsonRpcProvider,
+    readonly paymasterUrl: string | undefined
   ) {
     super(
       chainId,
@@ -40,7 +41,8 @@ export class Banana4337Provider extends ERC4337EthersProvider {
       httpRpcClient,
       smartAccountAPI,
       jsonRpcProvider,
-      publicKey
+      publicKey,
+      paymasterUrl
     );
   }
 
