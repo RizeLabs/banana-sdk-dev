@@ -59,12 +59,9 @@ export class Banana {
     );
     this.cookie = new BananaCookie();
     this.network = chain;
-<<<<<<< HEAD
     this.#bananaTransportInstance = new BananaTransporter();
-=======
     this.currentPaymasterUrl = _paymasterOptions?.find(paymaster => paymaster.chainId === String(this.network))?.paymasterUrl;
     console.log('this is paymaster url ', this.currentPaymasterUrl);
->>>>>>> 83fc516 (working on adding paymaster support)
   }
 
   /**
