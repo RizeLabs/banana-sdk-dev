@@ -21,16 +21,22 @@ const Navbar = () => {
   const [scwAddress, setSCWAddress] = useState("");
   const [load, setLoad] = useState(false);
 
-  // let nullBanana = new Banana(Chains.chiadoTestnet);
-  let nullBanana = new Banana(chain, [
-    {
-      chainId: '420',
-      paymasterUrl: `https://demo-paymaster.internal.candidelabs.com/optimism-goerli/71c6bedc7c3d1c7b4773c70fb972707a`
-      // 'https://api.pimlico.io/v1/mumbai/rpc?apikey=f95ac5ae-7612-4bac-b759-4603eb5e7a96	'
-      // f95ac5ae-7612-4bac-b759-4603eb5e7a96	
-      // paymasterUrl: 'https://api.stackup.sh/v1/paymaster/56933d7c3f0ed4ef2d488f51d7e8123c4b9e33b279ae1804879a177d76870595'
-    }
-  ]);
+  // // let nullBanana = new Banana(Chains.chiadoTestnet);
+  // let nullBanana = new Banana(chain, [
+  //   {
+  //     chainId: '420',
+  //     paymasterUrl: `https://demo-paymaster.internal.candidelabs.com/optimism-goerli/71c6bedc7c3d1c7b4773c70fb972707a`
+  //     // 'https://api.pimlico.io/v1/mumbai/rpc?apikey=f95ac5ae-7612-4bac-b759-4603eb5e7a96	'
+  //     // f95ac5ae-7612-4bac-b759-4603eb5e7a96	
+  //     // paymasterUrl: 'https://api.stackup.sh/v1/paymaster/56933d7c3f0ed4ef2d488f51d7e8123c4b9e33b279ae1804879a177d76870595'
+  //   },
+  // //   {
+  // //     chainId: '80001',
+  // //     paymasterUrl: 'https://api.pimlico.io/v1/mumbai/rpc?apikey=f95ac5ae-7612-4bac-b759-4603eb5e7a96'
+  // // }
+  // ]);
+
+  let nullBanana = new Banana(chain);
     // 'https://opt-goerli.g.alchemy.com/v2/Q37EPFzF1O8kJt4oTob4ytwuUFTW0Gas');
 
 //  let nullBanana = new Banana(Chains.mumbai , 'https://polygon-mumbai.g.alchemy.com/v2/cNkdRWeB8oylSQJSA2V3Xev2PYh5YGr4');
