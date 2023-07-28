@@ -86,8 +86,7 @@ export class BananaSigner extends ERC4337EthersSigner {
     }
 
     const message = await this.smartAccountAPI.getUserOpHash(userOperation);
-    console.log((parseInt(minGasRequired._hex) / 10 ** 18).toString());
-    console.log(' this is userOp formed ', userOperation);
+    
     let signatureObtained: string;
     try {
       signatureObtained =
@@ -109,8 +108,8 @@ export class BananaSigner extends ERC4337EthersSigner {
       await this.erc4337provider.constructUserOpTransactionResponse(
         userOperation
       );
-    try {
 
+    try {
       const networkInfo = await this.jsonRpcProvider.getNetwork();
       if(networkInfo.chainId === 81 || networkInfo.chainId === 592) {
         //! sending UserOp directly to ep for shibuya
