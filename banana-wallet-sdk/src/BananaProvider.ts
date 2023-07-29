@@ -5,7 +5,6 @@ import { MyWalletApi } from "./MyWalletApi";
 import { HttpRpcClient } from "@account-abstraction/sdk/dist/src/HttpRpcClient";
 import { ERC4337EthersProvider } from "@account-abstraction/sdk";
 import { Chains, getClientConfigInfo, getChainSpecificAddress, getChainSpecificConfig  } from "./Constants";
-import { registerFingerprint } from "./WebAuthnContext";
 import { BananaSigner } from "./BananaSigner";
 import { BananaCookie } from "./BananaCookie";
 import {
@@ -171,7 +170,6 @@ export class Banana {
       // he must have sent the username for registering wallet
     }
     this.walletIdentifier = walletIdentifier;
-    this.publicKey = await registerFingerprint();
   };
 
   getAddress(): string {

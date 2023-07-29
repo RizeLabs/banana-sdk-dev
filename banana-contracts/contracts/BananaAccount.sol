@@ -164,6 +164,27 @@ contract BananaAccount is Safe {
         _executeAndRevert(to, value, data, operation);
     }
 
+    /// @dev Allows the entrypoint to execute a batch transactions without any further confirmations.
+    /// @param to Destination addresses of transactions.
+    /// @param value Ether values of transactions.
+    /// @param data Data payloads of transactions.
+    /// @param operation Operation types of transactions.
+    function execBatchTransactionFromEntrypoint(
+        address[] calldata to,
+        uint256[] calldata value,
+        bytes[] memory data,
+        Enum.Operation operation
+    ) public {
+        // Only Entrypoint is allowed.
+        require(msg.sender == entryPoint, 'account: not from EntryPoint');
+        // Execute transaction without further confirmations.
+        require(to.length == data.length, "wrong array lengths");
+        for(uint256 i=0; i < to.length; i++) {
+            _executeAndRevert(to[i], value[i], data[i], operation);
+        }
+    }
+
+
     /// @dev check if the signature is valid
     /// @param messageToBeSigned Message to be signed.
     /// @param signature 'r' and 's' values of the signature.
