@@ -83,7 +83,7 @@ export class BananaTransporter implements BananaTransportProvider {
     const sessionId = v4();
     const walletName = this.cookieInstance.getCookie('bananaUser');
     const walletMetaData: UserCredentialObject = this.cookieInstance.getCookie(walletName);
-    console.log(' this is wallet meta deta ', walletMetaData);
+    
     const finalUrl = buildUrl(BANANA_APP_URL, {
         path: ['wallet', 'transact', sessionId],
         queryParams: {
