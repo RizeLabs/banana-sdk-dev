@@ -386,7 +386,7 @@ export class Banana {
   //! for now assigned eoaAddress as any type
   verifySignature = async (signature: string, message: string, eoaAddress: any): Promise<boolean> => {
 
-    const bananaAccount: BananaAccount = BananaAccount__factory.connect(this.walletAddress, this.jsonRpcProvider);
+    const bananaAccount: BananaAccount = BananaAccount__factory.connect(this.addresses.TouchIdSafeWalletContractSingletonAddress, this.jsonRpcProvider);
     const abiDecode = ethers.utils.defaultAbiCoder;
     const decoded = abiDecode.decode(['uint', 'uint', 'bytes', 'string', 'string', 'bytes32'], signature);
     const rHex = decoded[0]._hex;
@@ -394,6 +394,7 @@ export class Banana {
     const authenticatorData = decoded[2];
     const clientDataJSONPre = decoded[3];
     const clientDataJSONPost = decoded[4];
+    console.log('this is decoded', decoded);
 
     const messageHash = ethers.utils.keccak256(
       ethers.utils.solidityPack(["string"], [message])
