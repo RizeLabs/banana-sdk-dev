@@ -258,24 +258,13 @@ export class BananaSigner extends ERC4337EthersSigner {
     }
 
     const signatureAndMessage = JSON.parse(signatureObtained);
-
-    console.log("signature and mssage ", signatureAndMessage);
-    const abi = ethers.utils.defaultAbiCoder;
-    const decoded = abi.decode(
-      ["uint256", "uint256", "uint256"],
-      signatureAndMessage
-    );
-    const signedMessage = decoded[2];
-    const rHex = decoded[0].toHexString();
-    const sHex = decoded[1].toHexString();
-    const finalSignature = rHex + sHex.slice(2);
     /**
      * Note:
      * the `message` is signed using secp256r1 instead of secp256k1, hence to verify
      * signedMessage we cannot use ecrecover!
      */
     return {
-      signature: finalSignature,
+      signature: signatureAndMessage,
     };
   }
 }

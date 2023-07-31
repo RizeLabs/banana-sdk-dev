@@ -77,6 +77,7 @@ const Staking = () => {
     console.log("Signed message and status: ", signedMesage);
     const eoaAddress = await bananaInstance.getEOAAddress();
     console.log("eoa ", eoaAddress);
+    console.log(signedMesage, sampleMsg, eoaAddress)
     const isValid = await bananaInstance.verifySignature(
       signedMesage.signature,
       sampleMsg,

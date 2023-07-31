@@ -60,7 +60,6 @@ export class Banana {
     this.network = chain;
     this.#bananaTransportInstance = new BananaTransporter();
     this.currentPaymasterUrl = _paymasterOptions?.find(paymaster => paymaster.chainId === String(this.network))?.paymasterUrl;
-    console.log('this is paymaster url ', this.currentPaymasterUrl);
   }
 
   /**
@@ -386,7 +385,7 @@ export class Banana {
   //! for now assigned eoaAddress as any type
   verifySignature = async (signature: string, message: string, eoaAddress: any): Promise<boolean> => {
 
-    const bananaAccount: BananaAccount = BananaAccount__factory.connect(this.walletAddress, this.jsonRpcProvider);
+    const bananaAccount: BananaAccount = BananaAccount__factory.connect(this.addresses.TouchIdSafeWalletContractSingletonAddress, this.jsonRpcProvider);
     const abiDecode = ethers.utils.defaultAbiCoder;
     const decoded = abiDecode.decode(['uint', 'uint', 'bytes', 'string', 'string', 'bytes32'], signature);
     const rHex = decoded[0]._hex;
