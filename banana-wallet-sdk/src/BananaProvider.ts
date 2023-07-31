@@ -60,7 +60,6 @@ export class Banana {
     this.network = chain;
     this.#bananaTransportInstance = new BananaTransporter();
     this.currentPaymasterUrl = _paymasterOptions?.find(paymaster => paymaster.chainId === String(this.network))?.paymasterUrl;
-    console.log('this is paymaster url ', this.currentPaymasterUrl);
   }
 
   /**
@@ -394,7 +393,6 @@ export class Banana {
     const authenticatorData = decoded[2];
     const clientDataJSONPre = decoded[3];
     const clientDataJSONPost = decoded[4];
-    console.log('this is decoded', decoded);
 
     const messageHash = ethers.utils.keccak256(
       ethers.utils.solidityPack(["string"], [message])
