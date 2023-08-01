@@ -25,7 +25,6 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { Network } from "@ethersproject/providers";
 import { Wallet } from "./BananaWallet"
 import { Banana4337Provider } from "./Banana4337Provider";
-import { walletNameInput } from "./utils/walletNameInput";
 import { BananaTransporter } from "./BananaTransporter";
 import { getKeccakHash } from "./utils/getKeccakHash";
 import { encode } from "./utils/base64url-arraybuffer";
@@ -97,10 +96,12 @@ export class Banana {
       "bananaUser",
       JSON.stringify(walletIdentifier)
     );
+    
     this.cookie.setCookie(
       walletIdentifier,
       JSON.stringify(this.cookieObject)
     );
+    
     const setCredentialsStatus = await setWalletMetaData(
       walletIdentifier,
       this.cookieObject
@@ -424,10 +425,12 @@ export class Banana {
   private postCookieChecks = async (walletIdentifier: string) => {
     // check for username
     const walletName = this.cookie.getCookie("bananaUser");
+    
     if (!!walletName) {
       this.cookie.setCookie(walletName, JSON.stringify(this.cookieObject));
       return;
     }
+    
     this.cookie.setCookie("bananaUser", JSON.stringify(walletIdentifier));
     this.cookie.setCookie(walletIdentifier, JSON.stringify(this.cookieObject));
   };
