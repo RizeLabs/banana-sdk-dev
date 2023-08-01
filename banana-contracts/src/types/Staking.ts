@@ -27,10 +27,11 @@ export interface StakingInterface extends utils.Interface {
   functions: {
     "returnStake()": FunctionFragment;
     "stake()": FunctionFragment;
+    "stakedAmount()": FunctionFragment;
   };
 
   getFunction(
-    nameOrSignatureOrTopic: "returnStake" | "stake"
+    nameOrSignatureOrTopic: "returnStake" | "stake" | "stakedAmount"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -38,12 +39,20 @@ export interface StakingInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "stake", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "stakedAmount",
+    values?: undefined
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "returnStake",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "stake", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "stakedAmount",
+    data: BytesLike
+  ): Result;
 
   events: {};
 }
@@ -82,6 +91,8 @@ export interface Staking extends BaseContract {
     stake(
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    stakedAmount(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   returnStake(
@@ -92,10 +103,14 @@ export interface Staking extends BaseContract {
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  stakedAmount(overrides?: CallOverrides): Promise<BigNumber>;
+
   callStatic: {
     returnStake(overrides?: CallOverrides): Promise<void>;
 
     stake(overrides?: CallOverrides): Promise<void>;
+
+    stakedAmount(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {};
@@ -108,6 +123,8 @@ export interface Staking extends BaseContract {
     stake(
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    stakedAmount(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -118,5 +135,7 @@ export interface Staking extends BaseContract {
     stake(
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
+
+    stakedAmount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

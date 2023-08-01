@@ -84,6 +84,7 @@ export interface BananaAccountInterface extends utils.Interface {
     "encodeTransactionData(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,uint256)": FunctionFragment;
     "encodedIdHashToQValues(bytes32,uint256)": FunctionFragment;
     "entryPoint()": FunctionFragment;
+    "execBatchTransactionFromEntrypoint(address[],uint256[],bytes[],uint8)": FunctionFragment;
     "execTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes)": FunctionFragment;
     "execTransactionFromEntrypoint(address,uint256,bytes,uint8)": FunctionFragment;
     "execTransactionFromModule(address,uint256,bytes,uint8)": FunctionFragment;
@@ -126,6 +127,7 @@ export interface BananaAccountInterface extends utils.Interface {
       | "encodeTransactionData"
       | "encodedIdHashToQValues"
       | "entryPoint"
+      | "execBatchTransactionFromEntrypoint"
       | "execTransaction"
       | "execTransactionFromEntrypoint"
       | "execTransactionFromModule"
@@ -227,6 +229,15 @@ export interface BananaAccountInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "entryPoint",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "execBatchTransactionFromEntrypoint",
+    values: [
+      PromiseOrValue<string>[],
+      PromiseOrValue<BigNumberish>[],
+      PromiseOrValue<BytesLike>[],
+      PromiseOrValue<BigNumberish>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "execTransaction",
@@ -443,6 +454,10 @@ export interface BananaAccountInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "entryPoint", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "execBatchTransactionFromEntrypoint",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "execTransaction",
     data: BytesLike
@@ -810,6 +825,14 @@ export interface BananaAccount extends BaseContract {
 
     entryPoint(overrides?: CallOverrides): Promise<[string]>;
 
+    execBatchTransactionFromEntrypoint(
+      to: PromiseOrValue<string>[],
+      value: PromiseOrValue<BigNumberish>[],
+      data: PromiseOrValue<BytesLike>[],
+      operation: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     execTransaction(
       to: PromiseOrValue<string>,
       value: PromiseOrValue<BigNumberish>,
@@ -1054,6 +1077,14 @@ export interface BananaAccount extends BaseContract {
 
   entryPoint(overrides?: CallOverrides): Promise<string>;
 
+  execBatchTransactionFromEntrypoint(
+    to: PromiseOrValue<string>[],
+    value: PromiseOrValue<BigNumberish>[],
+    data: PromiseOrValue<BytesLike>[],
+    operation: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   execTransaction(
     to: PromiseOrValue<string>,
     value: PromiseOrValue<BigNumberish>,
@@ -1297,6 +1328,14 @@ export interface BananaAccount extends BaseContract {
     ): Promise<BigNumber>;
 
     entryPoint(overrides?: CallOverrides): Promise<string>;
+
+    execBatchTransactionFromEntrypoint(
+      to: PromiseOrValue<string>[],
+      value: PromiseOrValue<BigNumberish>[],
+      data: PromiseOrValue<BytesLike>[],
+      operation: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     execTransaction(
       to: PromiseOrValue<string>,
@@ -1638,6 +1677,14 @@ export interface BananaAccount extends BaseContract {
 
     entryPoint(overrides?: CallOverrides): Promise<BigNumber>;
 
+    execBatchTransactionFromEntrypoint(
+      to: PromiseOrValue<string>[],
+      value: PromiseOrValue<BigNumberish>[],
+      data: PromiseOrValue<BytesLike>[],
+      operation: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     execTransaction(
       to: PromiseOrValue<string>,
       value: PromiseOrValue<BigNumberish>,
@@ -1882,6 +1929,14 @@ export interface BananaAccount extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     entryPoint(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    execBatchTransactionFromEntrypoint(
+      to: PromiseOrValue<string>[],
+      value: PromiseOrValue<BigNumberish>[],
+      data: PromiseOrValue<BytesLike>[],
+      operation: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
 
     execTransaction(
       to: PromiseOrValue<string>,
