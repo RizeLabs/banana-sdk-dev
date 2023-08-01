@@ -89,24 +89,33 @@ export interface BananaAccountInterface extends utils.Interface {
     "execTransactionFromEntrypoint(address,uint256,bytes,uint8)": FunctionFragment;
     "execTransactionFromModule(address,uint256,bytes,uint8)": FunctionFragment;
     "execTransactionFromModuleReturnData(address,uint256,bytes,uint8)": FunctionFragment;
+    "finaliseRecovery()": FunctionFragment;
     "getChainId()": FunctionFragment;
     "getModulesPaginated(address,uint256)": FunctionFragment;
     "getOwners()": FunctionFragment;
     "getStorageAt(uint256,uint256)": FunctionFragment;
     "getThreshold()": FunctionFragment;
     "getTransactionHash(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,uint256)": FunctionFragment;
+    "inRecovery()": FunctionFragment;
+    "initiateRecovery(uint256[2],bytes32,bytes32,uint8,bytes32,bytes32)": FunctionFragment;
     "isModuleEnabled(address)": FunctionFragment;
     "isOwner(address)": FunctionFragment;
     "nonce()": FunctionFragment;
+    "recoveryAddress()": FunctionFragment;
     "removeOwner(address,address,uint256)": FunctionFragment;
     "replaceEntrypoint(address)": FunctionFragment;
     "setFallbackHandler(address)": FunctionFragment;
     "setGuard(address)": FunctionFragment;
     "setup(address[],uint256,address,bytes,address,address,uint256,address)": FunctionFragment;
+    "setupRecovery(address)": FunctionFragment;
     "setupWithEntrypoint(address[],uint256,address,bytes,address,address,uint256,address,address,bytes32,uint256[2])": FunctionFragment;
     "signedMessages(bytes32)": FunctionFragment;
     "simulateAndRevert(address,bytes)": FunctionFragment;
+    "stopRecoveryByOwner()": FunctionFragment;
+    "stopRecoveryByRelayer(bytes32,uint8,bytes32,bytes32)": FunctionFragment;
     "swapOwner(address,address,address)": FunctionFragment;
+    "trustedRelayer()": FunctionFragment;
+    "unlockTime()": FunctionFragment;
     "validateUserOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,uint256)": FunctionFragment;
     "verifySignature(bytes32,uint256[2],uint256[2])": FunctionFragment;
   };
@@ -132,24 +141,33 @@ export interface BananaAccountInterface extends utils.Interface {
       | "execTransactionFromEntrypoint"
       | "execTransactionFromModule"
       | "execTransactionFromModuleReturnData"
+      | "finaliseRecovery"
       | "getChainId"
       | "getModulesPaginated"
       | "getOwners"
       | "getStorageAt"
       | "getThreshold"
       | "getTransactionHash"
+      | "inRecovery"
+      | "initiateRecovery"
       | "isModuleEnabled"
       | "isOwner"
       | "nonce"
+      | "recoveryAddress"
       | "removeOwner"
       | "replaceEntrypoint"
       | "setFallbackHandler"
       | "setGuard"
       | "setup"
+      | "setupRecovery"
       | "setupWithEntrypoint"
       | "signedMessages"
       | "simulateAndRevert"
+      | "stopRecoveryByOwner"
+      | "stopRecoveryByRelayer"
       | "swapOwner"
+      | "trustedRelayer"
+      | "unlockTime"
       | "validateUserOp"
       | "verifySignature"
   ): FunctionFragment;
@@ -282,6 +300,10 @@ export interface BananaAccountInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "finaliseRecovery",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getChainId",
     values?: undefined
   ): string;
@@ -314,6 +336,21 @@ export interface BananaAccountInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "inRecovery",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "initiateRecovery",
+    values: [
+      [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "isModuleEnabled",
     values: [PromiseOrValue<string>]
   ): string;
@@ -322,6 +359,10 @@ export interface BananaAccountInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: "nonce", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "recoveryAddress",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "removeOwner",
     values: [
@@ -356,6 +397,10 @@ export interface BananaAccountInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "setupRecovery",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setupWithEntrypoint",
     values: [
       PromiseOrValue<string>[],
@@ -380,12 +425,33 @@ export interface BananaAccountInterface extends utils.Interface {
     values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
+    functionFragment: "stopRecoveryByOwner",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "stopRecoveryByRelayer",
+    values: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "swapOwner",
     values: [
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "trustedRelayer",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "unlockTime",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "validateUserOp",
@@ -474,6 +540,10 @@ export interface BananaAccountInterface extends utils.Interface {
     functionFragment: "execTransactionFromModuleReturnData",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "finaliseRecovery",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getChainId", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getModulesPaginated",
@@ -492,12 +562,21 @@ export interface BananaAccountInterface extends utils.Interface {
     functionFragment: "getTransactionHash",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "inRecovery", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "initiateRecovery",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "isModuleEnabled",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "isOwner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "nonce", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "recoveryAddress",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "removeOwner",
     data: BytesLike
@@ -513,6 +592,10 @@ export interface BananaAccountInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "setGuard", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setup", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "setupRecovery",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setupWithEntrypoint",
     data: BytesLike
   ): Result;
@@ -524,7 +607,20 @@ export interface BananaAccountInterface extends utils.Interface {
     functionFragment: "simulateAndRevert",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "stopRecoveryByOwner",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "stopRecoveryByRelayer",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "swapOwner", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "trustedRelayer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "unlockTime", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "validateUserOp",
     data: BytesLike
@@ -871,6 +967,10 @@ export interface BananaAccount extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    finaliseRecovery(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     getChainId(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getModulesPaginated(
@@ -903,6 +1003,18 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    inRecovery(overrides?: CallOverrides): Promise<[boolean]>;
+
+    initiateRecovery(
+      _newQValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      _encodedIdHash: PromiseOrValue<BytesLike>,
+      _message: PromiseOrValue<BytesLike>,
+      _v: PromiseOrValue<BigNumberish>,
+      _r: PromiseOrValue<BytesLike>,
+      _s: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     isModuleEnabled(
       module: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -914,6 +1026,8 @@ export interface BananaAccount extends BaseContract {
     ): Promise<[boolean]>;
 
     nonce(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    recoveryAddress(overrides?: CallOverrides): Promise<[string]>;
 
     removeOwner(
       prevOwner: PromiseOrValue<string>,
@@ -949,6 +1063,11 @@ export interface BananaAccount extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    setupRecovery(
+      _newRecoveryAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     setupWithEntrypoint(
       _owners: PromiseOrValue<string>[],
       _threshold: PromiseOrValue<BigNumberish>,
@@ -975,12 +1094,28 @@ export interface BananaAccount extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    stopRecoveryByOwner(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    stopRecoveryByRelayer(
+      _message: PromiseOrValue<BytesLike>,
+      _v: PromiseOrValue<BigNumberish>,
+      _r: PromiseOrValue<BytesLike>,
+      _s: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     swapOwner(
       prevOwner: PromiseOrValue<string>,
       oldOwner: PromiseOrValue<string>,
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    trustedRelayer(overrides?: CallOverrides): Promise<[string]>;
+
+    unlockTime(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     validateUserOp(
       userOp: UserOperationStruct,
@@ -1123,6 +1258,10 @@ export interface BananaAccount extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  finaliseRecovery(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   getChainId(overrides?: CallOverrides): Promise<BigNumber>;
 
   getModulesPaginated(
@@ -1155,6 +1294,18 @@ export interface BananaAccount extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  inRecovery(overrides?: CallOverrides): Promise<boolean>;
+
+  initiateRecovery(
+    _newQValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+    _encodedIdHash: PromiseOrValue<BytesLike>,
+    _message: PromiseOrValue<BytesLike>,
+    _v: PromiseOrValue<BigNumberish>,
+    _r: PromiseOrValue<BytesLike>,
+    _s: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   isModuleEnabled(
     module: PromiseOrValue<string>,
     overrides?: CallOverrides
@@ -1166,6 +1317,8 @@ export interface BananaAccount extends BaseContract {
   ): Promise<boolean>;
 
   nonce(overrides?: CallOverrides): Promise<BigNumber>;
+
+  recoveryAddress(overrides?: CallOverrides): Promise<string>;
 
   removeOwner(
     prevOwner: PromiseOrValue<string>,
@@ -1201,6 +1354,11 @@ export interface BananaAccount extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  setupRecovery(
+    _newRecoveryAddress: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   setupWithEntrypoint(
     _owners: PromiseOrValue<string>[],
     _threshold: PromiseOrValue<BigNumberish>,
@@ -1227,12 +1385,28 @@ export interface BananaAccount extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  stopRecoveryByOwner(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  stopRecoveryByRelayer(
+    _message: PromiseOrValue<BytesLike>,
+    _v: PromiseOrValue<BigNumberish>,
+    _r: PromiseOrValue<BytesLike>,
+    _s: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   swapOwner(
     prevOwner: PromiseOrValue<string>,
     oldOwner: PromiseOrValue<string>,
     newOwner: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  trustedRelayer(overrides?: CallOverrides): Promise<string>;
+
+  unlockTime(overrides?: CallOverrides): Promise<BigNumber>;
 
   validateUserOp(
     userOp: UserOperationStruct,
@@ -1375,6 +1549,8 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean, string] & { success: boolean; returnData: string }>;
 
+    finaliseRecovery(overrides?: CallOverrides): Promise<void>;
+
     getChainId(overrides?: CallOverrides): Promise<BigNumber>;
 
     getModulesPaginated(
@@ -1407,6 +1583,18 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    inRecovery(overrides?: CallOverrides): Promise<boolean>;
+
+    initiateRecovery(
+      _newQValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      _encodedIdHash: PromiseOrValue<BytesLike>,
+      _message: PromiseOrValue<BytesLike>,
+      _v: PromiseOrValue<BigNumberish>,
+      _r: PromiseOrValue<BytesLike>,
+      _s: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     isModuleEnabled(
       module: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -1418,6 +1606,8 @@ export interface BananaAccount extends BaseContract {
     ): Promise<boolean>;
 
     nonce(overrides?: CallOverrides): Promise<BigNumber>;
+
+    recoveryAddress(overrides?: CallOverrides): Promise<string>;
 
     removeOwner(
       prevOwner: PromiseOrValue<string>,
@@ -1453,6 +1643,11 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setupRecovery(
+      _newRecoveryAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setupWithEntrypoint(
       _owners: PromiseOrValue<string>[],
       _threshold: PromiseOrValue<BigNumberish>,
@@ -1479,12 +1674,26 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    stopRecoveryByOwner(overrides?: CallOverrides): Promise<void>;
+
+    stopRecoveryByRelayer(
+      _message: PromiseOrValue<BytesLike>,
+      _v: PromiseOrValue<BigNumberish>,
+      _r: PromiseOrValue<BytesLike>,
+      _s: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     swapOwner(
       prevOwner: PromiseOrValue<string>,
       oldOwner: PromiseOrValue<string>,
       newOwner: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    trustedRelayer(overrides?: CallOverrides): Promise<string>;
+
+    unlockTime(overrides?: CallOverrides): Promise<BigNumber>;
 
     validateUserOp(
       userOp: UserOperationStruct,
@@ -1723,6 +1932,10 @@ export interface BananaAccount extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    finaliseRecovery(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     getChainId(overrides?: CallOverrides): Promise<BigNumber>;
 
     getModulesPaginated(
@@ -1755,6 +1968,18 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    inRecovery(overrides?: CallOverrides): Promise<BigNumber>;
+
+    initiateRecovery(
+      _newQValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      _encodedIdHash: PromiseOrValue<BytesLike>,
+      _message: PromiseOrValue<BytesLike>,
+      _v: PromiseOrValue<BigNumberish>,
+      _r: PromiseOrValue<BytesLike>,
+      _s: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     isModuleEnabled(
       module: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -1766,6 +1991,8 @@ export interface BananaAccount extends BaseContract {
     ): Promise<BigNumber>;
 
     nonce(overrides?: CallOverrides): Promise<BigNumber>;
+
+    recoveryAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
     removeOwner(
       prevOwner: PromiseOrValue<string>,
@@ -1801,6 +2028,11 @@ export interface BananaAccount extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    setupRecovery(
+      _newRecoveryAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     setupWithEntrypoint(
       _owners: PromiseOrValue<string>[],
       _threshold: PromiseOrValue<BigNumberish>,
@@ -1827,12 +2059,28 @@ export interface BananaAccount extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    stopRecoveryByOwner(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    stopRecoveryByRelayer(
+      _message: PromiseOrValue<BytesLike>,
+      _v: PromiseOrValue<BigNumberish>,
+      _r: PromiseOrValue<BytesLike>,
+      _s: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     swapOwner(
       prevOwner: PromiseOrValue<string>,
       oldOwner: PromiseOrValue<string>,
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    trustedRelayer(overrides?: CallOverrides): Promise<BigNumber>;
+
+    unlockTime(overrides?: CallOverrides): Promise<BigNumber>;
 
     validateUserOp(
       userOp: UserOperationStruct,
@@ -1976,6 +2224,10 @@ export interface BananaAccount extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    finaliseRecovery(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     getChainId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getModulesPaginated(
@@ -2008,6 +2260,18 @@ export interface BananaAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    inRecovery(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    initiateRecovery(
+      _newQValues: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+      _encodedIdHash: PromiseOrValue<BytesLike>,
+      _message: PromiseOrValue<BytesLike>,
+      _v: PromiseOrValue<BigNumberish>,
+      _r: PromiseOrValue<BytesLike>,
+      _s: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     isModuleEnabled(
       module: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -2019,6 +2283,8 @@ export interface BananaAccount extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     nonce(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    recoveryAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     removeOwner(
       prevOwner: PromiseOrValue<string>,
@@ -2054,6 +2320,11 @@ export interface BananaAccount extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    setupRecovery(
+      _newRecoveryAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     setupWithEntrypoint(
       _owners: PromiseOrValue<string>[],
       _threshold: PromiseOrValue<BigNumberish>,
@@ -2080,12 +2351,28 @@ export interface BananaAccount extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    stopRecoveryByOwner(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    stopRecoveryByRelayer(
+      _message: PromiseOrValue<BytesLike>,
+      _v: PromiseOrValue<BigNumberish>,
+      _r: PromiseOrValue<BytesLike>,
+      _s: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     swapOwner(
       prevOwner: PromiseOrValue<string>,
       oldOwner: PromiseOrValue<string>,
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
+
+    trustedRelayer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    unlockTime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     validateUserOp(
       userOp: UserOperationStruct,
