@@ -43,8 +43,8 @@ const Staking = () => {
   // optimism staking
   // const stakeAddress = '0x8b370128A84bc2Df7fF4813675e294b1ae816178'
 
-  // polygo staking
-  const stakeAddress = "0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1";
+  // polygo staking 
+  const stakeAddress = '0x2144601Dc1b6220F34cf3070Ce8aE5F425aA96F1'
 
   // polygon mainnet
   // const stakeAddress = '0x8B220bc9529c0bc18265c1B822FcC579eE586bA2';
@@ -76,7 +76,8 @@ const Staking = () => {
     const signedMesage = await signer.signBananaMessage(sampleMsg);
     console.log("Signed message and status: ", signedMesage);
     const eoaAddress = await bananaInstance.getEOAAddress();
-    console.log("eoa ", eoaAddress);
+
+    console.log("eoa ", eoaAddress)
     console.log(signedMesage, sampleMsg, eoaAddress)
     const isValid = await bananaInstance.verifySignature(
       signedMesage.signature,
@@ -114,6 +115,7 @@ const Staking = () => {
     // const bananaERCTokenAddress = '0x8fe7c2d6eB8DE9A452F59E62078f73780db1da83';
     const bananaERCTokenAddress = "0x4e191815bbD8031955fe355C450eeB629451FfDf";
     console.log("minting tokens ");
+
     const walletAddress = await walletInstance.getAddress();
     let bananContract = new ethers.Contract(
       bananaERCTokenAddress,

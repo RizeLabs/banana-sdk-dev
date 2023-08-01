@@ -9,6 +9,7 @@ import { BaseProvider, JsonRpcProvider } from "@ethersproject/providers";
 import { Signer } from "ethers";
 import { BananaSigner } from "./BananaSigner";
 import { PublicKey } from "./interfaces/Banana.interface";
+import { MyWalletApi } from "./MyWalletApi";
 
 export class Banana4337Provider extends ERC4337EthersProvider {
   readonly signer: BananaSigner;

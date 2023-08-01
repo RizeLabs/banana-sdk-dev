@@ -84,8 +84,7 @@ export function getClientConfigInfo(chain: Chains): ClientConfig {
     case Chains.polygonMainnet:
       return {
         entryPointAddress: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-        // bundlerUrl: "https://api.pimlico.io/v1/polygon/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445",
-        bundlerUrl: "https://api.stackup.sh/v1/node/ae1b4f72151fb2b79b2e7486f1f84e23af70b434396318d023e50bfdd8a833c3"
+        bundlerUrl: "https://api.pimlico.io/v1/polygon/rpc?apikey=1849c85d-46c8-4bee-8a6d-d6a0cba4d445",
       };
       case Chains.astar:
       return {
@@ -206,10 +205,6 @@ export function getChainSpecificConfig(chain: Chains): ChainSpecificConfig {
     case Chains.astar:
       return {
         jsonRpcUrl: ASTAR_MAINNET_RPC,
-      }
-    case Chains.polygonMainnet:
-      return {
-        jsonRpcUrl: POLYGON_MAINNET_RPC
       }
   }
 }
