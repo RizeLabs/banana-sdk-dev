@@ -292,4 +292,80 @@ export class MyWalletApi extends SimpleAccountAPI {
       );
     return TouchIdSafeWalletContractAddress;
   }
+
+  async createUnsignedUserOpForBatchedTransaction(
+    info: TransactionDetailsForUserOp[]
+  ): Promise<UserOperationStruct> {
+    const { callData, callGasLimit } =
+      await this.encodeUserOpCallDataAndGasLimitForBatchedTransaction(info);
+    console.log("this is calldata and allgaslimit", callData, callGasLimit);
+    const initCode = await this.getInitCode();
+
+    const initGas = await this.estimateCreationGas(initCode);
+    const verificationGasLimit = BigNumber.from(
+      await this.getVerificationGasLimit()
+    ).add(initGas);
+
+    let { maxFeePerGas, maxPriorityFeePerGas } = info;
+    if (maxFeePerGas == null || maxPriorityFeePerGas == null) {
+      const feeData = await this.provider.getFeeData();
+      if (maxFeePerGas == null) {
+        maxFeePerGas = feeData.maxFeePerGas ?? undefined;
+      }
+      if (maxPriorityFeePerGas == null) {
+        maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
+      }
+    }
+
+    const partialUserOp: any = {
+      sender: this.getAccountAddress(),
+      nonce: info.nonce ?? this.getNonce(),
+      initCode,
+      callData,
+      callGasLimit,
+      verificationGasLimit,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
+      paymasterAndData: "0x",
+    };
+
+    let paymasterAndData: string | undefined;
+    if (this.paymasterAPI != null) {
+      // fill (partial) preVerificationGas (all except the cost of the generated paymasterAndData)
+      const userOpForPm = {
+        ...partialUserOp,
+        preVerificationGas: await this.getPreVerificationGas(partialUserOp),
+      };
+      paymasterAndData = await this.paymasterAPI.getPaymasterAndData(
+        userOpForPm
+      );
+    }
+    partialUserOp.paymasterAndData = paymasterAndData ?? "0x";
+    return {
+      ...partialUserOp,
+      preVerificationGas: this.getPreVerificationGas(partialUserOp),
+      signature: "",
+    };
+  }
+
+  async signUserOpHash(userOpHash: string): Promise<string> {
+    return await this.owner.signMessage(arrayify(userOpHash));
+  }
+
+  async getAccountAddress(): Promise<string> {
+    const TouchIdSafeWalletContractProxyFactory: BananaAccountProxyFactory =
+      BananaAccountProxyFactory__factory.connect(
+        this.factoryAddress,
+        this.provider
+      );
+    const TouchIdSafeWalletContractInitializer =
+      this.getTouchIdSafeWalletContractInitializer();
+    const TouchIdSafeWalletContractAddress =
+      await TouchIdSafeWalletContractProxyFactory.getAddress(
+        this.singletonTouchIdSafeAddress,
+        this.saltNonce,
+        TouchIdSafeWalletContractInitializer
+      );
+    return TouchIdSafeWalletContractAddress;
+  }
 }

@@ -4,7 +4,7 @@ import {
   ERC4337EthersProvider,
   HttpRpcClient,
 } from "@account-abstraction/sdk";
-import { BaseAccountAPI } from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
+import { MyWalletApi } from "./MyWalletApi";
 import { BaseProvider, JsonRpcProvider } from "@ethersproject/providers";
 import { Signer } from "ethers";
 import { BananaSigner } from "./BananaSigner";
