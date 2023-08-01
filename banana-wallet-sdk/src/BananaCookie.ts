@@ -1,6 +1,5 @@
 export class BananaCookie {
     setCookie = (name: string, value: string) => {
-        console.log('ye wala set cookie call hua asli wala');
         try {
             // Check if the cookie already exists
             var existingCookie = this.getCookie(name);

@@ -193,9 +193,7 @@ export class MyWalletApi extends SimpleAccountAPI {
       return BigNumber.from(a.toString());
     }
 
-    // const value = parseNumber(detailsForUserOp.value) ?? BigNumber.from(0)
     detailsForUserOp.map((op) => parseNumber(op.value) ?? BigNumber.from(0));
-    // const callData = await this.encodeExecute(detailsForUserOp.target, value, detailsForUserOp.data)
     const callData = await this.encodeBatchExecute(detailsForUserOp);
     let callGasLimit;
     try {
@@ -208,7 +206,6 @@ export class MyWalletApi extends SimpleAccountAPI {
         }));
     } catch (err) {
       callGasLimit = ethers.BigNumber.from(1e6);
-      console.log("getting error here", err);
     }
 
     return {
@@ -222,7 +219,6 @@ export class MyWalletApi extends SimpleAccountAPI {
   ): Promise<UserOperationStruct> {
     const { callData, callGasLimit } =
       await this.encodeUserOpCallDataAndGasLimitForBatchedTransaction(info);
-    console.log("this is calldata and allgaslimit", callData, callGasLimit);
     const initCode = await this.getInitCode();
 
     const initGas = await this.estimateCreationGas(initCode);
@@ -298,7 +294,6 @@ export class MyWalletApi extends SimpleAccountAPI {
   ): Promise<UserOperationStruct> {
     const { callData, callGasLimit } =
       await this.encodeUserOpCallDataAndGasLimitForBatchedTransaction(info);
-    console.log("this is calldata and allgaslimit", callData, callGasLimit);
     const initCode = await this.getInitCode();
 
     const initGas = await this.estimateCreationGas(initCode);
