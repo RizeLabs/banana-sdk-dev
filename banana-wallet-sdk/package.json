@@ -1,6 +1,6 @@
 {
-  "name": "@rize-labs/banana-wallet-sdk-test",
-  "version": "0.1.26",
+  "name": "@rize-labs/banana-wallet-sdk",
+  "version": "0.1.27",
   "description": "Smart contract wallet sdk package by Banana Wallet",
   "main": "dist/index.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "eip4337"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Banana-Wallet/banana-wallet-sdk/issues"
   },

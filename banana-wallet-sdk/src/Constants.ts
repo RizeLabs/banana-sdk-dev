@@ -102,7 +102,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xc51b3bB183E68f9258B580E70Ac18cd5B6C40C36",
+          "0x21eEBF9e081a3Fd08B9aFe602b37c5E91C170443",
         fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.optimismTestnet: 
@@ -111,7 +111,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xc51b3bB183E68f9258B580E70Ac18cd5B6C40C36",
+          "0x21eEBF9e081a3Fd08B9aFe602b37c5E91C170443",
         fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.mumbai: // mi
@@ -120,7 +120,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xc51b3bB183E68f9258B580E70Ac18cd5B6C40C36",
+          "0x21eEBF9e081a3Fd08B9aFe602b37c5E91C170443",
         fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.gnosis:
@@ -129,7 +129,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xc51b3bB183E68f9258B580E70Ac18cd5B6C40C36",
+          "0x21eEBF9e081a3Fd08B9aFe602b37c5E91C170443",
         fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.chiadoTestnet:
@@ -138,7 +138,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xc51b3bB183E68f9258B580E70Ac18cd5B6C40C36",
+          "0x21eEBF9e081a3Fd08B9aFe602b37c5E91C170443",
         fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.shibuyaTestnet:
@@ -147,7 +147,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xc51b3bB183E68f9258B580E70Ac18cd5B6C40C36",
+          "0x21eEBF9e081a3Fd08B9aFe602b37c5E91C170443",
         fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
       };
     case Chains.polygonMainnet: 
@@ -156,7 +156,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xc51b3bB183E68f9258B580E70Ac18cd5B6C40C36",
+          "0x21eEBF9e081a3Fd08B9aFe602b37c5E91C170443",
         fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
      };
     case Chains.astar:
@@ -165,7 +165,7 @@ export function getChainSpecificAddress(chain: Chains): ChainConfig {
         TouchIdSafeWalletContractProxyFactoryAddress:
           "0x8e5ffc77D0906618A8Ed73dB34f92Ea0251B327b",
         TouchIdSafeWalletContractSingletonAddress:
-          "0xc51b3bB183E68f9258B580E70Ac18cd5B6C40C36",
+          "0x21eEBF9e081a3Fd08B9aFe602b37c5E91C170443",
         fallBackHandlerAddress: "0xac1c08a5a59cEA20518f7201bB0dda29d9454eb0",
     };
   }
