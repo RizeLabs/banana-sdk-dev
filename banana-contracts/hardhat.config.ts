@@ -16,7 +16,7 @@ export default {
       viaIR: true,
       optimizer: {
         enabled: true,
-        runs: 1000000,
+        runs: 100,
         // details: {
         //   yul: false
         // }

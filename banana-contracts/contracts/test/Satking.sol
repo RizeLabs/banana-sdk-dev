@@ -1,8 +1,7 @@
 pragma solidity ^0.8.12;
 
 contract Staking {
-    uint stakedAmount = 0;
-
+    uint public stakedAmount = 0;
     function stake() external payable {
         stakedAmount = stakedAmount + msg.value;
     }
